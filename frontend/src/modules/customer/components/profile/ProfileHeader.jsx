@@ -2,7 +2,7 @@ import React from 'react';
 import { Camera } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const ProfileHeader = ({ user, onLogout }) => {
+const ProfileHeader = ({ user, stats }) => {
     return (
         <div className="relative mb-6">
             {/* Background Pattern */}
@@ -14,8 +14,8 @@ const ProfileHeader = ({ user, onLogout }) => {
                 {/* Avatar with Edit Badge */}
                 <div className="relative mb-3 group">
                     <div className="w-24 h-24 rounded-full border-4 border-white shadow-xl overflow-hidden bg-gray-100 flex items-center justify-center">
-                        {user?.avatar ? (
-                            <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                        {user?.profileImage && user.profileImage !== 'default_profile.png' ? (
+                            <img src={user.profileImage} alt={user.name} className="w-full h-full object-cover" />
                         ) : (
                             <span className="text-3xl font-bold text-[#1e3932]">{user?.name?.charAt(0) || 'U'}</span>
                         )}
@@ -34,15 +34,15 @@ const ProfileHeader = ({ user, onLogout }) => {
                 {/* Stats Grid */}
                 <div className="grid grid-cols-3 gap-3 w-full max-w-sm mt-6">
                     <div className="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 text-center">
-                        <span className="block text-lg font-bold text-[#1e3932]">12</span>
+                        <span className="block text-lg font-bold text-[#1e3932]">{stats?.totalOrders || 0}</span>
                         <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wide">Orders</span>
                     </div>
                     <div className="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 text-center">
-                        <span className="block text-lg font-bold text-[#1e3932]">3</span>
+                        <span className="block text-lg font-bold text-[#1e3932]">{stats?.pendingOrders || 0}</span>
                         <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wide">Pending</span>
                     </div>
                     <div className="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 text-center">
-                        <span className="block text-lg font-bold text-green-600">₹2.4k</span>
+                        <span className="block text-lg font-bold text-green-600">₹{stats?.savedAmount || 0}</span>
                         <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wide">Saved</span>
                     </div>
                 </div>

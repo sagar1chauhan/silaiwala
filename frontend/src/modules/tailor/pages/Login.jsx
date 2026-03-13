@@ -4,32 +4,51 @@ import { useNavigate, Link } from 'react-router-dom';
 import AppContainer from '../../../components/Common/AppContainer';
 import { Button, Input } from '../components/UIElements';
 import { useTailorAuth, TAILOR_STATUS } from '../context/AuthContext';
-
+import api from '../services/api';
 import silaiwalaLogo from '../../../assets/silaiwala-logo.png';
 
 const Login = () => {
     const { login } = useTailorAuth();
     const navigate = useNavigate();
     const [otpSent, setOtpSent] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const email = watch('email');
 
     const handleSendOTP = () => {
         if (email) {
             setOtpSent(true);
+            // In a real app, this would trigger api/auth/send-otp
             console.log('OTP Sent to', email);
         }
     };
 
-    const onSubmit = (data) => {
-        // Mock login logic
-        const mockUser = {
-            name: 'Royal Stitches',
-            email: data.email,
-            status: TAILOR_STATUS.APPROVED, // For testing, login as APPROVED
-        };
-        login(mockUser, 'mock-jwt-token-123');
-        navigate('/partner');
+    const onSubmit = async (data) => {
+        setIsLoading(true);
+        try {
+            const response = await api.post('/auth/login', {
+                email: data.email,
+                password: data.password
+            });
+
+            if (response.data.success) {
+                const { token, data: userData } = response.data;
+                
+                // Ensure only tailors can login to this portal
+                if (userData.role !== 'tailor') {
+                    alert("This portal is only for registered tailors.");
+                    return;
+                }
+
+                login(userData, token);
+                navigate('/partner');
+            }
+        } catch (error) {
+            const message = error.response?.data?.message || "Invalid credentials or server error";
+            alert(message);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -50,7 +69,13 @@ const Login = () => {
                             <Input
                                 label="Email Address"
                                 placeholder="tailor@example.com"
-                                {...register('email', { required: 'Email is required' })}
+                                {...register('email', { 
+                                    required: 'Email is required',
+                                    pattern: {
+                                        value: /^\S+@\S+$/i,
+                                        message: 'Invalid email address'
+                                    }
+                                })}
                                 error={errors.email?.message}
                                 disabled={otpSent}
                             />
@@ -59,7 +84,7 @@ const Login = () => {
                             <button
                                 type="button"
                                 onClick={handleSendOTP}
-                                disabled={!email}
+                                disabled={!email || errors.email}
                                 className="px-4 py-3 h-[52px] bg-[#1e3932] text-white rounded-2xl font-bold text-sm whitespace-nowrap active:scale-95 disabled:opacity-50 disabled:active:scale-100 transition-all shadow-lg shadow-green-900/10 mb-1"
                             >
                                 Send OTP
@@ -97,7 +122,7 @@ const Login = () => {
                                 </div>
                             </div>
                             <div className="pt-2">
-                                <Button type="submit">
+                                <Button type="submit" loading={isLoading}>
                                     Sign In
                                 </Button>
                             </div>

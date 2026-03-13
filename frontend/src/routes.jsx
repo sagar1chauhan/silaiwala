@@ -71,6 +71,8 @@ import AdminSettings from './modules/admin/pages/Settings';
 
 import ReferEarn from './modules/customer/pages/ReferEarn'; // NEW
 import FabricDetail from './modules/customer/pages/FabricDetail'; // NEW
+import Measurements from './modules/customer/pages/Measurements'; // NEW
+import SavedAddresses from './modules/customer/pages/SavedAddresses'; // NEW
 
 const AppRoutes = () => {
     return (
@@ -98,6 +100,8 @@ const AppRoutes = () => {
                 <Route path="/orders" element={<OrdersPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/profile/edit" element={<EditProfile />} />
+                <Route path="/profile/measurements" element={<Measurements />} />
+                <Route path="/profile/addresses" element={<SavedAddresses />} />
                 <Route path="/refer" element={<ReferEarn />} />
                 {/* Fixed path from /tailor/:id to /shop/:id to avoid conflict or keep it customer centric */}
                 <Route path="/tailor/:id" element={<TailorProfile />} />

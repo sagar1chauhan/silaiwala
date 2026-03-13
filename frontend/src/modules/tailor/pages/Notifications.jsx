@@ -1,59 +1,37 @@
-import React, { useState } from 'react';
-import { ArrowLeft, Bell, MessageSquare, Tag, AlertCircle, CheckCircle2 } from 'lucide-react';
+import React from 'react';
+import { ArrowLeft, Bell, MessageSquare, Tag, AlertCircle, CheckCircle2, ShoppingBag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-const INITIAL_NOTIFICATIONS = [
-    {
-        id: 1,
-        type: 'order',
-        title: 'New Order Request',
-        message: 'You have received a new order from Anjali R. for Kurti Stitching.',
-        time: '2 mins ago',
-        read: false,
-        icon: <Bell size={18} className="text-[#1e3932]" />,
-        bg: 'bg-green-50'
-    },
-    {
-        id: 2,
-        type: 'system',
-        title: 'Withdrawal Successful',
-        message: '₹4,500 has been transferred to your connected HDFC bank account.',
-        time: '2 hours ago',
-        read: false,
-        icon: <AlertCircle size={18} className="text-blue-600" />,
-        bg: 'bg-blue-50'
-    },
-    {
-        id: 3,
-        type: 'promo',
-        title: 'Premium Subscription Offer',
-        message: 'Upgrade to Premium today and get 50% more visibility in your area!',
-        time: '1 day ago',
-        read: true,
-        icon: <Tag size={18} className="text-orange-600" />,
-        bg: 'bg-orange-50'
-    },
-    {
-        id: 4,
-        type: 'message',
-        title: 'Message from Suresh M.',
-        message: '"Hi, can you make the sleeves a bit tighter?"',
-        time: '2 days ago',
-        read: true,
-        icon: <MessageSquare size={18} className="text-purple-600" />,
-        bg: 'bg-purple-50'
-    }
-];
+import { useNotifications } from '../context/NotificationContext';
 
 const Notifications = () => {
     const navigate = useNavigate();
-    const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
+    const { notifications, unreadCount, markAllRead, markAsRead, loading } = useNotifications();
 
-    const markAllAsRead = () => {
-        setNotifications(current => current.map(n => ({ ...n, read: true })));
+    const getRelativeTime = (date) => {
+        const now = new Date();
+        const diff = now - new Date(date);
+        const mins = Math.floor(diff / 60000);
+        const hours = Math.floor(mins / 60);
+        const days = Math.floor(hours / 24);
+
+        if (mins < 1) return 'Just now';
+        if (mins < 60) return `${mins}m ago`;
+        if (hours < 24) return `${hours}h ago`;
+        return `${days}d ago`;
     };
 
-    const hasUnread = notifications.some(n => !n.read);
+    const getIcon = (type) => {
+        switch (type) {
+            case 'ORDER_CREATED':
+                return { icon: <ShoppingBag size={18} />, bg: 'bg-green-50', color: 'text-green-600' };
+            case 'ORDER_STATUS_UPDATED':
+                return { icon: <Bell size={18} />, bg: 'bg-blue-50', color: 'text-blue-600' };
+            case 'SYSTEM_NOTICE':
+                return { icon: <AlertCircle size={18} />, bg: 'bg-orange-50', color: 'text-orange-600' };
+            default:
+                return { icon: <Bell size={18} />, bg: 'bg-gray-50', color: 'text-gray-400' };
+        }
+    };
 
     return (
         <div className="min-h-full bg-gray-50 flex flex-col relative animate-in fade-in duration-300">
@@ -65,9 +43,9 @@ const Notifications = () => {
                     </button>
                     <h1 className="text-lg font-black text-gray-900 tracking-tight">Notifications</h1>
                 </div>
-                {hasUnread ? (
+                {unreadCount > 0 ? (
                     <button
-                        onClick={markAllAsRead}
+                        onClick={markAllRead}
                         className="text-[10px] font-black text-[#1e3932] uppercase tracking-widest bg-green-50 px-3 py-1.5 rounded-lg active:scale-95 transition-all hover:bg-[#1e3932] hover:text-white"
                     >
                         Mark All Read
@@ -79,27 +57,47 @@ const Notifications = () => {
                 )}
             </div>
 
-            <div className="flex-1 p-5">
-                <div className="space-y-3">
-                    {notifications.map((notif) => (
-                        <div
-                            key={notif.id}
-                            className={`p-4 rounded-[1.25rem] border transition-all flex gap-4 ${notif.read ? 'bg-white border-gray-100 opacity-75' : 'bg-white border-green-100 shadow-[0_4px_20px_rgb(0,0,0,0.04)]'} relative`}
-                        >
-                            {!notif.read && (
-                                <div className="absolute top-4 right-4 h-2 w-2 bg-red-500 rounded-full animate-pulse"></div>
-                            )}
-                            <div className={`h-12 w-12 rounded-2xl flex items-center justify-center shrink-0 ${notif.bg}`}>
-                                {notif.icon}
-                            </div>
-                            <div className="flex-1 pr-4">
-                                <h3 className="text-sm font-black text-gray-900 leading-tight mb-1">{notif.title}</h3>
-                                <p className="text-xs font-medium text-gray-500 leading-snug line-clamp-2">{notif.message}</p>
-                                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-2">{notif.time}</p>
-                            </div>
+            <div className="flex-1 p-5 overflow-y-auto">
+                {loading && notifications.length === 0 ? (
+                    <div className="space-y-3">
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className="h-24 w-full bg-white rounded-[1.25rem] animate-pulse border border-gray-100"></div>
+                        ))}
+                    </div>
+                ) : notifications.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-20 text-center">
+                        <div className="h-20 w-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                            <Bell size={32} className="text-gray-300" />
                         </div>
-                    ))}
-                </div>
+                        <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">No Notifications Yet</h3>
+                        <p className="text-xs text-gray-400 font-medium mt-2">Updates about your orders will appear here.</p>
+                    </div>
+                ) : (
+                    <div className="space-y-3">
+                        {notifications.map((notif) => {
+                            const { icon, bg, color } = getIcon(notif.type);
+                            return (
+                                <div
+                                    key={notif._id}
+                                    onClick={() => !notif.isRead && markAsRead(notif._id)}
+                                    className={`p-4 rounded-[1.25rem] border transition-all flex gap-4 cursor-pointer ${notif.isRead ? 'bg-white border-gray-100 opacity-60' : 'bg-white border-green-100 shadow-[0_4px_20px_rgb(0,0,0,0.04)]'} relative group`}
+                                >
+                                    {!notif.isRead && (
+                                        <div className="absolute top-4 right-4 h-2 w-2 bg-red-500 rounded-full animate-pulse"></div>
+                                    )}
+                                    <div className={`h-12 w-12 rounded-2xl flex items-center justify-center shrink-0 ${bg} ${color} transition-transform group-hover:scale-110`}>
+                                        {icon}
+                                    </div>
+                                    <div className="flex-1 pr-4">
+                                        <h3 className="text-sm font-black text-gray-900 leading-tight mb-1">{notif.title}</h3>
+                                        <p className="text-xs font-medium text-gray-500 leading-snug line-clamp-2">{notif.message}</p>
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-2">{getRelativeTime(notif.createdAt)}</p>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
         </div>
     );

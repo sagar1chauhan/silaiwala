@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import useAuthStore from '../../../../store/authStore';
@@ -18,11 +18,15 @@ import {
     LifeBuoy,
     Book,
     Send,
-    UploadCloud
+    UploadCloud,
+    Loader2
 } from 'lucide-react';
+import deliveryService from '../../services/deliveryService';
+import { toast } from 'react-hot-toast';
 
 const DeliveryProfile = () => {
     const navigate = useNavigate();
+    const { user, setUser } = useAuthStore();
     const logout = useAuthStore((state) => state.logout);
     const [isEditing, setIsEditing] = useState(null); // 'personal' | 'bank' | null
     const { isOnline, setIsOnline } = useOutletContext() || { isOnline: true, setIsOnline: () => { } };
@@ -30,30 +34,111 @@ const DeliveryProfile = () => {
     const [showSupport, setShowSupport] = useState(false);
     const [showKYCModal, setShowKYCModal] = useState(false);
     const [kycStatus, setKycStatus] = useState('Action Required');
+    const [loading, setLoading] = useState(true);
 
-    // Mock KYC Upload States
-    const [aadharImage, setAadharImage] = useState(null);
-    const [licenseImage, setLicenseImage] = useState(null);
-
-    // Mock States
+    // Profile States
+    const [deliveryProfile, setDeliveryProfile] = useState(null);
     const [personalInfo, setPersonalInfo] = useState({
-        name: 'Vikram Sethi',
-        phone: '+91 98765 43210',
-        emergencyPhone: '+91 91234 56789',
-        vehicle: 'DL-4C-BN-9921',
+        name: '',
+        phone: '',
+        emergencyPhone: '+91 91234 56789', // Local only for now
+        vehicle: '',
     });
 
     const [bankInfo, setBankInfo] = useState({
-        accountName: 'Vikram Sethi',
+        accountName: 'Partner Name',
         bank: 'HDFC Bank',
         accountNo: '**** **** 9921',
         ifsc: 'HDFC0001234',
     });
 
-    const handleSave = (section) => {
-        // Mock save action
-        setIsEditing(null);
+    // Mock KYC Upload States
+    const [aadharImage, setAadharImage] = useState(null);
+    const [licenseImage, setLicenseImage] = useState(null);
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const res = await deliveryService.getProfile();
+                if (res.success) {
+                    const data = res.data;
+                    setDeliveryProfile(data);
+                    setPersonalInfo(prev => ({
+                        ...prev,
+                        name: data.user.name,
+                        phone: data.user.phoneNumber || '',
+                        vehicle: data.vehicleNumber || '',
+                    }));
+                    if (data.bankDetails) {
+                        setBankInfo({
+                            accountName: data.bankDetails.accountName || 'Partner Name',
+                            bank: data.bankDetails.bankName || 'HDFC Bank',
+                            accountNo: data.bankDetails.accountNumber || '**** **** 9921',
+                            ifsc: data.bankDetails.ifscCode || 'HDFC0001234',
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to fetch profile:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProfile();
+    }, []);
+
+    const handleToggleDuty = async () => {
+        const newStatus = !isOnline;
+        setIsOnline(newStatus);
+        try {
+            await deliveryService.updateStatus({ isAvailable: newStatus });
+            toast.success(`You are now ${newStatus ? 'Online' : 'Offline'}`);
+        } catch (error) {
+            console.error('Failed to update status:', error);
+            setIsOnline(!newStatus); // Revert on failure
+            toast.error('Failed to update status');
+        }
     };
+
+    const handleSave = async (section) => {
+        try {
+            if (section === 'personal') {
+                await deliveryService.updateProfile({
+                    name: personalInfo.name,
+                    phoneNumber: personalInfo.phone,
+                    vehicleNumber: personalInfo.vehicle
+                });
+                
+                if (setUser && user) {
+                    setUser({ ...user, name: personalInfo.name });
+                }
+                toast.success('Identity profile updated');
+            } else if (section === 'bank') {
+                await deliveryService.updateProfile({
+                    bankDetails: {
+                        accountName: bankInfo.accountName,
+                        bankName: bankInfo.bank,
+                        accountNumber: bankInfo.accountNo,
+                        ifscCode: bankInfo.ifsc
+                    }
+                });
+                toast.success('Financial details updated');
+            }
+            setIsEditing(null);
+        } catch (error) {
+            console.error(`Failed to update ${section} details:`, error);
+            toast.error(`Failed to update ${section} details`);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-4">
+                <Loader2 className="w-10 h-10 text-emerald-800 animate-spin" />
+                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest leading-none">Scanning Profile...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-2">
@@ -68,7 +153,7 @@ const DeliveryProfile = () => {
 
                 {/* Interactive Toggle Switch */}
                 <button
-                    onClick={() => setIsOnline(!isOnline)}
+                    onClick={handleToggleDuty}
                     className={`w-14 h-8 rounded-full p-1 transition-colors duration-500 ease-in-out relative flex items-center shadow-inner ${isOnline ? 'bg-emerald-800' : 'bg-slate-200'
                         }`}
                 >

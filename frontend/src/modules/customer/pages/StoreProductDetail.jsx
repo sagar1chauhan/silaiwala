@@ -43,7 +43,7 @@ const StoreProductDetail = () => {
         );
     }
 
-    const isWishlisted = isInWishlist(productData.id);
+    const isWishlisted = isInWishlist(productData._id || productData.id);
 
     const showToast = (message, type = 'success') => {
         setToast({ message, type });
@@ -117,7 +117,7 @@ const StoreProductDetail = () => {
                     </button>
                     <button
                         onClick={() => {
-                            toggleWishlist(productData);
+                            toggleWishlist(productData._id || productData.id);
                             showToast(isWishlisted ? "Removed from Wishlist" : "Added to Wishlist");
                         }}
                         className={`p-2 rounded-full transition-colors ${isWishlisted ? 'text-red-500 bg-white' : 'text-white hover:bg-white/10'}`}

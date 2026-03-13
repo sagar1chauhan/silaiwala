@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import api from '../services/api';
 
 const AuthContext = createContext();
 
@@ -11,26 +12,52 @@ export const TAILOR_STATUS = {
 };
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(JSON.parse(localStorage.getItem('tailor_user')));
     const [token, setToken] = useState(localStorage.getItem('tailor_token'));
-    const [status, setStatus] = useState(TAILOR_STATUS.NOT_REGISTERED);
+    const [status, setStatus] = useState(localStorage.getItem('tailor_status') || TAILOR_STATUS.NOT_REGISTERED);
     const [loading, setLoading] = useState(true);
 
+    const determineStatus = (tailorData) => {
+        if (!tailorData || !tailorData.documents) return TAILOR_STATUS.PENDING_APPROVAL;
+        
+        const hasRejected = tailorData.documents.some(d => d.status === 'rejected');
+        const allVerified = tailorData.documents.length > 0 && tailorData.documents.every(d => d.status === 'verified');
+        
+        if (hasRejected) return TAILOR_STATUS.REJECTED;
+        if (allVerified) return TAILOR_STATUS.APPROVED;
+        return TAILOR_STATUS.PENDING_APPROVAL;
+    };
+
     useEffect(() => {
-        // Dummy check for existing session
         const checkAuth = async () => {
             if (token) {
-                // Mock API call to get profile
-                setTimeout(() => {
-                    const mockUser = JSON.parse(localStorage.getItem('tailor_user')) || {
-                        name: 'Royal Stitches',
-                        email: 'tailor@example.com',
-                        status: TAILOR_STATUS.APPROVED, // Change this to test different flows
-                    };
-                    setUser(mockUser);
-                    setStatus(mockUser.status);
+                try {
+                    const res = await api.get('/tailors/me');
+                    if (res.data.success) {
+                        const tailorData = res.data.data;
+                        const currentStatus = determineStatus(tailorData);
+
+                        const combinedUser = {
+                            ...tailorData.user,
+                            shopName: tailorData.shopName,
+                            documents: tailorData.documents,
+                            profile: tailorData, // Keep full profile for reference
+                            status: currentStatus
+                        };
+                        
+                        setUser(combinedUser);
+                        setStatus(currentStatus);
+                        localStorage.setItem('tailor_status', currentStatus);
+                        localStorage.setItem('tailor_user', JSON.stringify(combinedUser));
+                    }
+                } catch (error) {
+                    console.error("Auth check failed:", error);
+                    if (error.response?.status === 401) {
+                        logout();
+                    }
+                } finally {
                     setLoading(false);
-                }, 500);
+                }
             } else {
                 setLoading(false);
             }
@@ -40,15 +67,31 @@ export const AuthProvider = ({ children }) => {
 
     const login = (userData, userToken) => {
         localStorage.setItem('tailor_token', userToken);
-        localStorage.setItem('tailor_user', JSON.stringify(userData));
+        
+        // Determine status immediately from login payload
+        let currentStatus = TAILOR_STATUS.NOT_REGISTERED;
+        if (userData.role === 'tailor') {
+            currentStatus = determineStatus(userData.profile);
+        }
+
+        const enrichedUser = {
+            ...userData,
+            status: currentStatus
+        };
+
+        localStorage.setItem('tailor_user', JSON.stringify(enrichedUser));
+        localStorage.setItem('tailor_status', currentStatus);
+        
         setToken(userToken);
-        setUser(userData);
-        setStatus(userData.status);
+        setUser(enrichedUser);
+        setStatus(currentStatus);
+        setLoading(false); // Stop loading immediately on explicit login
     };
 
     const logout = () => {
         localStorage.removeItem('tailor_token');
         localStorage.removeItem('tailor_user');
+        localStorage.removeItem('tailor_status');
         setToken(null);
         setUser(null);
         setStatus(TAILOR_STATUS.NOT_REGISTERED);
@@ -56,6 +99,7 @@ export const AuthProvider = ({ children }) => {
 
     const updateStatus = (newStatus) => {
         setStatus(newStatus);
+        localStorage.setItem('tailor_status', newStatus);
         if (user) {
             const updatedUser = { ...user, status: newStatus };
             setUser(updatedUser);

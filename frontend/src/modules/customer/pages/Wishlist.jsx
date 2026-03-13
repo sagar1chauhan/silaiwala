@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ArrowLeft, Heart, ShoppingBag } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import useWishlistStore from '../../../store/wishlistStore';
@@ -6,7 +6,11 @@ import ProductCard from '../components/store/ProductCard';
 
 const WishlistPage = () => {
     const navigate = useNavigate();
-    const { items, clearWishlist } = useWishlistStore(state => state);
+    const { items, clearWishlist, fetchWishlist, isLoading } = useWishlistStore(state => state);
+
+    useEffect(() => {
+        fetchWishlist();
+    }, [fetchWishlist]);
 
     if (items.length === 0) {
         return (
@@ -50,7 +54,7 @@ const WishlistPage = () => {
             <div className="max-w-7xl mx-auto p-4 md:p-8">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 animate-in fade-in duration-500">
                     {items.map((product) => (
-                        <ProductCard key={product.id} product={product} />
+                        <ProductCard key={product._id || product.id} product={product} />
                     ))}
                 </div>
             </div>

@@ -32,13 +32,14 @@ const DeliveryLogin = () => {
 
     return (
         <div className="w-full">
-            <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-md overflow-hidden border border-slate-50">
-                    <img src={silaiwalaLogo} alt="Silaiwala" className="w-12 h-12 object-contain" />
+            <div className="flex flex-col items-center mb-10">
+                <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-xl border border-slate-50 mb-6">
+                    <img src={silaiwalaLogo} alt="Silaiwala" className="w-14 h-14 object-contain" />
                 </div>
+                <h2 className="text-3xl font-black text-slate-900 tracking-tighter text-center">Partner Login</h2>
+                <div className="w-12 h-1 bg-emerald-600 rounded-full mt-3 opacity-20"></div>
+                <p className="text-[11px] font-black text-emerald-800 uppercase tracking-[0.2em] mt-4 opacity-70 italic">Delivery Command Center</p>
             </div>
-            <h2 className="text-2xl font-black text-center text-slate-900 mb-2">Partner Login</h2>
-            <p className="text-center text-slate-500 mb-8 font-medium">Deliver happiness with Silaiwala</p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 {error && (

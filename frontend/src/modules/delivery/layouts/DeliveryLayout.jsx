@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -11,6 +11,8 @@ import {
     MapPin,
     Navigation2
 } from 'lucide-react';
+import deliveryService from '../services/deliveryService';
+import { toast } from 'react-hot-toast';
 
 import silaiwalaLogo from '../../../assets/silaiwala-logo.png';
 
@@ -20,10 +22,21 @@ const DeliveryLayout = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
+    const toggleAvailability = async () => {
+        const newStatus = !isOnline;
+        setIsOnline(newStatus);
+        try {
+            await deliveryService.updateStatus({ isAvailable: newStatus });
+            toast.success(`You are now ${newStatus ? 'Online' : 'Offline'}`);
+        } catch (error) {
+            console.error('Failed to update status:', error);
+            setIsOnline(!newStatus);
+            toast.error('Failed to update status');
+        }
+    };
+
     const notifications = [
-        { id: 1, title: 'New Task Assigned', desc: 'Fabric pickup from Mystic Manor.', time: '2m ago', unread: true },
-        { id: 2, title: 'Identity Verified', desc: 'Your documents have been approved.', time: '1h ago', unread: false },
-        { id: 3, title: 'Payout Processed', desc: 'Amt ₹450 credited to wallet.', time: '3h ago', unread: false },
+        { id: 1, title: 'Network Connected', desc: 'Secure connection established.', time: 'Just now', unread: true },
     ];
 
     const navItems = [
@@ -99,7 +112,7 @@ const DeliveryLayout = () => {
                 <div className="flex items-center gap-4">
                     {/* Header Status Toggle */}
                     <button
-                        onClick={() => setIsOnline(!isOnline)}
+                        onClick={toggleAvailability}
                         className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-500 ${isOnline
                             ? 'bg-emerald-100 border-emerald-100 text-emerald-800 shadow-sm'
                             : 'bg-slate-50 border-slate-200 text-slate-400'

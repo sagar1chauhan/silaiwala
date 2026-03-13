@@ -1,21 +1,74 @@
-import React, { useState } from 'react';
-import { ArrowLeft, Edit2, History, Bell, MapPin, Shield, LogOut, ChevronRight, FileText, Save, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, Edit2, History, Bell, MapPin, Shield, LogOut, ChevronRight, FileText, Save, X, Phone, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Input, Button } from '../components/UIElements';
+import { useTailorAuth } from '../context/AuthContext';
+import api from '../services/api';
 
 const ProfileSettings = () => {
     const navigate = useNavigate();
+    const { logout } = useTailorAuth();
     const [isEditing, setIsEditing] = useState(false);
     const [activeModal, setActiveModal] = useState(null); // 'pickup', 'terms', 'privacy'
     const [isSaving, setIsSaving] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [profile, setProfile] = useState(null);
+    const [formData, setFormData] = useState({
+        shopName: '',
+        name: '',
+        email: '',
+        phoneNumber: '',
+        bio: '',
+        address: ''
+    });
 
-    const handleSave = () => {
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const res = await api.get('/tailors/me');
+                if (res.data.success) {
+                    const data = res.data.data;
+                    setProfile(data);
+                    setFormData({
+                        shopName: data.shopName || '',
+                        name: data.user?.name || '',
+                        email: data.user?.email || '',
+                        phoneNumber: data.user?.phoneNumber || '',
+                        bio: data.bio || '',
+                        address: data.location?.address || '123 Main St, Bandra West, Mumbai'
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchProfile();
+    }, []);
+
+    const handleSave = async (e) => {
+        e.preventDefault();
         setIsSaving(true);
-        setTimeout(() => {
+        try {
+            const res = await api.patch('/tailors/profile', formData);
+            if (res.data.success) {
+                setProfile(res.data.data);
+                setIsEditing(false);
+                alert("Profile details saved successfully!");
+            }
+        } catch (error) {
+            alert(error.response?.data?.message || 'Update failed');
+        } finally {
             setIsSaving(false);
-            alert("Profile details saved successfully!");
-            setIsEditing(false);
-        }, 800);
+        }
+    };
+
+    const handleLogout = () => {
+        if (window.confirm("Are you sure you want to logout?")) {
+            logout();
+            navigate('/partner/login');
+        }
     };
 
     const menuOptions = [
@@ -27,6 +80,12 @@ const ProfileSettings = () => {
         { icon: <Shield size={20} />, label: 'Privacy & Security', action: () => setActiveModal('privacy') },
     ];
 
+    if (isLoading) {
+        return <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1e3932]"></div>
+        </div>;
+    }
+
     const renderModalContent = () => {
         switch (activeModal) {
             case 'pickup':
@@ -36,7 +95,7 @@ const ProfileSettings = () => {
                         <p className="text-sm text-gray-600">Default pickup location is your registered shop address. Delivery partners will arrive between 10 AM - 6 PM.</p>
                         <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
                             <p className="text-xs font-bold text-[#1e3932] uppercase tracking-widest mb-1">Current Address</p>
-                            <p className="text-sm font-medium text-gray-800">123 Main St, Bandra West, Mumbai</p>
+                            <p className="text-sm font-medium text-gray-800">{formData.address}</p>
                         </div>
                     </div>
                 );
@@ -46,7 +105,7 @@ const ProfileSettings = () => {
                         <h3 className="text-lg font-black text-gray-900">Terms & Conditions</h3>
                         <div className="text-xs text-gray-600 space-y-2 h-48 overflow-y-auto custom-scrollbar pr-2 leading-relaxed">
                             <p>1. By using Silaiwala, you agree to fulfill all accepted orders within the specified deadline.</p>
-                            <p>2. Royal Stitches is responsible for the fabric quality if provided by the shop.</p>
+                            <p>2. {formData.shopName} is responsible for the fabric quality if provided by the shop.</p>
                             <p>3. Payments are processed every Friday for completed orders.</p>
                             <p>4. Platform commission is fixed at 12% per transaction.</p>
                         </div>
@@ -85,7 +144,7 @@ const ProfileSettings = () => {
                     <button onClick={() => isEditing ? setIsEditing(false) : navigate(-1)} className="p-2 -ml-2 text-white hover:text-green-100 transition-colors">
                         {isEditing ? <X size={20} /> : <ArrowLeft size={20} />}
                     </button>
-                    <h1 className="text-lg font-black tracking-tight absolute left-1/2 -translate-x-1/2">
+                    <h1 className="text-lg font-black tracking-tight absolute left-1/2 -translate-x-1/2 uppercase">
                         {isEditing ? 'Edit Profile' : 'Profile'}
                     </h1>
                     <div className="w-10"></div>
@@ -103,7 +162,7 @@ const ProfileSettings = () => {
                 <div className="relative z-20 flex flex-col items-center -mt-20 mb-8 px-5 animate-in zoom-in duration-300">
                     <div className="h-[5.5rem] w-[5.5rem] bg-white p-1 rounded-full shadow-lg mb-4 pointer-events-none">
                         <div className="w-full h-full bg-[#1e3932] rounded-full flex flex-col items-center justify-center text-white relative overflow-hidden pointer-events-auto">
-                            <span className="text-3xl font-black">R</span>
+                            <span className="text-3xl font-black">{profile?.shopName?.charAt(0) || formData.name?.charAt(0) || 'R'}</span>
                             <div
                                 className="absolute bottom-0 w-full bg-black/20 py-1 text-center cursor-pointer hover:bg-black/30 transition-colors"
                                 onClick={() => setIsEditing(true)}
@@ -112,27 +171,47 @@ const ProfileSettings = () => {
                             </div>
                         </div>
                     </div>
-                    <h2 className="text-xl font-black text-gray-900 tracking-tight">Royal Stitches</h2>
+                    <h2 className="text-xl font-black text-gray-900 tracking-tight">{profile?.shopName || 'Luxury Stitches'}</h2>
                     <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase tracking-widest">Premium Tailor</p>
                 </div>
             )}
 
             {isEditing ? (
                 /* Compacted Edit Form */
-                <div className="px-5 flex-1 pb-10 relative z-20 -mt-10 animate-in slide-in-from-bottom-4 duration-300">
-                    <div className="bg-white p-5 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 mb-6">
-                        <div className="space-y-3">
-                            <Input label="Shop Name" defaultValue="Royal Stitches" />
-                            <Input label="Owner Name" defaultValue="Rahul Kumar" />
-                            <Input label="Email Address" type="email" defaultValue="rahul@royalstitches.com" />
-                            <Input label="Contact Number" type="tel" defaultValue="+91 9876543210" />
-                            <Input label="Shop Address" defaultValue="123 Main St, Bandra West, Mumbai" />
-                        </div>
+                <form onSubmit={handleSave} className="px-5 flex-1 pb-10 relative z-20 -mt-10 animate-in slide-in-from-bottom-4 duration-300">
+                    <div className="bg-white p-6 rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 mb-6 space-y-4">
+                        <Input 
+                            label="Shop Name" 
+                            value={formData.shopName} 
+                            onChange={(e) => setFormData({...formData, shopName: e.target.value})}
+                        />
+                        <Input 
+                            label="Owner Name" 
+                            value={formData.name} 
+                            onChange={(e) => setFormData({...formData, name: e.target.value})}
+                        />
+                        <Input 
+                            label="Email Address" 
+                            type="email" 
+                            value={formData.email} 
+                            onChange={(e) => setFormData({...formData, email: e.target.value})}
+                        />
+                        <Input 
+                            label="Contact Number" 
+                            type="tel" 
+                            value={formData.phoneNumber} 
+                            onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
+                        />
+                        <Input 
+                            label="Shop Address" 
+                            value={formData.address} 
+                            onChange={(e) => setFormData({...formData, address: e.target.value})}
+                        />
                     </div>
-                    <Button onClick={handleSave} loading={isSaving} className="py-4 shadow-xl shadow-green-900/10 transition-all">
-                        <Save size={18} /> Save Changes
+                    <Button type="submit" loading={isSaving} className="py-5 rounded-2xl shadow-xl shadow-green-900/20 transition-all font-black uppercase tracking-widest">
+                         Save Profile
                     </Button>
-                </div>
+                </form>
             ) : (
                 /* Menu List */
                 <div className="px-5 space-y-3 flex-1 pb-10 animate-in fade-in duration-300">
@@ -140,27 +219,27 @@ const ProfileSettings = () => {
                         <button
                             key={index}
                             onClick={() => item.action ? item.action() : navigate(item.path)}
-                            className="w-full bg-white p-4 rounded-[1.25rem] border border-gray-100/50 shadow-[0_2px_15px_rgb(0,0,0,0.03)] flex items-center justify-between hover:border-gray-200 transition-all group active:scale-[0.98]"
+                            className="w-full bg-white px-5 py-4 rounded-[1.5rem] border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] flex items-center justify-between hover:border-[#1e3932]/20 transition-all group active:scale-[0.98]"
                         >
                             <div className="flex items-center gap-4">
-                                <div className="text-gray-400 group-hover:text-[#1e3932] transition-colors">
+                                <div className="h-10 w-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 group-hover:text-[#1e3932] group-hover:bg-green-50 transition-all">
                                     {item.icon}
                                 </div>
                                 <span className="text-sm font-bold text-gray-700 tracking-tight">{item.label}</span>
                             </div>
-                            <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-400 transition-colors" />
+                            <ChevronRight size={18} className="text-gray-300 group-hover:text-[#1e3932] transition-colors" />
                         </button>
                     ))}
 
                     <button
-                        onClick={() => navigate('/partner/login')}
-                        className="w-full bg-white p-4 rounded-[1.25rem] border border-gray-100/50 shadow-[0_2px_15px_rgb(0,0,0,0.03)] flex items-center justify-between hover:border-red-100 transition-all group active:scale-[0.98] mt-6 relative z-10"
+                        onClick={handleLogout}
+                        className="w-full bg-white px-5 py-4 rounded-[1.5rem] border border-red-50 shadow-[0_4px_20px_rgb(0,0,0,0.02)] flex items-center justify-between hover:bg-red-50/50 transition-all group active:scale-[0.98] mt-4"
                     >
                         <div className="flex items-center gap-4">
-                            <div className="text-red-400 group-hover:text-red-500 transition-colors">
+                            <div className="h-10 w-10 bg-red-50 rounded-xl flex items-center justify-center text-red-400 group-hover:text-red-500 transition-all">
                                 <LogOut size={20} />
                             </div>
-                            <span className="text-sm font-bold text-red-500 tracking-tight">Logout</span>
+                            <span className="text-sm font-bold text-red-500 tracking-tight">Sign Out</span>
                         </div>
                     </button>
                 </div>
@@ -168,19 +247,14 @@ const ProfileSettings = () => {
 
             {/* Modals for Pickup, Terms, Privacy */}
             {activeModal && (
-                <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white w-full max-w-[450px] rounded-t-[2rem] sm:rounded-[2rem] p-6 animate-in slide-in-from-bottom flex flex-col max-h-[85vh]">
-                        <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-4 sm:hidden"></div>
-                        <div className="flex justify-end mb-2">
-                            <button onClick={() => setActiveModal(null)} className="p-2 bg-gray-50 text-gray-400 hover:text-gray-900 rounded-full">
-                                <X size={20} />
-                            </button>
-                        </div>
-                        <div className="flex-1 overflow-y-auto">
+                <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white w-full max-w-[450px] rounded-t-[2.5rem] p-8 animate-in slide-in-from-bottom flex flex-col max-h-[80vh] shadow-2xl">
+                        <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6"></div>
+                        <div className="overflow-y-auto custom-scrollbar pr-2">
                             {renderModalContent()}
                         </div>
-                        <div className="mt-6 pt-4 border-t border-gray-100">
-                            <Button onClick={() => setActiveModal(null)}>Close</Button>
+                        <div className="mt-8">
+                            <Button onClick={() => setActiveModal(null)} className="rounded-2xl py-4 font-black uppercase tracking-widest italic">Understood</Button>
                         </div>
                     </div>
                 </div>

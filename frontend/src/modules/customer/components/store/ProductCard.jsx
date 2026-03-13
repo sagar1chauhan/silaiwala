@@ -7,7 +7,7 @@ import useWishlistStore from '../../../../store/wishlistStore';
 const ProductCard = ({ product }) => {
     const [isHovered, setIsHovered] = useState(false);
     const { toggleWishlist, isInWishlist } = useWishlistStore(state => state);
-    const isWishlisted = isInWishlist(product.id);
+    const isWishlisted = isInWishlist(product._id || product.id);
 
     return (
         <div
@@ -27,7 +27,7 @@ const ProductCard = ({ product }) => {
                 onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    toggleWishlist(product);
+                    toggleWishlist(product._id || product.id);
                 }}
                 className={cn(
                     "absolute top-2 right-2 z-20 p-1.5 rounded-full bg-white/90 shadow-sm transition-colors opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 duration-300",

@@ -127,6 +127,19 @@ export const Step2Business = ({ register, errors }) => {
                     error={errors.pincode?.message}
                 />
             </div>
+            <Input
+                label="Experience (Years)"
+                type="number"
+                placeholder="e.g. 5"
+                {...register('experienceInYears', { required: 'Experience is required' })}
+                error={errors.experienceInYears?.message}
+            />
+            <Input
+                label="Specializations (Comma separated)"
+                placeholder="e.g. Suits, Bridal, Alterations"
+                {...register('specializations', { required: 'Specializations are required' })}
+                error={errors.specializations?.message}
+            />
             <div className="space-y-1">
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Primary Service Area</label>
                 <select

@@ -28,7 +28,7 @@ const Registration = () => {
                 fieldsToValidate = ['fullName', 'phone', 'email', 'otp', 'password'];
                 break;
             case 2:
-                fieldsToValidate = ['shopName', 'address', 'city', 'pincode', 'serviceArea'];
+                fieldsToValidate = ['shopName', 'address', 'city', 'pincode', 'serviceArea', 'experienceInYears', 'specializations'];
                 break;
             case 3:
                 fieldsToValidate = ['aadharNumber', 'panNumber'];
@@ -46,19 +46,39 @@ const Registration = () => {
         }
     };
 
-    const onSubmit = (data) => {
-        console.log('Final Data:', data);
-        // Mock API call
-        setTimeout(() => {
-            setIsSubmitted(true);
-            // Mock login as PENDING
-            const mockUser = {
+    const [isLoading, setIsLoading] = useState(false);
+
+    const onSubmit = async (data) => {
+        setIsLoading(true);
+        try {
+            // Map frontend data to backend schema
+            const payload = {
                 name: data.fullName,
                 email: data.email,
-                status: TAILOR_STATUS.PENDING_APPROVAL,
+                phoneNumber: data.phone,
+                password: data.password,
+                role: 'tailor',
+                shopName: data.shopName,
+                experienceInYears: Number(data.experienceInYears),
+                specializations: data.specializations.split(',').map(s => s.trim()).filter(s => s),
+                coordinates: [72.8777, 19.0760] // Mumbai default
             };
-            login(mockUser, 'mock-jwt-token-123');
-        }, 1500);
+
+            const response = await api.post('/auth/register', payload);
+
+            if (response.data.success) {
+                const { token, data: result } = response.data;
+                setIsSubmitted(true);
+                
+                // Login the user (they will be restricted by their status)
+                login(result.user, token);
+            }
+        } catch (error) {
+            const message = error.response?.data?.message || "Registration failed. Try again.";
+            alert(message);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const renderStep = () => {
@@ -148,7 +168,7 @@ const Registration = () => {
                         Continue
                     </Button>
                 ) : (
-                    <Button onClick={handleSubmit(onSubmit)} className="bg-[#1e3932] text-white w-full mb-4 font-bold text-sm h-[52px] rounded-full active:scale-95 transition-all">
+                    <Button onClick={handleSubmit(onSubmit)} loading={isLoading} className="bg-[#1e3932] text-white w-full mb-4 font-bold text-sm h-[52px] rounded-full active:scale-95 transition-all">
                         Submit Application
                     </Button>
                 )}

@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     CheckCircle2,
@@ -11,17 +11,52 @@ import {
     Camera,
     ShieldCheck,
     X,
-    Wallet
+    Wallet,
+    Loader2
 } from 'lucide-react';
+import deliveryService from '../../services/deliveryService';
 
 const DeliveryHistory = () => {
     const [selectedProof, setSelectedProof] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [historyData, setHistoryData] = useState({
+        orders: [],
+        stats: { totalEarnings: 0 }
+    });
 
-    const historicalTasks = [
-        { id: 'TK-9901', type: 'Fabric Pickup', customer: 'Rohan Sharma', date: '21 Feb 2026', time: '11:30 AM', earnings: '₹120', paymentType: 'Platform Payout', status: 'Completed', proof: 'fabric_proof' },
-        { id: 'TK-9882', type: 'Final Delivery', customer: 'Priya Verma', date: '20 Feb 2026', time: '04:15 PM', earnings: '₹150', paymentType: 'Platform Payout', status: 'Completed', proof: 'delivery_proof' },
-        { id: 'EC-5521', type: 'Ready-made Delivery', customer: 'Amit Kumar', date: '19 Feb 2026', time: '02:00 PM', earnings: '₹100', paymentType: 'C.O.D. Collected', status: 'Completed', proof: 'delivery_proof' },
-    ];
+    useEffect(() => {
+        const fetchHistory = async () => {
+            try {
+                const [ordersRes, statsRes] = await Promise.all([
+                    deliveryService.getAssignedOrders('delivered'),
+                    deliveryService.getStats()
+                ]);
+
+                if (ordersRes.success && statsRes.success) {
+                    setHistoryData({
+                        orders: ordersRes.data,
+                        stats: statsRes.data
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to fetch history:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchHistory();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-4">
+                <Loader2 className="w-10 h-10 text-slate-600 animate-spin" />
+                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest leading-none">Retrieving Archives...</p>
+            </div>
+        );
+    }
+
+    const { orders: historicalTasks, stats } = historyData;
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-2">
@@ -39,8 +74,8 @@ const DeliveryHistory = () => {
             {/* Earnings Summary Mini Card */}
             <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] flex items-center justify-between overflow-hidden relative group">
                 <div className="space-y-1 relative z-10">
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none">Total Admin Payouts (Feb)</p>
-                    <h3 className="text-2xl font-black text-slate-900 tracking-tighter">₹3,450</h3>
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none">Total Admin Payouts</p>
+                    <h3 className="text-2xl font-black text-slate-900 tracking-tighter">₹{stats.totalEarnings}</h3>
                 </div>
                 <div className="w-11 h-11 bg-slate-600 rounded-[0.8rem] flex items-center justify-center text-white relative z-10">
                     <IndianRupee size={22} strokeWidth={2.5} />
@@ -59,28 +94,32 @@ const DeliveryHistory = () => {
 
             {/* List */}
             <div className="space-y-4">
-                {historicalTasks.map((task, idx) => (
+                {historicalTasks.length === 0 ? (
+                    <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl p-10 text-center">
+                        <Package className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                        <p className="text-slate-500 font-bold text-sm">No historical records found.</p>
+                        <p className="text-slate-400 text-xs mt-1">Complete tasks to see them here.</p>
+                    </div>
+                ) : historicalTasks.map((task, idx) => (
                     <motion.div
-                        key={task.id}
+                        key={task._id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.1 }}
                         className="bg-white p-5 rounded-2xl border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] flex flex-col group hover:border-slate-100 transition-all"
                     >
                         <div className="flex items-start gap-4 mb-3">
-                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${task.type === 'Fabric Pickup' ? 'bg-slate-50 text-slate-600' : 'bg-emerald-100 text-emerald-800'
-                                }`}>
-                                {task.type === 'Fabric Pickup' ? <Truck size={22} /> : <Package size={22} />}
+                            <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
+                                <Package size={22} />
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-start justify-between mb-1 gap-2">
-                                    <p className="text-sm font-black text-slate-900 uppercase tracking-tight truncate">#{task.id}</p>
-                                    <span className={`text-[8px] font-black px-2 py-1 rounded max-w-max uppercase tracking-widest shrink-0 ${task.paymentType === 'Platform Payout' ? 'bg-slate-50 text-slate-600' : 'bg-amber-50 text-amber-600'
-                                        }`}>{task.paymentType}</span>
+                                    <p className="text-sm font-black text-slate-900 uppercase tracking-tight truncate">#{task._id.slice(-6).toUpperCase()}</p>
+                                    <span className="text-[8px] font-black px-2 py-1 rounded max-w-max uppercase tracking-widest shrink-0 bg-slate-50 text-slate-600">Platform Payout</span>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest truncate max-w-[120px]">To: {task.customer}</p>
-                                    <span className="text-sm font-black text-slate-900">{task.earnings}</span>
+                                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest truncate max-w-[120px]">To: {task.customer?.name || 'Customer'}</p>
+                                    <span className="text-sm font-black text-slate-900">₹20</span>
                                 </div>
                             </div>
                         </div>
@@ -90,12 +129,16 @@ const DeliveryHistory = () => {
                             <div className="flex items-center gap-3 opacity-80">
                                 <div className="flex items-center gap-1">
                                     <Calendar size={10} className="text-slate-600" />
-                                    <span className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">{task.date}</span>
+                                    <span className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">
+                                        {new Date(task.deliveredAt || task.updatedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                    </span>
                                 </div>
                                 <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
                                 <div className="flex items-center gap-1">
                                     <Clock size={10} className="text-slate-600" />
-                                    <span className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">{task.time}</span>
+                                    <span className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">
+                                        {new Date(task.deliveredAt || task.updatedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                                    </span>
                                 </div>
                             </div>
 
@@ -110,6 +153,7 @@ const DeliveryHistory = () => {
                     </motion.div>
                 ))}
             </div>
+
 
             {/* Empty Footnote */}
             <p className="text-center text-[11px] font-bold text-slate-500 pt-6 pb-2">Records older than 90 days are archived externally.</p>
@@ -146,17 +190,14 @@ const DeliveryHistory = () => {
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-black text-slate-900 tracking-tight leading-none mb-1 capitalize">Delivery Proof</h3>
-                                    <p className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Task #{selectedProof.id}</p>
+                                    <p className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Task #{selectedProof._id.slice(-6).toUpperCase()}</p>
                                 </div>
                             </div>
 
-                            {/* Mock Image Area */}
+                            {/* Image Area */}
                             <div className="aspect-[4/3] bg-slate-100 rounded-[1.5rem] border border-slate-200 flex flex-col items-center justify-center mb-5 relative overflow-hidden group">
                                 <img
-                                    src={selectedProof.type === 'Fabric Pickup'
-                                        ? "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=600&auto=format&fit=crop" // Fabric bundle
-                                        : "https://images.unsplash.com/photo-1607083206968-13611e3d76db?q=80&w=600&auto=format&fit=crop" // Packed parcel
-                                    }
+                                    src={selectedProof.deliveryProof || "https://images.unsplash.com/photo-1607083206968-13611e3d76db?q=80&w=600&auto=format&fit=crop"}
                                     alt="Delivery Proof"
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                 />
@@ -165,11 +206,9 @@ const DeliveryHistory = () => {
                                 <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm">
                                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-800 animate-pulse"></div>
                                     <span className="text-[8px] font-black text-slate-700 uppercase tracking-widest">Live Capture</span>
-                                </div>
-
-                                <div className="absolute bottom-3 right-3 bg-slate-900/80 backdrop-blur-md px-2.5 py-1.5 rounded-md text-[8px] font-black tracking-widest text-white uppercase flex flex-col items-end gap-0.5">
-                                    <span>{selectedProof.date}</span>
-                                    <span className="text-slate-300 opacity-80">{selectedProof.time}</span>
+                                </div>                                <div className="absolute bottom-3 right-3 bg-slate-900/80 backdrop-blur-md px-2.5 py-1.5 rounded-md text-[8px] font-black tracking-widest text-white uppercase flex flex-col items-end gap-0.5">
+                                    <span>{new Date(selectedProof.deliveredAt || selectedProof.updatedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</span>
+                                    <span className="text-slate-300 opacity-80">{new Date(selectedProof.deliveredAt || selectedProof.updatedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
                                 </div>
                             </div>
 
@@ -177,19 +216,17 @@ const DeliveryHistory = () => {
                             <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 relative z-10 space-y-3">
                                 <div className="flex justify-between items-center">
                                     <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Customer</span>
-                                    <span className="text-[11px] font-black text-slate-800 capitalize">{selectedProof.customer}</span>
+                                    <span className="text-[11px] font-black text-slate-800 capitalize">{selectedProof.customer?.name || 'Customer'}</span>
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Task Type</span>
-                                    <span className="text-[11px] font-black text-slate-800 capitalize">{selectedProof.type}</span>
+                                    <span className="text-[11px] font-black text-slate-800 capitalize">{selectedProof.status === 'out-for-delivery' ? 'Final Delivery' : 'Fabric Pickup'}</span>
                                 </div>
                                 <div className="flex justify-between items-center pt-2 border-t border-slate-200/60">
                                     <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                                        {selectedProof.paymentType === 'C.O.D. Collected' ? 'Cash Collected' : 'Admin Payout'}
+                                        {selectedProof.paymentStatus === 'paid' ? 'Admin Payout' : 'C.O.D. Pending'}
                                     </span>
-                                    <span className={`text-[12px] font-black ${selectedProof.paymentType === 'C.O.D. Collected' ? 'text-amber-600' : 'text-emerald-800'}`}>
-                                        {selectedProof.earnings}
-                                    </span>
+                                    <span className="text-[11px] font-black text-emerald-800">+₹20.00</span>
                                 </div>
                             </div>
 

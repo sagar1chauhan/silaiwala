@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
     User, ShoppingBag, MapPin, Ruler, Grid, LogOut,
-    Settings, Headset, ChevronRight, Share2
+    Settings, Headset, ChevronRight, Share2, Heart, MessageSquare
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../../../store/authStore';
@@ -9,20 +9,30 @@ import BottomNav from '../components/BottomNav';
 import ProfileHeader from '../components/profile/ProfileHeader';
 import MenuOption from '../components/profile/MenuOption';
 
+import useUserStore from '../../../store/userStore';
+
 const ProfilePage = () => {
     const navigate = useNavigate();
-    const { user, logout } = useAuthStore(state => state);
+    const { logout } = useAuthStore(state => state);
+    const { fetchProfile, profile, isLoading } = useUserStore();
 
-    // If no user, mock one for display (until auth integrated)
-    const displayUser = user || {
-        name: 'Guest User',
-        email: 'guest@example.com',
-        phone: '+91 9876543210'
-    };
+    useEffect(() => {
+        fetchProfile();
+    }, [fetchProfile]);
 
     const handleLogout = () => {
         logout();
         navigate('/login');
+    };
+
+    if (isLoading && !profile) {
+        return <div className="flex items-center justify-center min-h-screen">Loading profile...</div>;
+    }
+
+    const displayUser = profile || {
+        name: 'Guest User',
+        email: 'guest@example.com',
+        phone: '+91 9876543210'
     };
 
     // Quick Fix Check: if useAuthStore fails, user might be undefined
@@ -30,7 +40,7 @@ const ProfilePage = () => {
     return (
         <div className="min-h-screen bg-gray-50 pb-24 font-sans text-gray-900">
             {/* 1. Header & Stats */}
-            <ProfileHeader user={displayUser} />
+            <ProfileHeader user={displayUser} stats={profile?.stats} />
 
             <div className="max-w-md mx-auto px-4 -mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
@@ -48,7 +58,7 @@ const ProfilePage = () => {
                     icon={MapPin}
                     label="Saved Addresses"
                     subLabel="Manage Pickup & Delivery locations"
-                    to="/checkout/address" // Temporarily reuse
+                    to="/profile/addresses"
                 />
 
                 <MenuOption
@@ -56,6 +66,20 @@ const ProfilePage = () => {
                     label="My Measurements"
                     subLabel="Saved Body Profiles"
                     to="/profile/measurements"
+                />
+
+                <MenuOption
+                    icon={Heart}
+                    label="Wishlist"
+                    subLabel="Your Saved styles"
+                    to="/wishlist"
+                />
+
+                <MenuOption
+                    icon={MessageSquare}
+                    label="My Reviews"
+                    subLabel="Rating & feedback given"
+                    to="/reviews"
                 />
 
                 <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 mt-6 ml-1">Support & More</h3>

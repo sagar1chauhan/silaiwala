@@ -23,17 +23,14 @@ const Login = () => {
 
         try {
             const user = await login(email, password);
-            if (user.role === 'tailor') {
-                navigate('/partner');
-            } else if (user.role === 'delivery') {
-                navigate('/delivery');
-            } else if (user.role === 'admin') {
-                navigate('/admin');
-            } else {
-                navigate('/');
-            }
+            const redirectPath = {
+                tailor: '/partner',
+                delivery: '/delivery',
+                admin: '/admin'
+            }[user.role] || '/';
+            navigate(redirectPath);
         } catch (err) {
-            setError('Invalid credentials');
+            setError(err.message || 'Invalid credentials');
         }
     };
 

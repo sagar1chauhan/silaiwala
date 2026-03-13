@@ -45,19 +45,21 @@ const DeliverySignup = () => {
 
     return (
         <div className="w-full">
-            <div className="flex items-center gap-4 mb-8">
-                <button onClick={() => navigate('/delivery/login')} className="p-2 bg-slate-50 rounded-xl text-slate-400 hover:text-slate-900 transition-all">
+            <div className="relative flex flex-col items-center mb-10">
+                <button 
+                    onClick={() => navigate('/delivery/login')} 
+                    className="absolute left-0 top-0 p-3 bg-slate-50 text-slate-400 rounded-2xl hover:text-slate-900 transition-all border border-slate-100"
+                >
                     <ArrowLeft size={18} />
                 </button>
-                <div className="flex-1 flex items-center gap-3">
-                    <div className="h-10 w-10 bg-white rounded-xl flex items-center justify-center p-1.5 shadow-lg border border-slate-100">
-                        <img src={silaiwalaLogo} alt="Silaiwala" className="w-full h-full object-contain" />
-                    </div>
-                    <div>
-                        <h2 className="text-xl font-black text-slate-900 leading-none tracking-tight">Silaiwala</h2>
-                        <p className="text-[10px] font-black text-emerald-700 uppercase tracking-widest mt-1">Delivery Partner</p>
-                    </div>
+                
+                <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-xl border border-slate-50 mb-6">
+                    <img src={silaiwalaLogo} alt="Silaiwala" className="w-14 h-14 object-contain" />
                 </div>
+                
+                <h2 className="text-3xl font-black text-slate-900 tracking-tighter text-center">Join the Fleet</h2>
+                <div className="w-12 h-1 bg-emerald-600 rounded-full mt-3 opacity-20"></div>
+                <p className="text-[11px] font-black text-emerald-800 uppercase tracking-[0.2em] mt-4 opacity-70 italic">Exclusive Delivery Partner Program</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">

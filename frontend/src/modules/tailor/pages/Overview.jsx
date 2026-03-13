@@ -1,18 +1,49 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShoppingBag, Clock, Wallet, ChevronRight, Zap, Bell, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTailorAuth } from '../context/AuthContext';
+import { useNotifications } from '../context/NotificationContext';
+import api from '../services/api';
 
 const Overview = () => {
     const { user } = useTailorAuth();
+    const { unreadCount } = useNotifications();
     const navigate = useNavigate();
+    const [dashboardData, setDashboardData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const fetchDashboardData = async () => {
+        try {
+            const response = await api.get('/tailors/dashboard');
+            if (response.data.success) {
+                setDashboardData(response.data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching dashboard:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchDashboardData();
+    }, []);
+
+    const summary = dashboardData?.summary || {
+        totalEarnings: 0,
+        totalOrders: 0,
+        pendingOrders: 0,
+        completedThisWeek: 0,
+        avgDeliveryTime: 0,
+        walletBalance: 0
+    };
 
     return (
         <div className="min-h-full bg-gray-50 flex flex-col relative animate-in fade-in duration-500">
             {/* Gradient Header */}
             <div className="bg-gradient-to-b from-[#1e3932] to-[#2a4f45] px-5 pt-8 pb-16 rounded-b-[2rem] relative shrink-0">
                 <div className="flex justify-between items-center mb-6">
-                    <button onClick={() => navigate('/partner/settings')} className="text-white flex flex-col justify-center">
+                    <button onClick={() => navigate('/partner/settings')} className="text-white flex flex-col justify-center text-left">
                         <p className="text-xs font-bold text-green-100 uppercase tracking-widest flex items-center gap-2">
                             <span className="h-2 w-2 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_rgb(74,222,128)]"></span>
                             Online Mode
@@ -21,7 +52,9 @@ const Overview = () => {
                     <div className="flex items-center gap-4">
                         <button onClick={() => navigate('/partner/notifications')} className="text-white hover:text-green-100 relative p-2">
                             <Bell size={20} />
-                            <span className="absolute top-1 right-1 h-2.5 w-2.5 bg-red-500 rounded-full border-2 border-[#1e3932]"></span>
+                            {unreadCount > 0 && (
+                                <span className="absolute top-1 right-1 h-2.5 w-2.5 bg-red-500 rounded-full border-2 border-[#1e3932] animate-pulse"></span>
+                            )}
                         </button>
                         <button onClick={() => navigate('/partner/settings')} className="h-10 w-10 bg-white/10 hover:bg-white/20 transition-colors rounded-2xl flex items-center justify-center text-white font-black backdrop-blur-sm border border-white/10 shadow-inner">
                             {user?.name?.charAt(0) || 'R'}
@@ -43,8 +76,8 @@ const Overview = () => {
                                 <Wallet size={18} className="text-[#1e3932]" />
                             </div>
                             <div>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Earnings</p>
-                                <p className="text-xl font-black text-gray-900 tracking-tight">₹14,500</p>
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Available Balance</p>
+                                <p className="text-xl font-black text-gray-900 tracking-tight">₹{summary.walletBalance.toLocaleString()}</p>
                             </div>
                         </div>
                         <button
@@ -59,7 +92,7 @@ const Overview = () => {
                         <button onClick={() => navigate('/partner/orders')} className="flex gap-3 items-center text-left hover:bg-gray-50 p-2 -m-2 rounded-xl transition-colors">
                             <div className="relative h-12 w-12 rounded-full border-[4px] border-gray-50 flex items-center justify-center shrink-0">
                                 <div className="absolute inset-0 rounded-full border-[4px] border-blue-500 border-t-transparent border-r-transparent -rotate-45"></div>
-                                <span className="text-base font-black text-gray-900">48</span>
+                                <span className="text-base font-black text-gray-900">{summary.totalOrders}</span>
                             </div>
                             <div>
                                 <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-2 py-1 rounded-lg inline-block mb-1">Total</p>
@@ -69,7 +102,7 @@ const Overview = () => {
                         <button onClick={() => navigate('/partner/orders')} className="flex gap-3 items-center text-left hover:bg-gray-50 p-2 -m-2 rounded-xl transition-colors">
                             <div className="relative h-12 w-12 rounded-full border-[4px] border-gray-50 flex items-center justify-center shrink-0">
                                 <div className="absolute inset-0 rounded-full border-[4px] border-[#1e3932] border-t-transparent border-l-transparent rotate-12"></div>
-                                <span className="text-base font-black text-gray-900">12</span>
+                                <span className="text-base font-black text-gray-900">{summary.pendingOrders}</span>
                             </div>
                             <div>
                                 <p className="text-[10px] font-black text-[#1e3932] uppercase tracking-widest bg-[#1e3932]/10 px-2 py-1 rounded-lg inline-block mb-1">To Do</p>
@@ -92,7 +125,7 @@ const Overview = () => {
                         <div className="h-8 w-8 bg-green-50 text-green-600 rounded-xl flex items-center justify-center mb-4 shadow-sm border border-green-100">
                             <CheckCircle size={16} />
                         </div>
-                        <p className="text-xl font-black text-gray-900">32</p>
+                        <p className="text-xl font-black text-gray-900">{summary.completedThisWeek}</p>
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Completed<br />This Week</p>
                     </button>
 
@@ -103,7 +136,7 @@ const Overview = () => {
                         <div className="h-8 w-8 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center mb-4 shadow-sm border border-orange-100">
                             <Zap size={16} />
                         </div>
-                        <p className="text-xl font-black text-gray-900">2.4h</p>
+                        <p className="text-xl font-black text-gray-900">{summary.avgDeliveryTime}h</p>
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Avg. Delivery<br />Time</p>
                     </button>
                 </div>
@@ -116,34 +149,40 @@ const Overview = () => {
                     </div>
 
                     <div className="space-y-3">
-                        {[
-                            { title: 'Suit Alteration', icon: <ShoppingBag size={14} />, color: 'bg-green-50 text-green-600', val: '₹450', time: '20 Feb', status: 'Delivered' },
-                            { title: 'Kurta Stitching', icon: <ShoppingBag size={14} />, color: 'bg-blue-50 text-blue-600', val: '₹1200', time: 'Today', status: 'New' },
-                            { title: 'Designer Blouse', icon: <ShoppingBag size={14} />, color: 'bg-[#1e3932]/10 text-[#1e3932]', val: '₹2500', time: '24 Feb', status: 'Active' },
-                        ].map((item, i) => (
-                            <button
-                                key={i}
-                                onClick={() => navigate('/partner/orders', { state: { highlightOrderTitle: item.title, orderStatus: item.status } })}
-                                className="w-full bg-white p-3 rounded-[1.25rem] flex items-center justify-between shadow-[0_2px_10px_rgb(0,0,0,0.02)] border border-gray-50 hover:shadow-md transition-shadow group/item"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className={`h-8 w-8 rounded-xl flex items-center justify-center ${item.color}`}>
-                                        {item.icon}
+                        {isLoading ? (
+                             [1, 2, 3].map((i) => (
+                                <div key={i} className="w-full bg-white h-16 rounded-[1.25rem] animate-pulse border border-gray-50"></div>
+                             ))
+                        ) : dashboardData?.recentActivity?.length === 0 ? (
+                            <p className="text-center py-6 text-gray-400 text-[10px] font-black uppercase tracking-widest bg-white rounded-2xl border border-gray-50">No recent activity</p>
+                        ) : (
+                            dashboardData?.recentActivity?.map((order, i) => (
+                                <button
+                                    key={order._id}
+                                    onClick={() => navigate('/partner/orders', { state: { highlightOrderTitle: order.orderId, orderStatus: order.status } })}
+                                    className="w-full bg-white p-3 rounded-[1.25rem] flex items-center justify-between shadow-[0_2px_10px_rgb(0,0,0,0.02)] border border-gray-50 hover:shadow-md transition-shadow group/item"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-8 w-8 rounded-xl flex items-center justify-center bg-[#1e3932]/10 text-[#1e3932]">
+                                            <ShoppingBag size={14} />
+                                        </div>
+                                        <div className="text-left">
+                                            <p className="text-sm font-black text-gray-900 leading-none">{order.customerName}</p>
+                                            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-1">Order: #{order.orderId.split('-')[1]}</p>
+                                        </div>
                                     </div>
-                                    <div className="text-left">
-                                        <p className="text-sm font-black text-gray-900">{item.title}</p>
-                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{item.time}</p>
+                                    <div className="text-right flex items-center gap-3">
+                                        <div>
+                                            <p className="text-sm font-black text-gray-900 leading-none">₹{order.totalAmount}</p>
+                                            <p className={`text-[8px] font-black uppercase tracking-widest mt-1 ${order.status === 'pending' ? 'text-blue-500' : 'text-green-600'}`}>
+                                                {order.status}
+                                            </p>
+                                        </div>
+                                        <ChevronRight size={14} className="text-gray-300 group-hover/item:text-[#1e3932] group-hover/item:translate-x-1 transition-all" />
                                     </div>
-                                </div>
-                                <div className="text-right flex items-center gap-3">
-                                    <div>
-                                        <p className="text-sm font-black text-gray-900">{item.val}</p>
-                                        <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-0.5">{item.status}</p>
-                                    </div>
-                                    <ChevronRight size={14} className="text-gray-300 group-hover/item:text-[#1e3932] group-hover/item:translate-x-1 transition-all" />
-                                </div>
-                            </button>
-                        ))}
+                                </button>
+                            ))
+                        )}
                     </div>
                 </div>
 

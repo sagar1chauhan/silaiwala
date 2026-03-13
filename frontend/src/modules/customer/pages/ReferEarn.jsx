@@ -2,14 +2,23 @@ import React from 'react';
 import { ArrowLeft, Gift, Share2, Copy, CheckCircle2, Ticket } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import useUserStore from '../../../store/userStore';
 
 const ReferEarn = () => {
     const navigate = useNavigate();
-    const referralCode = "SILAIWALA2026";
+    const { fetchReferralStats, referralStats, isLoading } = useUserStore();
+
+    React.useEffect(() => {
+        fetchReferralStats();
+    }, [fetchReferralStats]);
+
+    const referralCode = referralStats?.referralCode || "GETTING_CODE...";
 
     const copyToClipboard = () => {
-        navigator.clipboard.writeText(referralCode);
-        // show toast logic here if needed
+        if (referralStats?.referralCode) {
+            navigator.clipboard.writeText(referralStats.referralCode);
+            alert("Code copied!");
+        }
     };
 
     return (
@@ -98,7 +107,7 @@ const ReferEarn = () => {
                     </div>
                     <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Total Earned Credits</p>
                     <div className="flex items-baseline gap-1">
-                        <span className="text-3xl font-black">₹1,200</span>
+                        <span className="text-3xl font-black">₹{referralStats?.rewardPoints || 0}</span>
                         <span className="text-xs text-green-400 font-bold flex items-center gap-1">
                             <CheckCircle2 size={12} /> Verified
                         </span>
@@ -106,7 +115,7 @@ const ReferEarn = () => {
                     <div className="mt-4 flex gap-4">
                         <div className="flex-1">
                             <p className="text-[10px] text-gray-400">Total Referrals</p>
-                            <p className="text-sm font-bold">06 Friends</p>
+                            <p className="text-sm font-bold">{referralStats?.totalReferrals || 0} Friends</p>
                         </div>
                         <div className="w-px h-8 bg-white/10" />
                         <div className="flex-1 text-right">

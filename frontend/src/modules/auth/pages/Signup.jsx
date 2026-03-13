@@ -13,13 +13,14 @@ const Signup = () => {
 
     const [step, setStep] = useState(1); // 1: Role Selection, 2: Details
     const [selectedRole, setSelectedRole] = useState(null);
-
     const [formData, setFormData] = useState({
         name: '',
         email: '',
+        phoneNumber: '',
         password: '',
         confirmPassword: '',
     });
+    const [error, setError] = useState('');
 
     const handleRoleSelect = (role) => {
         setSelectedRole(role);
@@ -32,24 +33,28 @@ const Signup = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+
+        if (formData.password.length < 8) {
+            setError('Password must be at least 8 characters long');
+            return;
+        }
+
         if (formData.password !== formData.confirmPassword) {
-            alert("Passwords don't match");
+            setError("Passwords don't match");
             return;
         }
 
         try {
             await signup({ ...formData, role: selectedRole });
-            if (selectedRole === 'tailor') {
-                navigate('/partner');
-            } else if (selectedRole === 'delivery') {
-                navigate('/delivery');
-            } else if (selectedRole === 'admin') {
-                navigate('/admin');
-            } else {
-                navigate('/');
-            }
-        } catch (error) {
-            console.error(error);
+            const redirectPath = {
+                tailor: '/partner',
+                delivery: '/delivery',
+                admin: '/admin'
+            }[selectedRole] || '/';
+            navigate(redirectPath);
+        } catch (err) {
+            setError(err.message || 'Signup failed. Please try again.');
         }
     };
 
@@ -61,6 +66,12 @@ const Signup = () => {
                     {step === 1 ? 'Join us as a Customer, Tailor, or Partner' : `Sign up as a ${selectedRole}`}
                 </p>
             </div>
+
+            {error && (
+                <div className="mb-6 p-4 text-sm text-red-600 bg-red-50 rounded-2xl border border-red-100 animate-in fade-in slide-in-from-top-2">
+                    {error}
+                </div>
+            )}
 
             {step === 1 ? (
                 <div>
@@ -91,6 +102,17 @@ const Signup = () => {
                             type="email"
                             placeholder="john@example.com"
                             value={formData.email}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Phone Number</label>
+                        <Input
+                            name="phoneNumber"
+                            placeholder="9876543210"
+                            value={formData.phoneNumber}
                             onChange={handleChange}
                             required
                         />

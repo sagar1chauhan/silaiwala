@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import silaiwalaLogo from '../../../assets/silaiwala-logo.png';
+const silaiwalaLogo = '/logo.png';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import useAuthStore from '../../../store/authStore';

@@ -18,8 +18,6 @@ const Signup = () => {
         name: '',
         email: '',
         phoneNumber: '',
-        password: '',
-        confirmPassword: '',
         referralCode: '',
     });
     const [error, setError] = useState('');
@@ -36,17 +34,6 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-
-        if (formData.password.length < 8) {
-            setError('Password must be at least 8 characters long');
-            return;
-        }
-
-        if (formData.password !== formData.confirmPassword) {
-            setError("Passwords don't match");
-            return;
-        }
-
         try {
             await signup({ ...formData, role: selectedRole });
             const redirectPath = {
@@ -123,29 +110,7 @@ const Signup = () => {
                         />
                     </div>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">Password</label>
-                        <Input
-                            name="password"
-                            type="password"
-                            placeholder="••••••••"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">Confirm Password</label>
-                        <Input
-                            name="confirmPassword"
-                            type="password"
-                            placeholder="••••••••"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
 
                     {selectedRole === 'customer' && (
                         <div className="space-y-2">

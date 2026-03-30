@@ -351,43 +351,74 @@ const DeliveryDashboard = () => {
                             </div>
 
                             <div className="relative z-10 flex flex-col mt-2">
-                                <div className="flex gap-4 mb-6">
-                                    <div className="flex flex-col items-center pt-1">
-                                        <div className="w-3.5 h-3.5 rounded-full border-2 border-primary/30 bg-transparent z-10"></div>
-                                        <div className="w-px h-8 bg-slate-100 border-dashed border-l border-slate-200"></div>
-                                        <div className="w-3.5 h-3.5 rounded-full bg-primary z-10 border-2 border-white shadow-sm"></div>
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-pink-400"></div>
-                                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">
-                                                {currentTask.status === 'out-for-delivery' ? 'Recipient' : 'Source'}
-                                            </span>
+                                <div className="flex gap-4 mb-6 relative">
+                                    <div className="flex flex-col items-center pt-1.5 shrink-0">
+                                        <div className="w-3.5 h-3.5 rounded-full border-2 border-primary bg-white z-10 shadow-sm flex items-center justify-center">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-primary/40"></div>
                                         </div>
-                                        <p className="text-[16px] font-black text-slate-900 truncate leading-none mb-1.5">
-                                            {(() => {
-                                                const isFabric = currentTask.taskType === 'fabric-pickup';
-                                                const isPickup = ['fabric-ready-for-pickup', 'ready-for-pickup'].includes(currentTask.status);
-                                                
-                                                if (isPickup) {
-                                                    return isFabric ? currentTask.customer?.name : currentTask.tailor?.shopName;
-                                                } else {
-                                                    return isFabric ? currentTask.tailor?.shopName : currentTask.customer?.name;
-                                                }
-                                            })()}
-                                        </p>
-                                        <div className="flex flex-col gap-0.5">
-                                            <p className="text-[11px] text-slate-500 font-bold truncate tracking-tight leading-tight">
-                                                {getTaskAddress(currentTask)}
-                                            </p>
-                                            <p className="text-[10px] text-primary font-black tracking-widest mt-1.5">
-                                                Call: {(() => {
+                                        <div className="w-0.5 h-14 bg-slate-100 border-dashed border-l-2 border-slate-200 -my-0.5"></div>
+                                        <motion.div 
+                                            animate={{ scale: [1, 1.2, 1] }} 
+                                            transition={{ repeat: Infinity, duration: 2 }} 
+                                            className="w-3.5 h-3.5 rounded-full bg-primary z-10 border-2 border-white shadow-md flex items-center justify-center"
+                                        >
+                                            <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
+                                        </motion.div>
+                                    </div>
+                                    <div className="flex-1 min-w-0 space-y-4">
+                                        {/* Source */}
+                                        <div className="flex flex-col">
+                                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1.5">
+                                                Pickup (Source)
+                                            </span>
+                                            <p className="text-[14px] font-black text-slate-900 truncate leading-tight">
+                                                {(() => {
                                                     const isFabric = currentTask.taskType === 'fabric-pickup';
                                                     const isPickup = ['fabric-ready-for-pickup', 'ready-for-pickup'].includes(currentTask.status);
                                                     if (isPickup) {
-                                                        return isFabric ? currentTask.customer?.phoneNumber : currentTask.tailor?.phone;
+                                                        return isFabric ? currentTask.customer?.name : currentTask.tailor?.shopName;
                                                     } else {
-                                                        return isFabric ? currentTask.tailor?.phone : currentTask.customer?.phoneNumber;
+                                                        return isFabric ? currentTask.tailor?.shopName : currentTask.customer?.name;
+                                                    }
+                                                })()}
+                                            </p>
+                                            <p className="text-[10px] text-slate-400 font-bold truncate leading-tight mt-0.5">
+                                                {(() => {
+                                                    const isFabric = currentTask.taskType === 'fabric-pickup';
+                                                    const isPickup = ['fabric-ready-for-pickup', 'ready-for-pickup'].includes(currentTask.status);
+                                                    if (isPickup) {
+                                                        return isFabric ? formatAddress(currentTask.deliveryAddress) : formatAddress(currentTask.tailor?.address);
+                                                    } else {
+                                                        return isFabric ? formatAddress(currentTask.tailor?.address) : formatAddress(currentTask.deliveryAddress);
+                                                    }
+                                                })()}
+                                            </p>
+                                        </div>
+
+                                        {/* Destination */}
+                                        <div className="flex flex-col">
+                                            <span className="text-[9px] font-black text-primary uppercase tracking-widest leading-none mb-1.5">
+                                                Drop-off (Destination)
+                                            </span>
+                                            <p className="text-[14px] font-black text-slate-900 truncate leading-tight">
+                                                {(() => {
+                                                    const isFabric = currentTask.taskType === 'fabric-pickup';
+                                                    const isPickup = ['fabric-ready-for-pickup', 'ready-for-pickup'].includes(currentTask.status);
+                                                    if (isPickup) {
+                                                        return isFabric ? currentTask.tailor?.shopName : currentTask.customer?.name;
+                                                    } else {
+                                                        return isFabric ? currentTask.customer?.name : currentTask.tailor?.shopName;
+                                                    }
+                                                })()}
+                                            </p>
+                                            <p className="text-[10px] text-slate-500 font-bold truncate leading-tight mt-0.5">
+                                                {(() => {
+                                                    const isFabric = currentTask.taskType === 'fabric-pickup';
+                                                    const isPickup = ['fabric-ready-for-pickup', 'ready-for-pickup'].includes(currentTask.status);
+                                                    if (isPickup) {
+                                                        return isFabric ? formatAddress(currentTask.tailor?.address) : formatAddress(currentTask.deliveryAddress);
+                                                    } else {
+                                                        return isFabric ? formatAddress(currentTask.deliveryAddress) : formatAddress(currentTask.tailor?.address);
                                                     }
                                                 })()}
                                             </p>

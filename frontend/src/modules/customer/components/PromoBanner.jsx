@@ -90,7 +90,7 @@ const PromoBanner = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.6 }}
-                    className={`relative overflow-hidden rounded-[2.5rem] ${currentBanner.color || 'bg-gray-900'} text-white shadow-xl h-64 lg:h-72 flex items-center`}
+                    className={`relative overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] ${currentBanner.color || 'bg-gray-900'} text-white shadow-xl h-40 sm:h-64 lg:h-72 flex items-center`}
                 >
                     {/* Full Background Image */}
                     <div className="absolute inset-0 z-0">
@@ -103,19 +103,19 @@ const PromoBanner = () => {
                          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
                     </div>
 
-                    <div className="relative z-10 flex-1 flex flex-col gap-3 px-8 lg:px-12">
-                        <div className="bg-white/20 w-fit px-3 py-1 rounded-full text-[10px] font-black tracking-widest backdrop-blur-md flex items-center gap-1.5 border border-white/10 uppercase">
-                            <Sparkles size={10} className="text-pink-300" /> {currentBanner.badge || 'PROMO'}
+                    <div className="relative z-10 flex-1 flex flex-col gap-1.5 sm:gap-3 px-6 sm:px-12">
+                        <div className="bg-white/20 w-fit px-2.5 py-1 rounded-full text-[8px] sm:text-[10px] font-black tracking-widest backdrop-blur-md flex items-center gap-1.5 border border-white/10 uppercase">
+                            <Sparkles size={8} className="text-pink-300" /> {currentBanner.badge || 'PROMO'}
                         </div>
                         <div className="max-w-md">
-                            <h2 className="text-3xl lg:text-5xl font-black leading-none tracking-tighter uppercase drop-shadow-lg">
+                            <h2 className="text-xl sm:text-3xl lg:text-5xl font-black leading-none tracking-tighter uppercase drop-shadow-lg">
                                 {currentBanner.title}
                             </h2>
-                            <p className="text-sm lg:text-base text-white/90 mt-3 font-bold tracking-tight drop-shadow-md">{currentBanner.subtitle}</p>
+                            <p className="text-[10px] sm:text-sm lg:text-base text-white/90 mt-0.5 sm:mt-3 font-bold tracking-tight drop-shadow-md leading-tight">{currentBanner.subtitle}</p>
                         </div>
-                        <div className="flex items-center gap-4 mt-6">
-                            <button className="bg-[#FF5C8A] text-white px-8 py-3.5 rounded-2xl text-xs font-black shadow-xl shadow-pink-900/20 hover:bg-[#cc496e] active:scale-95 transition-all flex items-center gap-2 uppercase tracking-widest">
-                                Book Now <ArrowRight size={14} />
+                        <div className="flex items-center gap-4 mt-2 sm:mt-6">
+                            <button className="bg-[#FF5C8A] text-white px-5 sm:px-8 py-2 sm:py-3.5 rounded-lg sm:rounded-2xl text-[9px] sm:text-xs font-black shadow-xl shadow-pink-900/20 hover:bg-[#cc496e] active:scale-95 transition-all flex items-center gap-1.5 uppercase tracking-widest">
+                                Book Now <ArrowRight size={12} />
                             </button>
                         </div>
                     </div>

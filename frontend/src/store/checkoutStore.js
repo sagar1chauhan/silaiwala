@@ -5,12 +5,21 @@ const useCheckoutStore = create(
     persist(
         (set, get) => ({
             // Session Data
-            serviceDetails: null, // { id, title, image, basePrice, tailorId, tailorName }
-            configuration: null,  // { deliveryType, fabricSource, measurements, instructions }
-            pricing: null,        // { base, delivery, taxes, total, deliveryDays }
-            addons: [],           // Array of addon objects
+            serviceItems: [],    // Array of { serviceDetails, configuration, pricing, addons }
+            serviceDetails: null, // Current drafting { id, title, image, basePrice, tailorId, tailorName }
+            configuration: null,  // Current drafting { deliveryType, fabricSource, measurements, instructions }
+            pricing: null,        // Current drafting { base, delivery, taxes, total, deliveryDays }
+            addons: [],           // Current drafting Array of addon objects
 
             // Actions
+            addServiceItem: (item) => set((state) => ({
+                serviceItems: [...state.serviceItems, item]
+            })),
+
+            removeServiceItem: (index) => set((state) => ({
+                serviceItems: state.serviceItems.filter((_, i) => i !== index)
+            })),
+
             initializeCheckout: (data) => set({
                 serviceDetails: data.service ? {
                     ...data.service,
@@ -29,6 +38,7 @@ const useCheckoutStore = create(
             })),
 
             clearCheckout: () => set({
+                serviceItems: [],
                 serviceDetails: null,
                 configuration: null,
                 pricing: null,
@@ -38,6 +48,7 @@ const useCheckoutStore = create(
         {
             name: 'checkout-session-storage',
             partialize: (state) => ({
+                serviceItems: state.serviceItems,
                 serviceDetails: state.serviceDetails,
                 configuration: state.configuration,
                 pricing: state.pricing,

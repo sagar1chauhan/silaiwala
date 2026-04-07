@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
     User, ShoppingBag, MapPin, Ruler, Grid, LogOut, Wallet, Star,
-    Settings, Headset, ChevronRight, Share2, Heart, MessageSquare, FileText, Shield, Ticket, Bell, Globe, Sparkles
+    Settings, Headset, ChevronRight, Share2, Heart, MessageSquare, FileText, Shield, Ticket, Bell, Globe, Sparkles, Package
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../../../store/authStore';
@@ -106,6 +106,13 @@ const ProfilePage = () => {
                             label="My Measurements"
                             subLabel="Saved Body Profiles"
                             to="/profile/measurements"
+                        />
+                        <MenuOption
+                            icon={Package}
+                            color="bg-purple-600"
+                            label="Bulk Inquiries"
+                            subLabel="Wholesale & Corporate Tracking"
+                            to="/bulk-orders"
                         />
                     </div>
                 </div>

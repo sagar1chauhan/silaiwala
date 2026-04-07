@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
     ArrowLeft, MapPin, Phone, MessageSquare,
     AlertCircle, HelpCircle, Package, Truck,
     Calendar, ExternalLink, ChevronRight, ShieldCheck,
-    Loader2, CheckCircle2
+    Loader2, CheckCircle2, Star, User, Scissors
 } from 'lucide-react';
 import api from '../../../utils/api';
 import TrackingTimeline from '../components/orders/TrackingTimeline';
@@ -15,15 +15,30 @@ import ReviewModal from '../components/orders/ReviewModal';
 const OrderTracking = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const [order, setOrder] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const [isReviewed, setIsReviewed] = useState(false);
+    const [isBulk, setIsBulk] = useState(location.state?.isBulk || false);
 
     const fetchOrderDetails = async () => {
         try {
-            const response = await api.get(`/orders/${id}`);
+            // Try fetching from standard orders first
+            let response;
+            try {
+                response = await api.get(`/orders/${id}`);
+            } catch (err) {
+                if (err.response?.status === 404) {
+                    // Try bulk orders if not found in standard
+                    response = await api.get(`/bulk-orders/${id}`);
+                    setIsBulk(true);
+                } else {
+                    throw err;
+                }
+            }
+
             if (response.data.success) {
                 setOrder(response.data.data);
             }
@@ -84,34 +99,66 @@ const OrderTracking = () => {
         );
     }
 
-    const firstItem = order.items?.[0];
-    const serviceTitle = firstItem?.service?.title || (firstItem?.product?.name) || 'Order Detail';
-    const imageUrl = firstItem?.service?.image || firstItem?.product?.images?.[0] || firstItem?.product?.image;
+    // Data Extraction based on Order Type
+    const serviceTitle = isBulk 
+        ? `${order.organizationName} - ${order.serviceType}`
+        : (order.items?.[0]?.service?.title || order.items?.[0]?.product?.name || 'Order Detail');
+    
+    const imageUrl = isBulk
+        ? (order.referenceImages?.[0] || null)
+        : (order.items?.[0]?.service?.image || order.items?.[0]?.product?.images?.[0] || order.items?.[0]?.product?.image);
 
-    // Estimate arrival based on acceptedAt or createdAt
-    const baseDate = order.acceptedAt ? new Date(order.acceptedAt) : new Date(order.createdAt);
-    const deliveryType = firstItem?.deliveryType || 'standard';
-    const deliveryDays = deliveryType === 'express' ? 10 : (deliveryType === 'premium' ? 7 : 15);
-    baseDate.setDate(baseDate.getDate() + deliveryDays);
-    const dateString = baseDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    // Arrival Date Calculation
+    const getArrivalDate = () => {
+        if (isBulk && order.expectedDeliveryDate) {
+            return new Date(order.expectedDeliveryDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        }
+        const baseDate = order.acceptedAt ? new Date(order.acceptedAt) : new Date(order.createdAt);
+        const firstItem = order.items?.[0];
+        const deliveryType = firstItem?.deliveryType || 'standard';
+        const deliveryDays = deliveryType === 'express' ? 10 : (deliveryType === 'premium' ? 7 : 15);
+        baseDate.setDate(baseDate.getDate() + deliveryDays);
+        return baseDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    };
 
-    // Map tracking history to stages (dynamic based on fabric pickup)
-    const stages = [
-        { key: 'pending', label: 'Placed', icon: Package },
-        { key: 'accepted', label: 'Accepted', icon: ShieldCheck },
-        ...(order.fabricPickupRequired ? [{ key: 'fabric-pickup', label: 'Fabric', icon: Truck }] : []),
-        { key: 'in-production', label: 'Crafting', icon: Calendar },
-        { key: 'out-for-delivery', label: 'Dispatch', icon: Truck },
-        { key: 'delivered', label: 'Arrived', icon: CheckCircle2 }
-    ];
+    const dateString = getArrivalDate();
+
+    // Timeline Configuration
+    const stages = isBulk 
+        ? [
+            { key: 'pending', label: 'Inquiry', icon: Package },
+            { key: 'accepted', label: 'Paid', icon: ShieldCheck },
+            { key: 'accepted-by-tailor', label: 'Assigned', icon: User },
+            { key: 'in-production', label: 'Production', icon: Scissors },
+            { key: 'shipped', label: 'In Transit', icon: Truck },
+            { key: 'delivered', label: 'Delivered', icon: CheckCircle2 }
+        ]
+        : [
+            { key: 'pending', label: 'Placed', icon: Package },
+            { key: 'accepted', label: 'Accepted', icon: ShieldCheck },
+            ...(order.fabricPickupRequired ? [{ key: 'fabric-pickup', label: 'Fabric', icon: Truck }] : []),
+            { key: 'in-production', label: 'Crafting', icon: Calendar },
+            { key: 'out-for-delivery', label: 'Dispatch', icon: Truck },
+            { key: 'delivered', label: 'Arrived', icon: CheckCircle2 }
+        ];
 
     const getStageStatus = (stageKey) => {
-        const history = order.trackingHistory || [];
+        const history = isBulk ? (order.history || []) : (order.trackingHistory || []);
         const status = order.status.toLowerCase();
 
-        // Check if stage is completed in history or current
+        // Check completion logic
         if (stageKey === 'pending') return { completed: true, time: new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
         
+        // For Bulk
+        if (isBulk) {
+            const entry = history.find(h => h.status === stageKey);
+            const statusOrder = ['pending', 'reviewing', 'quoted', 'accepted', 'accepted-by-tailor', 'in-production', 'shipped', 'delivered', 'completed'];
+            const currentIndex = statusOrder.indexOf(status);
+            const stageIndex = statusOrder.indexOf(stageKey);
+            const isCompleted = !!entry || (currentIndex >= stageIndex && stageIndex !== -1);
+            return { completed: isCompleted, time: entry ? new Date(entry.timestamp || entry.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null };
+        }
+
         if (stageKey === 'accepted') {
             const entry = history.find(h => h.status === 'accepted' || h.status.includes('ready-for-pickup'));
             const isCompleted = !!entry || ['fabric-ready-for-pickup', 'fabric-picked-up', 'fabric-delivered', 'cutting', 'stitching', 'completed', 'ready-for-pickup', 'out-for-delivery', 'delivered'].includes(status);
@@ -125,13 +172,13 @@ const OrderTracking = () => {
         }
 
         if (stageKey === 'in-production') {
-            const entry = history.find(h => ['cutting', 'stitching', 'in-progress'].includes(h.status));
-            const isCompleted = !!entry || ['completed', 'ready-for-pickup', 'out-for-delivery', 'delivered'].includes(status);
+            const entry = history.find(h => ['cutting', 'stitching', 'in-progress', 'in-production'].includes(h.status));
+            const isCompleted = !!entry || ['completed', 'ready-for-pickup', 'out-for-delivery', 'delivered', 'shipped'].includes(status);
             return { completed: isCompleted, time: entry ? new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null };
         }
 
-        if (stageKey === 'out-for-delivery') {
-            const entry = history.find(h => h.status === 'out-for-delivery' || h.status === 'delivery-out-for-delivery');
+        if (stageKey === 'out-for-delivery' || stageKey === 'shipped') {
+            const entry = history.find(h => h.status === 'out-for-delivery' || h.status === 'delivery-out-for-delivery' || h.status === 'shipped');
             const isCompleted = !!entry || ['delivered'].includes(status);
             return { completed: isCompleted, time: entry ? new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null };
         }
@@ -144,17 +191,21 @@ const OrderTracking = () => {
         return { completed: false };
     };
 
-    const timelineStates = stages.map(s => ({
-        ...s,
-        ...getStageStatus(s.key)
-    }));
-
+    const timelineStates = stages.map(s => ({ ...s, ...getStageStatus(s.key) }));
     const currentStageIndex = [...timelineStates].reverse().findIndex(s => s.completed);
     const actualCurrentIndex = currentStageIndex === -1 ? 0 : (timelineStates.length - 1 - currentStageIndex);
 
+    const getCurrentStatusMessage = () => {
+        const history = isBulk ? (order.history || []) : (order.trackingHistory || []);
+        const latestHistory = history[history.length - 1];
+        if (latestHistory?.message) return latestHistory.message;
+        if (order.status === 'delivered') return "Your order has been delivered successfully.";
+        if (isBulk && order.status === 'accepted') return "Security deposit received. Awaiting production start.";
+        return "Your order is progressing smoothly through our production line.";
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 pb-12 font-sans text-gray-900">
-            {/* 1. Sticky Header */}
             <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 px-4 py-3 pb-4 pt-safe flex flex-col gap-2">
                 <div className="flex items-center gap-3">
                     <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-gray-50 text-gray-700">
@@ -205,7 +256,7 @@ const OrderTracking = () => {
                                 {timelineStates[actualCurrentIndex]?.label}
                             </h2>
                             <p className="text-[10px] text-white/70 font-medium">
-                                {order.trackingHistory[order.trackingHistory.length-1]?.message || 'Your order is progressing smoothly.'}
+                                {getCurrentStatusMessage()}
                             </p>
                         </div>
                         <div className="absolute top-0 right-0 p-4 opacity-10">

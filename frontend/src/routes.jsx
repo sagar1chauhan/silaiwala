@@ -73,6 +73,7 @@ import AdminReports from './modules/admin/pages/Reports';
 import AdminSettings from './modules/admin/pages/Settings';
 import AdminLogin from './modules/admin/pages/Login';
 import AdminStyleAddons from './modules/admin/pages/StyleAddons';
+import AdminBulkOrders from './modules/admin/pages/BulkOrders';
 import AdminProtectedRoute from './modules/admin/components/AdminProtectedRoute';
 
 import ReferEarn from './modules/customer/pages/ReferEarn'; // NEW
@@ -83,6 +84,8 @@ import Support from './modules/customer/pages/Support'; // NEW
 import CMSContent from './modules/customer/pages/CMSContent'; // NEW
 import Embellishments from './modules/customer/pages/Embellishments'; // NEW
 import MyReviews from './modules/customer/pages/MyReviews'; // NEW
+import BulkOrderRequest from './modules/customer/pages/BulkOrderRequest'; // NEW
+import MyBulkOrders from './modules/customer/pages/MyBulkOrders'; // NEW
 
 const AppRoutes = () => {
     return (
@@ -131,6 +134,8 @@ const AppRoutes = () => {
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/wishlist" element={<WishlistPage />} />
                     <Route path="/reviews" element={<MyReviews />} />
+                    <Route path="/bulk-order" element={<BulkOrderRequest />} />
+                    <Route path="/bulk-orders" element={<MyBulkOrders />} />
                 </Route>
             </Route>
 
@@ -186,6 +191,7 @@ const AppRoutes = () => {
                     <Route path="/admin/cms" element={<AdminCMS />} />
                     <Route path="/admin/reports" element={<AdminReports />} />
                     <Route path="/admin/style-addons" element={<AdminStyleAddons />} />
+                    <Route path="/admin/bulk-orders" element={<AdminBulkOrders />} />
                     <Route path="/admin/settings" element={<AdminSettings />} />
                 </Route>
             </Route>

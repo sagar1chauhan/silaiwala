@@ -16,48 +16,48 @@ const HomeHeader = ({ user }) => {
     const { notifications, unreadCount, markAsRead, markAllRead } = useNotifications();
 
     return (
-        <div className="sticky top-0 z-[100] bg-white/80 backdrop-blur-2xl border-b border-gray-100/50 pt-2 transition-all duration-300">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 pt-safe">
+        <div className="sticky top-0 z-[100] bg-white/80 backdrop-blur-2xl border-b border-gray-100/50 pt-1 transition-all duration-300">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-5 pt-safe">
                 {/* Top Row: Brand & Icons */}
-                <div className="flex justify-between items-center mb-5">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md overflow-hidden border border-gray-50 rotate-3">
-                            <img src={silaiwalaLogo} alt="Silaiwala" className="w-full h-full object-contain p-1.5" />
+                <div className="flex justify-between items-center mb-3 sm:mb-5">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-lg sm:rounded-xl flex items-center justify-center shadow-md overflow-hidden border border-gray-50 rotate-3">
+                            <img src={silaiwalaLogo} alt="Silaiwala" className="w-full h-full object-contain p-1 sm:p-1.5" />
                         </div>
                         <div>
-                            <h1 className="text-xl font-black text-gray-900 leading-none tracking-tight">Silai<span className="text-[#FF5C8A]">wala</span></h1>
-                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter mt-1">Modern Stitching</p>
+                            <h1 className="text-lg sm:text-xl font-black text-gray-900 leading-none tracking-tight">Silai<span className="text-[#FF5C8A]">wala</span></h1>
+                            <p className="text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase tracking-tighter mt-0.5 sm:mt-1">Modern Stitching</p>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => setShowNotifications(!showNotifications)}
-                            className="relative p-2.5 bg-gray-50 rounded-2xl text-gray-400 border border-gray-100 hover:bg-white hover:text-[#FF5C8A] transition-all active:scale-90"
+                            className="relative p-2 sm:p-2.5 bg-gray-50 rounded-xl sm:rounded-2xl text-gray-400 border border-gray-100 hover:bg-white hover:text-[#FF5C8A] transition-all active:scale-90"
                         >
-                            <Bell size={20} />
+                            <Bell size={18} />
                             {unreadCount > 0 && (
-                                <span className="absolute top-2 right-2 h-2.5 w-2.5 bg-rose-500 rounded-full border-2 border-white animate-pulse shadow-sm"></span>
+                                <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-rose-500 rounded-full border-2 border-white animate-pulse shadow-sm"></span>
                             )}
                         </button>
-
+ 
                         <Link
                             to="/cart"
-                            className="p-2.5 bg-gray-50 rounded-2xl text-gray-400 border border-gray-100 hover:bg-white hover:text-[#FF5C8A] transition-all active:scale-90 relative"
+                            className="p-2 sm:p-2.5 bg-gray-50 rounded-xl sm:rounded-2xl text-gray-400 border border-gray-100 hover:bg-white hover:text-[#FF5C8A] transition-all active:scale-90 relative"
                         >
-                            <ShoppingBag size={20} />
+                            <ShoppingBag size={18} />
                             {cartCount > 0 && (
-                                <span className="absolute -top-1 -right-1 h-5 w-5 bg-[#FF5C8A] text-white text-[10px] font-black flex items-center justify-center rounded-full border-2 border-white shadow-md">
+                                <span className="absolute -top-1 -right-1 h-4 w-4 bg-[#FF5C8A] text-white text-[8px] font-black flex items-center justify-center rounded-full border-2 border-white shadow-md">
                                     {cartCount}
                                 </span>
                             )}
                         </Link>
-
-                        <Link to="/profile" className="ml-1 active:scale-90 transition-transform">
-                            <div className="w-11 h-11 rounded-[1.25rem] border-2 border-[#FF5C8A]/10 p-0.5 overflow-hidden shadow-sm">
+ 
+                        <Link to="/profile" className="ml-0.5 active:scale-90 transition-transform">
+                            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-[1rem] sm:rounded-[1.25rem] border-2 border-[#FF5C8A]/10 p-0.5 overflow-hidden shadow-sm">
                                 <img
                                     src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'User'}`}
-                                    className="w-full h-full object-cover bg-gray-100 rounded-[1rem]"
+                                    className="w-full h-full object-cover bg-gray-100 rounded-[0.8rem] sm:rounded-[1rem]"
                                     alt="User"
                                 />
                             </div>
@@ -67,13 +67,13 @@ const HomeHeader = ({ user }) => {
 
                 {/* Search Bar - Modernized */}
                 <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Search className="h-4 w-4 text-gray-400 group-focus-within:text-[#FF5C8A] transition-colors" />
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                        <Search className="h-3.5 w-3.5 text-gray-400 group-focus-within:text-[#FF5C8A] transition-colors" />
                     </div>
                     <input
                         type="text"
                         placeholder="Search tailors, fabrics, designs..."
-                        className="w-full bg-gray-100 border border-transparent rounded-[1.25rem] py-3.5 pl-11 pr-4 text-sm font-medium focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#FF5C8A]/5 focus:border-[#FF5C8A]/20 transition-all placeholder:text-gray-400 shadow-inner"
+                        className="w-full bg-gray-100 border border-transparent rounded-[1rem] sm:rounded-[1.25rem] py-2.5 sm:py-3.5 pl-10 pr-4 text-[13px] font-medium focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#FF5C8A]/5 focus:border-[#FF5C8A]/20 transition-all placeholder:text-gray-400 shadow-inner"
                     />
                 </div>
             </div>

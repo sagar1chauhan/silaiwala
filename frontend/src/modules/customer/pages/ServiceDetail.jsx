@@ -13,6 +13,8 @@ import PriceSummary from '../components/service-detail/PriceSummary';
 import StyleAddonModal from '../components/service-detail/StyleAddonModal';
 import useCheckoutStore from '../../../store/checkoutStore';
 import useMeasurementStore from '../../../store/measurementStore';
+import useLocationStore from '../../../store/locationStore';
+import { calculateDistance } from '../../../utils/distance';
 import api from '../../../utils/api';
 
 const FAQItem = ({ question, answer }) => {
@@ -41,7 +43,13 @@ const ServiceDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
-    const { initializeCheckout, serviceDetails: storedDetails } = useCheckoutStore(state => state);
+    const { 
+        initializeCheckout, 
+        addServiceItem, 
+        serviceItems,
+        removeServiceItem,
+        serviceDetails: storedDetails 
+    } = useCheckoutStore(state => state);
     const addMeasurement = useMeasurementStore(state => state.addMeasurement);
 
     const [isLoading, setIsLoading] = useState(true);
@@ -60,6 +68,8 @@ const ServiceDetail = () => {
     const [selectedFabric, setSelectedFabric] = useState(location.state?.selectedFabric || null);
     const [selectedSavedProfile, setSelectedSavedProfile] = useState(null);
     const [measurements, setMeasurements] = useState(null);
+    const [visitSettings, setVisitSettings] = useState({ baseFee: 150, perKmFee: 20, freeKm: 3 });
+    const userCoords = useLocationStore(state => state.coordinates);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -82,6 +92,12 @@ const ServiceDetail = () => {
                 if (location.state?.selectedFabric) {
                     setFabricSource('platform');
                     setSelectedFabric(location.state.selectedFabric);
+                }
+
+                // Fetch visit settings
+                const settingsRes = await api.get('/cms/settings');
+                if (settingsRes.data.success && settingsRes.data.data.visitFee) {
+                    setVisitSettings(settingsRes.data.data.visitFee);
                 }
             } catch (error) {
                 console.error('Failed to fetch service/tailor detail:', error);
@@ -106,10 +122,32 @@ const ServiceDetail = () => {
     const deliveryPrice = deliveryType === 'express' ? 150 : (deliveryType === 'premium' ? 350 : 0);
     const fabricPrice = (fabricSource === 'platform' && selectedFabric) ? selectedFabric.price : 0;
     const addonsPrice = selectedAddons.reduce((sum, a) => sum + a.price, 0);
-    const tailorAtHomePrice = isTailorAtHome ? 250 : 0;
+    
+    const calculateVisitPrice = () => {
+        if (!isTailorAtHome) return 0;
+        // If no tailor selected yet, show base fee
+        if (!preSelectedTailor || !userCoords) return visitSettings.baseFee;
+
+        try {
+            const [tLng, tLat] = preSelectedTailor.location.coordinates;
+            const distance = calculateDistance(userCoords.lat, userCoords.lng, tLat, tLng);
+            
+            if (distance <= visitSettings.freeKm) return visitSettings.baseFee;
+            
+            return Math.round(visitSettings.baseFee + (distance - visitSettings.freeKm) * visitSettings.perKmFee);
+        } catch (err) {
+            return visitSettings.baseFee;
+        }
+    };
+
+    const tailorAtHomePrice = calculateVisitPrice();
     const subtotal = basePrice + deliveryPrice + fabricPrice + addonsPrice + tailorAtHomePrice;
     const taxes = Math.round(subtotal * 0.05);
-    const total = subtotal + taxes;
+    const currentTotal = subtotal + taxes;
+
+    // Grand Total (Basket + Current)
+    const basketTotal = serviceItems.reduce((sum, item) => sum + item.pricing.total, 0);
+    const grandTotal = basketTotal + currentTotal;
 
     const getDeliveryDays = () => {
         if (deliveryType === 'express') return 10;
@@ -117,9 +155,16 @@ const ServiceDetail = () => {
         return 15;
     }
 
+    const resetDraftForm = () => {
+        setMeasurementType(null);
+        setMeasurements(null);
+        setSelectedAddons([]);
+        setSelectedSavedProfile(null);
+        setIsTailorAtHome(false);
+        // Delivery type, fabric source can persist as defaults
+    };
 
-
-    const handleProceed = async () => {
+    const prepareDraftItem = async () => {
         let finalMeasurements = measurements;
 
         // If user requested to save this measurement profile
@@ -131,7 +176,6 @@ const ServiceDetail = () => {
                     measurements: measurements.data,
                     notes: measurements.data.notes
                 });
-                // Remove saveProfile flag from order object but keep the data
                 finalMeasurements = measurements.data;
             } catch (err) {
                 console.error("Failed to save measurement profile:", err);
@@ -139,13 +183,16 @@ const ServiceDetail = () => {
         } else if (measurements?.type === 'self') {
             finalMeasurements = measurements.data;
         } else if (measurements?.type === 'slip' || measurements?.type === 'saved') {
-            // For slip and saved, we use the object as is (it already has the values)
             finalMeasurements = measurements.type === 'saved' ? measurements.measurements : measurements;
         }
 
-        initializeCheckout({
-            service: serviceData,
-            config: { 
+        return {
+            serviceDetails: {
+                ...serviceData,
+                tailorId: preSelectedTailor?._id || null,
+                tailorName: preSelectedTailor?.shopName || preSelectedTailor?.user?.name || null
+            },
+            configuration: { 
                 deliveryType, 
                 fabricSource, 
                 selectedFabric, 
@@ -160,19 +207,31 @@ const ServiceDetail = () => {
                 addons: addonsPrice,
                 tailorAtHome: tailorAtHomePrice,
                 taxes, 
-                total, 
+                total: currentTotal, 
                 deliveryDays: getDeliveryDays() 
-            },
-            tailorId: preSelectedTailor?._id || null,
-            tailorName: preSelectedTailor?.shopName || preSelectedTailor?.user?.name || null
-        });
+            }
+        };
+    };
 
+    const handleAddMore = async () => {
+        const item = await prepareDraftItem();
+        addServiceItem(item);
+        resetDraftForm();
+        toast.success("Added to Order! Configure your next item.");
+    };
+
+    const handleProceed = async () => {
+        const item = await prepareDraftItem();
+        // Add current drafting to the basket
+        addServiceItem(item);
+        
+        // Go to next step
         if (!preSelectedTailor) navigate('/checkout/tailor');
         else navigate('/checkout/address');
     };
 
     return (
-        <div className="min-h-screen bg-[#f8faf9] pb-40 font-sans">
+        <div className="min-h-screen bg-[#f8faf9] pb-48 font-sans">
             {/* 1. Header & Stepper Integration */}
             <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl pt-safe">
                 <div className="px-5 py-4 flex items-center justify-between border-b border-gray-100">
@@ -185,10 +244,10 @@ const ServiceDetail = () => {
                             <p className="text-[10px] text-primary font-bold uppercase tracking-widest mt-1">Configuring Order</p>
                         </div>
                     </div>
-                    {preSelectedTailor && (
-                        <div className="flex items-center gap-2 bg-pink-50 px-3 py-1.5 rounded-xl border border-primary/10">
-                            <ShieldCheck size={14} className="text-primary" />
-                            <span className="text-[10px] font-black text-primary truncate max-w-[80px]">{preSelectedTailor.shopName || preSelectedTailor.user?.name}</span>
+                    {serviceItems.length > 0 && (
+                        <div className="flex items-center gap-1.5 bg-primary text-white px-3 py-1.5 rounded-full shadow-lg shadow-pink-100">
+                            <ShoppingBag size={12} />
+                            <span className="text-[10px] font-black">{serviceItems.length} Items</span>
                         </div>
                     )}
                 </div>
@@ -196,6 +255,50 @@ const ServiceDetail = () => {
             </div>
 
             <div className="max-w-2xl mx-auto px-4 mt-6 space-y-6">
+
+                {/* Basket Summary Card */}
+                {serviceItems.length > 0 && (
+                    <section className="animate-in fade-in slide-in-from-top-4">
+                        <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 overflow-hidden relative">
+                            <div className="absolute top-0 right-0 p-6 opacity-5 rotate-12">
+                                <ShoppingBag size={80} />
+                            </div>
+                            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Current Basket</h3>
+                            <div className="space-y-3">
+                                <AnimatePresence mode='popLayout'>
+                                    {serviceItems.map((item, idx) => (
+                                        <motion.div 
+                                            key={idx}
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, scale: 0.9 }}
+                                            className="flex items-center justify-between bg-gray-50/50 p-3 rounded-2xl border border-gray-100"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-primary shadow-sm">
+                                                    <Scissors size={18} />
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs font-black text-gray-900">Item #{idx + 1}: {item.serviceDetails.title}</p>
+                                                    <p className="text-[9px] text-gray-400 font-bold uppercase">₹{item.pricing.total}</p>
+                                                </div>
+                                            </div>
+                                            <button 
+                                                onClick={() => removeServiceItem(idx)}
+                                                className="p-2 text-gray-300 hover:text-red-500 transition-colors"
+                                            >
+                                                <X size={16} />
+                                            </button>
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
+                            </div>
+                        </div>
+                    </section>
+                )}
+
+                {/* 2. Fabric Choice - The "Fork" */}
+                {/* ... existing code ... */}
 
                 {/* 2. Fabric Choice - The "Fork" */}
                 <section className="animate-in fade-in slide-in-from-bottom-2">
@@ -212,6 +315,8 @@ const ServiceDetail = () => {
                 <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <MeasurementSelector
                         selectedType={measurementType}
+                        visitPrice={tailorAtHomePrice || visitSettings.baseFee}
+                        isDistanceBased={!!preSelectedTailor}
                         onSelectType={(type) => {
                             if (type === 'home') {
                                 setIsTailorAtHome(true);
@@ -313,17 +418,19 @@ const ServiceDetail = () => {
             </div>
 
             {/* 7. LIVE BILL - Sticky Transparent Footer */}
-            <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-2xl border-t border-gray-100 p-4 pb-safe animate-in slide-in-from-bottom duration-500">
+            <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-2xl border-t border-gray-100 p-4 pb-10 sm:pb-6 animate-in slide-in-from-bottom duration-500">
                 <div className="max-w-md mx-auto">
                     {/* Live Bill Header - Compact */}
                     <div className="flex justify-between items-center mb-3">
                         <div className="flex flex-col">
                             <div className="flex items-center gap-1.5 mb-0.5">
-                                <span className="text-[9px] font-black text-primary uppercase tracking-tighter">Live Bill</span>
+                                <span className="text-[9px] font-black text-primary uppercase tracking-tighter">
+                                    {serviceItems.length > 0 ? `Total Bundle (${serviceItems.length + 1} items)` : 'Live Bill'}
+                                </span>
                                 <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
                             </div>
                             <h4 className="text-xl font-black text-gray-900 flex items-baseline gap-1 leading-none">
-                                ₹{total.toLocaleString()}
+                                ₹{grandTotal.toLocaleString()}
                                 <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Incl. GST</span>
                             </h4>
                         </div>
@@ -340,52 +447,48 @@ const ServiceDetail = () => {
                     <div className="flex gap-1.5 overflow-x-auto pb-3 no-scrollbar">
                         <div className="shrink-0 bg-gray-50 px-2 py-1 rounded-md border border-gray-100 flex items-center gap-1.5">
                             <Scissors size={8} className="text-gray-400" />
-                            <span className="text-[9px] font-black text-gray-500 uppercase">Stitching: ₹{basePrice}</span>
+                            <span className="text-[9px] font-black text-gray-500 uppercase">Current: ₹{currentTotal}</span>
                         </div>
-                        {fabricPrice > 0 && (
-                            <div className="shrink-0 bg-gray-50 px-2 py-1 rounded-md border border-gray-100 flex items-center gap-1.5">
-                                <ShoppingBag size={8} className="text-gray-400" />
-                                <span className="text-[9px] font-black text-gray-500 uppercase">Fabric: ₹{fabricPrice}</span>
-                            </div>
-                        )}
-                        {deliveryPrice > 0 && (
-                            <div className="shrink-0 bg-gray-50 px-2 py-1 rounded-md border border-gray-100 flex items-center gap-1.5">
-                                <Clock size={8} className="text-gray-400" />
-                                <span className="text-[9px] font-black text-gray-500 uppercase">Express: ₹{deliveryPrice}</span>
-                            </div>
-                        )}
-                        {addonsPrice > 0 && (
-                            <div className="shrink-0 bg-gray-50 px-2 py-1 rounded-md border border-gray-100 flex items-center gap-1.5">
-                                <Wand2 size={8} className="text-gray-400" />
-                                <span className="text-[9px] font-black text-gray-500 uppercase">Addons: ₹{addonsPrice}</span>
-                            </div>
-                        )}
-                        {tailorAtHomePrice > 0 && (
-                            <div className="shrink-0 bg-gray-50 px-2 py-1 rounded-md border border-gray-100 flex items-center gap-1.5">
-                                <MapPin size={8} className="text-gray-400" />
-                                <span className="text-[9px] font-black text-gray-500 uppercase">Home Visit: ₹{tailorAtHomePrice}</span>
+                        {serviceItems.length > 0 && (
+                            <div className="shrink-0 bg-pink-50 px-2 py-1 rounded-md border border-primary/10 flex items-center gap-1.5">
+                                <ShoppingBag size={8} className="text-primary" />
+                                <span className="text-[9px] font-black text-primary uppercase">Basket: ₹{basketTotal}</span>
                             </div>
                         )}
                     </div>
 
-                    {/* Primary Button - Slimmer */}
-                    <button
-                        onClick={handleProceed}
-                        disabled={!measurementType}
-                        className={cn(
-                            "w-full py-4 rounded-xl font-black text-[11px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg",
-                            measurementType ? "bg-primary text-white shadow-pink-100 active:scale-[0.98] hover:bg-primary-dark" : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                        )}
-                    >
-                        {measurementType ? (
-                            <>Confirm Configuration <ChevronRight size={16} /></>
-                        ) : (
-                            <>Enter Measurements to Proceed</>
-                        )}
-                    </button>
-                    {measurementType && !measurements && measurementType !== 'saved' && (
-                        <p className="text-center text-[8px] text-primary font-black uppercase mt-2 tracking-widest">Action Required: Input details above</p>
-                    )}
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                        <button
+                            onClick={handleAddMore}
+                            disabled={!measurementType || (measurementType !== 'saved' && !measurements)}
+                            className={cn(
+                                "flex-1 py-4 rounded-xl font-black text-[11px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all border-2",
+                                measurementType && (measurementType === 'saved' || measurements) 
+                                    ? "border-primary text-primary hover:bg-pink-50 active:scale-95" 
+                                    : "border-gray-100 text-gray-300 cursor-not-allowed"
+                            )}
+                        >
+                            <Tag size={16} /> Add Another
+                        </button>
+                        
+                        <button
+                            onClick={handleProceed}
+                            disabled={!measurementType || (measurementType !== 'saved' && !measurements)}
+                            className={cn(
+                                "flex-[2] py-4 rounded-xl font-black text-[11px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg",
+                                measurementType && (measurementType === 'saved' || measurements)
+                                    ? "bg-primary text-white shadow-pink-100 active:scale-[0.98] hover:bg-primary-dark" 
+                                    : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                            )}
+                        >
+                            {measurementType && (measurementType === 'saved' || measurements) ? (
+                                <>Confirm & Checkout ({serviceItems.length + 1}) <ChevronRight size={16} /></>
+                            ) : (
+                                <>Enter Details to Proceed</>
+                            )}
+                        </button>
+                    </div>
                 </div>
             </div>
 

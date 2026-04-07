@@ -43,7 +43,7 @@ const LocationBar = () => {
 
     return (
         <div className="bg-white/40 backdrop-blur-md border-b border-gray-100 relative z-40 selection:bg-[#FF5C8A] selection:text-white transition-all duration-300">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-3 flex justify-between items-center text-xs sm:text-sm">
             <AnimatePresence mode="wait">
                 {isEditing ? (
                     <motion.div
@@ -60,21 +60,21 @@ const LocationBar = () => {
                                 value={tempLocation}
                                 onChange={(e) => setTempLocation(e.target.value)}
                                 placeholder="Enter area or pincode..."
-                                className="w-full bg-white border border-gray-200 rounded-xl py-2 pl-9 pr-3 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-[#FF5C8A]/10 transition-all shadow-sm"
+                                className="w-full bg-white border border-gray-200 rounded-lg sm:rounded-xl py-1.5 sm:py-2 pl-8 pr-3 text-[11px] font-bold focus:outline-none focus:ring-2 focus:ring-[#FF5C8A]/10 transition-all shadow-sm"
                                 autoFocus
                             />
                         </div>
                         <button
                             onClick={handleDetectLocation}
-                            className="p-2.5 bg-[#FF5C8A]/5 text-[#FF5C8A] rounded-xl hover:bg-[#FF5C8A]/10 transition-colors"
+                            className="p-2 sm:p-2.5 bg-[#FF5C8A]/5 text-[#FF5C8A] rounded-lg sm:rounded-xl hover:bg-[#FF5C8A]/10 transition-colors"
                         >
-                            {isLoading ? <Loader2 size={16} className="animate-spin" /> : <Navigation size={16} />}
+                            {isLoading ? <Loader2 size={14} className="animate-spin" /> : <Navigation size={14} />}
                         </button>
                         <button
                             onClick={handleSave}
-                            className="p-2.5 bg-[#FF5C8A] text-white rounded-xl shadow-lg shadow-[#FF5C8A]/20 active:scale-90 transition-transform"
+                            className="p-2 sm:p-2.5 bg-[#FF5C8A] text-white rounded-lg sm:rounded-xl shadow-lg shadow-[#FF5C8A]/20 active:scale-90 transition-transform"
                         >
-                            <Check size={16} />
+                            <Check size={14} />
                         </button>
                     </motion.div>
                 ) : (
@@ -85,20 +85,20 @@ const LocationBar = () => {
                         className="flex items-center justify-between w-full"
                     >
                         <div
-                            className="flex items-center gap-2.5 truncate cursor-pointer group"
+                            className="flex items-center gap-2 sm:gap-2.5 truncate cursor-pointer group"
                             onClick={() => {
                                 setTempLocation(location);
                                 setIsEditing(true);
                             }}
                         >
-                            <div className="w-8 h-8 rounded-full bg-[#FF5C8A]/5 flex items-center justify-center text-[#FF5C8A] shrink-0 border border-[#FF5C8A]/5">
-                                <MapPin size={14} className="group-hover:scale-110 transition-transform" />
+                            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#FF5C8A]/5 flex items-center justify-center text-[#FF5C8A] shrink-0 border border-[#FF5C8A]/5">
+                                <MapPin size={12} className="group-hover:scale-110 transition-transform" />
                             </div>
                             <div className="min-w-0">
-                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter leading-none mb-1 text-left">Delivering To</p>
-                                <div className="flex items-center gap-1.5 overflow-hidden">
-                                    <span className="text-xs font-black text-gray-900 truncate tracking-tight">{location}</span>
-                                    <ChevronDown size={14} className="text-[#FF5C8A] opacity-50 group-hover:translate-y-0.5 transition-transform" />
+                                <p className="text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase tracking-tighter leading-none mb-0.5 sm:mb-1 text-left">Delivering To</p>
+                                <div className="flex items-center gap-1 overflow-hidden">
+                                    <span className="text-[11px] sm:text-xs font-black text-gray-900 truncate tracking-tight">{location}</span>
+                                    <ChevronDown size={12} className="text-[#FF5C8A] opacity-50 group-hover:translate-y-0.5 transition-transform" />
                                 </div>
                             </div>
                         </div>

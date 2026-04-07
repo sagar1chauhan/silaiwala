@@ -16,7 +16,8 @@ import {
     Megaphone,
     Menu,
     X,
-    Sparkles
+    Sparkles,
+    Package
 } from 'lucide-react';
 const silaiwalaLogo = '/logo.png';
 
@@ -56,6 +57,7 @@ const AdminLayout = () => {
     const menuItems = [
         { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/admin' },
         { icon: <ShoppingBag size={20} />, label: 'Orders', path: '/admin/orders' },
+        { icon: <Package size={20} />, label: 'Bulk Orders', path: '/admin/bulk-orders' },
         { icon: <Scissors size={20} />, label: 'Tailors', path: '/admin/tailors' },
         { icon: <Truck size={20} />, label: 'Delivery', path: '/admin/delivery' },
         { icon: <Users size={20} />, label: 'Customers', path: '/admin/customers' },

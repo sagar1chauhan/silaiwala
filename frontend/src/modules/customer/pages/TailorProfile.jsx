@@ -98,7 +98,7 @@ const TailorProfile = () => {
     return (
         <div className="min-h-screen bg-[#f8faf9] pb-32 font-sans overflow-x-hidden">
             {/* 1. Dynamic Header with Parallax-like feel */}
-            <div className="relative h-48 w-full overflow-hidden bg-[#FF5C8A]">
+            <div className="relative h-44 w-full overflow-hidden bg-[#FF5C8A]">
                 <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/10 z-10"></div>
                 <SafeImage
                     src={tailor.user?.profileImage}
@@ -107,7 +107,7 @@ const TailorProfile = () => {
                     className="w-full h-full opacity-60 blur-sm scale-110"
                 />
 
-                <div className="absolute top-0 left-0 right-0 z-20 p-4 pt-safe flex justify-between items-center">
+                <div className="absolute top-0 left-0 right-0 z-20 p-4 pt-10 sm:pt- safe flex justify-between items-center">
                     <button
                         onClick={() => navigate(-1)}
                         className="p-2.5 bg-white/10 backdrop-blur-md rounded-full text-white border border-white/20 active:scale-90 transition-all"
@@ -129,15 +129,15 @@ const TailorProfile = () => {
             </div>
 
             {/* 2. Overlapping Profile Card */}
-            <div className="relative z-30 -mt-16 px-4">
+            <div className="relative z-30 -mt-12 px-4">
                 <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="bg-white rounded-[2.5rem] p-6 shadow-xl border border-gray-100"
+                    className="bg-white rounded-[2.5rem] p-4 sm:p-6 shadow-xl border border-gray-100"
                 >
-                    <div className="flex gap-5 items-start">
+                    <div className="flex gap-4 items-start">
                         <div className="relative shrink-0">
-                            <div className="w-24 h-24 rounded-[2rem] overflow-hidden border-4 border-white shadow-2xl rotate-2 group">
+                            <div className="w-20 h-20 rounded-[1.5rem] overflow-hidden border-4 border-white shadow-2xl rotate-2 group">
                                 <SafeImage src={tailor.user?.profileImage} alt={tailor.shopName} className="w-full h-full group-hover:scale-110 transition-transform duration-700" />
                             </div>
                             {tailor.isApproved && (
@@ -170,35 +170,35 @@ const TailorProfile = () => {
                     </div>
 
                     {/* Stats Row */}
-                    <div className="mt-8 grid grid-cols-3 gap-3">
-                        <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-50 text-center">
-                            <Award size={20} className="mx-auto mb-1.5 text-[#FF5C8A]" />
+                    <div className="mt-5 grid grid-cols-3 gap-2">
+                        <div className="bg-gray-50/50 p-2.5 rounded-2xl border border-gray-50 text-center">
+                            <Award size={18} className="mx-auto mb-1 text-[#FF5C8A]" />
                             <span className="block text-xs font-black text-gray-900 leading-none">{tailor.experienceInYears || 0}y</span>
                             <span className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter mt-1 block">Experience</span>
                         </div>
-                        <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 text-center">
-                            <CheckCircle2 size={20} className="mx-auto mb-1.5 text-green-600" />
+                        <div className="bg-gray-50/50 p-2.5 rounded-2xl border border-gray-100 text-center">
+                            <CheckCircle2 size={18} className="mx-auto mb-1 text-green-600" />
                             <span className="block text-xs font-black text-gray-900 leading-none">100+</span>
-                            <span className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter mt-1 block">Finished By</span>
+                            <span className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter mt-1 block">Finished</span>
                         </div>
-                        <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 text-center">
-                            <Clock size={20} className="mx-auto mb-1.5 text-amber-600" />
-                            <span className="block text-xs font-black text-gray-900 leading-none">3-5 days</span>
+                        <div className="bg-gray-50/50 p-2.5 rounded-2xl border border-gray-100 text-center">
+                            <Clock size={18} className="mx-auto mb-1 text-amber-600" />
+                            <span className="block text-xs font-black text-gray-900 leading-none">3-5d</span>
                             <span className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter mt-1 block">Delivery</span>
                         </div>
                     </div>
 
                     {/* About Section */}
-                    <div className="mt-6 p-4 bg-gray-50/80 rounded-2xl border border-gray-100">
-                        <h3 className="text-xs font-black text-gray-900 uppercase tracking-widest mb-2 opacity-40">Artisan's Bio</h3>
-                        <p className="text-xs text-gray-500 leading-relaxed font-medium">
+                    <div className="mt-4 p-3.5 bg-gray-50/80 rounded-2xl border border-gray-100">
+                        <h3 className="text-xs font-black text-gray-900 uppercase tracking-widest mb-1.5 opacity-40">Artisan's Bio</h3>
+                        <p className="text-[11px] text-gray-500 leading-relaxed font-medium">
                             {tailor.bio || "Crafting perfect fits with dedication and precision. Every stitch tells a story of elegance and comfort."}
                         </p>
                     </div>
 
                     {/* Location Sneak Peek */}
-                    <div className="mt-6">
-                        <h3 className="text-xs font-black text-gray-900 uppercase tracking-widest mb-3 opacity-40 px-1">Artisan's Atelier</h3>
+                    <div className="mt-4">
+                        <h3 className="text-xs font-black text-gray-900 uppercase tracking-widest mb-2 opacity-40 px-1">Artisan's Atelier</h3>
                         <div className="bg-gray-100 h-24 rounded-2xl relative overflow-hidden active:scale-[0.99] transition-transform">
                             <img src="https://images.unsplash.com/photo-1524613032530-449a5d94c285?w=600" className="w-full h-full object-cover blur-[1px] grayscale-[0.5]" alt="Map" />
                             <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
@@ -217,11 +217,11 @@ const TailorProfile = () => {
 
             {/* 3. Shop Fabrics (High Impact) */}
             {fabrics && fabrics.length > 0 && (
-                <div className="mt-10 px-4">
-                    <div className="flex justify-between items-center mb-6 px-2">
+                <div className="mt-6 px-4">
+                    <div className="flex justify-between items-center mb-4 px-2">
                         <div>
                             <h3 className="text-xl font-black text-gray-900 tracking-tight">Artisan's Collection</h3>
-                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Exclusive fabrics available in-store</p>
+                            <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">Exclusive fabrics available in-store</p>
                         </div>
                         <div className="p-2.5 bg-[#FF5C8A]/5 rounded-2xl border border-[#FF5C8A]/5">
                             <Tag size={18} className="text-[#FF5C8A]" />
@@ -272,11 +272,11 @@ const TailorProfile = () => {
             )}
  
             {/* 4. Portfolio / Designs */}
-            <div className="mt-10 px-4">
-                <div className="flex justify-between items-center mb-6 px-2">
+            <div className="mt-6 px-4">
+                <div className="flex justify-between items-center mb-4 px-2">
                     <div>
                         <h3 className="text-xl font-black text-gray-900 tracking-tight">Signature Designs</h3>
-                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Inspired by traditional masteries</p>
+                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">Inspired by traditional masteries</p>
                     </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -330,7 +330,7 @@ const TailorProfile = () => {
             </div>
 
             {/* Sticky Action Footer - DUAL ACTION */}
-            <div className="fixed bottom-0 left-0 right-0 p-3 pb-safe bg-white/80 backdrop-blur-2xl border-t border-gray-100 z-[40] animate-in slide-in-from-bottom">
+            <div className="fixed bottom-0 left-0 right-0 p-4 pb-10 sm:pb-6 bg-white/80 backdrop-blur-2xl border-t border-gray-100 z-[40] animate-in slide-in-from-bottom">
                 <div className="max-w-md mx-auto flex gap-2">
                     <button
                         onClick={() => {

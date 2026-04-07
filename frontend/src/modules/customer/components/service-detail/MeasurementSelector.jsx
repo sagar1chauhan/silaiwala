@@ -5,7 +5,7 @@ import SelfMeasureForm from './measurement-forms/SelfMeasureForm';
 import UploadSlip from './measurement-forms/UploadSlip';
 import useMeasurementStore from '../../../../store/measurementStore';
 
-const MeasurementSelector = ({ selectedType, onSelectType, onMeasurementComplete, selectedSavedProfile, onSelectSavedProfile }) => {
+const MeasurementSelector = ({ selectedType, onSelectType, onMeasurementComplete, selectedSavedProfile, onSelectSavedProfile, visitPrice, isDistanceBased }) => {
     const { measurements, fetchMeasurements, isLoading } = useMeasurementStore();
     
     // Local state to track if a valid measurement has been provided for each type
@@ -159,10 +159,15 @@ const MeasurementSelector = ({ selectedType, onSelectType, onMeasurementComplete
                             <h4 className="text-sm font-bold text-gray-900">Tailor at Home</h4>
                             <span className="text-[8px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-black uppercase tracking-widest">Premium</span>
                         </div>
-                        <p className="text-[10px] text-gray-400 font-medium leading-none mt-1">Get measured by experts at your doorstep</p>
+                        <p className="text-[10px] text-gray-400 font-medium leading-none mt-1">
+                            {isDistanceBased ? 'Expert will visit your location' : 'Expert visits start at base price'}
+                        </p>
                     </div>
                     <div className="text-right">
-                        <p className="text-xs font-black text-primary">₹250</p>
+                        <p className="text-xs font-black text-primary flex flex-col items-end">
+                            <span className="text-[8px] text-gray-400 mb-0.5">{!isDistanceBased && 'starts @'}</span>
+                            ₹{visitPrice || 250}
+                        </p>
                     </div>
                     {selectedType === 'home' && (
                         <div className="absolute top-0 right-0 p-1 bg-primary text-white rounded-bl-lg">

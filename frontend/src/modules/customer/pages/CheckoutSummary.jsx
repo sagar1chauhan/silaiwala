@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, ArrowRight, CreditCard, Lock, ShieldCheck, MapPin } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, ArrowRight, CreditCard, Lock, ShieldCheck, MapPin, Package } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 import api from '../../../utils/api';
 import useCheckoutStore from '../../../store/checkoutStore';
 import useAddressStore from '../../../store/userStore';
@@ -13,128 +14,148 @@ import useOrderStore from '../../../store/orderStore';
 
 const CheckoutSummary = () => {
     const navigate = useNavigate();
-    const { serviceDetails, configuration, pricing, addons } = useCheckoutStore(state => state);
+    const { 
+        serviceItems, 
+        clearCheckout 
+    } = useCheckoutStore(state => state);
     const { items: cartItems, getTotalPrice, clearCart } = useCartStore(state => state);
     const selectedAddress = useAddressStore(state => state.getSelectedAddress());
 
     const addOrder = useOrderStore(state => state.addOrder);
-    const clearCheckout = useCheckoutStore(state => state.clearCheckout);
 
-    const isServiceCheckout = !!(serviceDetails?.id || serviceDetails?._id || (configuration?.addons && configuration.addons.length > 0));
+    const isServiceCheckout = serviceItems.length > 0;
     const isCartCheckout = cartItems.length > 0;
 
     const [isProcessing, setIsProcessing] = useState(false);
+    const [bulkOrder, setBulkOrder] = useState(null);
+    const location = useLocation();
+    const bulkOrderId = location.state?.bulkOrderId;
 
-    // Redirect if session data missing
-    useEffect(() => {
-        if (isProcessing) return; // Don't redirect while processing/navigating
+    // ... (bulk order fetch remains same)
 
-        if (!selectedAddress) {
-            navigate('/checkout/address');
-            return;
-        }
-        
-        console.log('Checkout State:', { isServiceCheckout, isCartCheckout, serviceDetails, configuration, cartItems });
-
-        if (!isServiceCheckout && !isCartCheckout) {
-            navigate('/store'); // Navigate to store instead of services if empty
-        }
-    }, [isServiceCheckout, isCartCheckout, selectedAddress, navigate, isProcessing, configuration, serviceDetails, cartItems]);
-
-    if ((!isServiceCheckout && !isCartCheckout && !isProcessing) || !selectedAddress) return null;
-
-    const currentPricing = isServiceCheckout ? pricing : {
-        total: getTotalPrice(),
-        base: getTotalPrice(),
-        taxes: 0,
-        delivery: getTotalPrice() > 999 ? 0 : 49
+    // Pricing Logic
+    const getServicePricing = () => {
+        if (serviceItems.length === 0) return { total: 0, base: 0, taxes: 0, delivery: 0 };
+        return serviceItems.reduce((acc, item) => ({
+            total: acc.total + item.pricing.total,
+            base: acc.base + item.pricing.base,
+            taxes: acc.taxes + item.pricing.taxes,
+            delivery: acc.delivery + item.pricing.delivery
+        }), { total: 0, base: 0, taxes: 0, delivery: 0 });
     };
 
-    // Recalculate total for cart (including delivery/platform fee if needed)
-    // For simplicity, reusing logic
-    const finalTotal = Math.round(isServiceCheckout ? currentPricing.total + 10 : currentPricing.total + currentPricing.delivery);
+    const currentPricing = bulkOrder 
+        ? {
+            total: bulkOrder.quote.depositRequired,
+            base: bulkOrder.quote.depositRequired,
+            taxes: 0,
+            delivery: 0
+          }
+        : isServiceCheckout ? getServicePricing() : {
+            total: getTotalPrice(),
+            base: getTotalPrice(),
+            taxes: 0,
+            delivery: getTotalPrice() > 999 ? 0 : 49
+        };
 
     const handlePayment = async () => {
         setIsProcessing(true);
         try {
-            // 1. Create order payload
-            let payload;
-            if (isServiceCheckout) {
-                payload = {
-                    tailorId: serviceDetails.tailorId || serviceDetails.tailor,
-                    items: [{
-                        service: serviceDetails.id || serviceDetails._id,
-                        fabricSource: configuration.fabricSource,
-                        deliveryType: configuration.deliveryType,
-                        selectedFabric: configuration.selectedFabric?._id || configuration.selectedFabric?.id,
-                        quantity: 1,
-                        price: pricing.base,
-                        measurements: configuration.measurements,
-                        isTailorAtHome: configuration.isTailorAtHome,
-                        addons: configuration.addons
-                    }],
-                    totalAmount: finalTotal,
-                    deliveryAddress: {
-                        street: selectedAddress.street,
-                        city: selectedAddress.city,
-                        state: selectedAddress.state || '',
-                        zipCode: selectedAddress.zipCode
-                    }
-                };
-            } else {
-                const firstItemTailor = cartItems[0]?.tailor; 
-                payload = {
-                    tailorId: firstItemTailor,
-                    items: cartItems.map(item => ({
-                        product: item._id,
-                        quantity: item.quantity,
-                        price: item.price
-                    })),
-                    totalAmount: finalTotal,
-                    deliveryAddress: {
-                        street: selectedAddress.street,
-                        city: selectedAddress.city,
-                        state: selectedAddress.state || '',
-                        zipCode: selectedAddress.zipCode
-                    }
-                };
+            let order;
+            
+            if (!bulkOrderId) {
+                let payload;
+                if (isServiceCheckout) {
+                    const firstItemTailor = serviceItems[0]?.serviceDetails?.tailorId || serviceItems[0]?.serviceDetails?.tailor;
+                    payload = {
+                        tailorId: firstItemTailor,
+                        items: serviceItems.map(item => ({
+                            service: item.serviceDetails.id || item.serviceDetails._id,
+                            fabricSource: item.configuration.fabricSource,
+                            deliveryType: item.configuration.deliveryType,
+                            selectedFabric: item.configuration.selectedFabric?._id || item.configuration.selectedFabric?.id,
+                            quantity: 1,
+                            price: item.pricing.base,
+                            measurements: item.configuration.measurements,
+                            isTailorAtHome: item.configuration.isTailorAtHome,
+                            addons: item.configuration.addons
+                        })),
+                        totalAmount: finalTotal,
+                        deliveryAddress: {
+                            street: selectedAddress.street,
+                            city: selectedAddress.city,
+                            state: selectedAddress.state || '',
+                            zipCode: selectedAddress.zipCode
+                        }
+                    };
+                } else {
+                    const firstItemTailor = cartItems[0]?.tailor; 
+                    payload = {
+                        tailorId: firstItemTailor,
+                        items: cartItems.map(item => ({
+                            product: item._id,
+                            quantity: item.quantity,
+                            price: item.price
+                        })),
+                        totalAmount: finalTotal,
+                        deliveryAddress: {
+                            street: selectedAddress.street,
+                            city: selectedAddress.city,
+                            state: selectedAddress.state || '',
+                            zipCode: selectedAddress.zipCode
+                        }
+                    };
+                }
+
+                const orderRes = await api.post('/orders', payload);
+                if (!orderRes.data.success) throw new Error('Order creation failed');
+                order = orderRes.data.data;
             }
 
-            // 2. Create Order in Backend (Pending status)
-            const orderRes = await api.post('/orders', payload);
-            if (!orderRes.data.success) throw new Error('Order creation failed');
-            const order = orderRes.data.data;
-
-            // 3. Create Razorpay Order
             const rzpOrderRes = await api.post('/orders/razorpay/create', { amount: finalTotal });
             if (!rzpOrderRes.data.success) throw new Error('Razorpay order creation failed');
             const rzpOrder = rzpOrderRes.data.data;
 
-            // 4. Open Razorpay Modal
             const options = {
                 key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_8sYbzHWidwe5Zw',
                 amount: rzpOrder.amount,
                 currency: rzpOrder.currency,
                 name: "SilaiWala",
-                description: "Order Payment",
+                description: bulkOrderId ? "Bulk Order Deposit" : "Order Payment",
                 order_id: rzpOrder.id,
                 handler: async function (response) {
                     try {
-                        // 5. Verify Payment in Backend
-                        const verifyRes = await api.post('/orders/razorpay/verify', {
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature: response.razorpay_signature,
-                            orderObjectId: order._id
-                        });
-
-                        if (verifyRes.data.success) {
-                            if (isServiceCheckout) clearCheckout();
-                            else clearCart();
-                            
-                            navigate('/checkout/success', { 
-                                state: { orderId: order._id, orderNumber: order.orderId } 
+                        if (bulkOrderId) {
+                            const verifyRes = await api.put(`/bulk-orders/${bulkOrderId}`, {
+                                paymentStatus: 'deposit-paid',
+                                status: 'accepted',
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                message: "Security deposit paid via Razorpay. Order accepted."
                             });
+
+                            if (verifyRes.data.success) {
+                                navigate('/checkout/success', { 
+                                    state: { orderId: bulkOrderId, orderNumber: bulkOrder.orderId, isBulk: true } 
+                                });
+                            }
+                        } else {
+                            const verifyRes = await api.post('/orders/razorpay/verify', {
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                orderObjectId: order._id
+                            });
+
+                            if (verifyRes.data.success) {
+                                if (isServiceCheckout) clearCheckout();
+                                else clearCart();
+                                
+                                navigate('/checkout/success', { 
+                                    state: { orderId: order._id, orderNumber: order.orderId } 
+                                });
+                            }
                         }
                     } catch (err) {
                         console.error('Verification failed:', err);
@@ -145,9 +166,7 @@ const CheckoutSummary = () => {
                     name: selectedAddress?.receiverName || "",
                     contact: selectedAddress?.phone || ""
                 },
-                theme: {
-                    color: "#FF5C8A"
-                }
+                theme: { color: "#FF5C8A" }
             };
 
             const rzp = new window.Razorpay(options);
@@ -181,11 +200,43 @@ const CheckoutSummary = () => {
 
                 <div className="flex-1 space-y-4">
                     {/* 2. Review Section */}
-                    {isServiceCheckout ? (
-                        <ServiceReviewCard
-                            service={serviceDetails}
-                            config={configuration}
-                        />
+                    {bulkOrderId && bulkOrder ? (
+                         <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm mb-4 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-3">
+                                <span className="px-3 py-1 bg-pink-50 text-[#FF5C8A] rounded-full text-[10px] font-black uppercase tracking-widest border border-pink-100">Bulk Order Deposit</span>
+                            </div>
+                            <h3 className="text-sm font-black text-gray-900 mb-4 uppercase tracking-widest italic">Inquiry Review</h3>
+                            <div className="flex gap-5">
+                                <div className="w-20 h-24 bg-gray-50 rounded-2xl flex items-center justify-center border border-gray-100 shrink-0">
+                                    <Package size={24} className="text-gray-300" />
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="text-lg font-black text-gray-900 leading-tight">{bulkOrder.serviceType}</h4>
+                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">{bulkOrder.organizationName || 'Bulk Inquiry'}</p>
+                                    <div className="mt-4 flex items-center gap-6">
+                                        <div>
+                                            <p className="text-[8px] text-gray-400 font-black uppercase tracking-widest mb-0.5">Quantity</p>
+                                            <p className="text-xs font-black text-gray-900">{bulkOrder.estimatedQuantity} Units</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[8px] text-gray-400 font-black uppercase tracking-widest mb-0.5">Total Quote</p>
+                                            <p className="text-xs font-black text-gray-900">₹{bulkOrder.quote.totalAmount.toLocaleString()}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                         </div>
+                    ) : isServiceCheckout ? (
+                        <div className="space-y-4">
+                            <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Service Bundle ({serviceItems.length} items)</h3>
+                            {serviceItems.map((item, idx) => (
+                                <ServiceReviewCard
+                                    key={idx}
+                                    service={item.serviceDetails}
+                                    config={item.configuration}
+                                />
+                            ))}
+                        </div>
                     ) : (
                         <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm mb-4">
                             <h3 className="text-sm font-bold text-gray-900 mb-3">Cart Items ({cartItems.length})</h3>

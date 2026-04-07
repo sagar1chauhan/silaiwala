@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-const silaiwalaLogo = '/logo.png';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import RoleSelector from '../components/RoleSelector';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
@@ -48,105 +48,125 @@ const Signup = () => {
     };
 
     return (
-        <div className="w-full">
-            <div className="flex flex-col items-center mb-8">
-                <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-xl border border-slate-50 mb-6 transition-transform hover:rotate-3">
-                    <img src={silaiwalaLogo} alt="Silaiwala" className="w-14 h-14 object-contain" />
-                </div>
-                <h2 className="text-3xl font-black text-gray-900 tracking-tight text-center">Create Account</h2>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-2">
-                    {step === 1 ? 'Join us as a Customer, Tailor, or Partner' : `Sign up as a ${selectedRole}`}
+        <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="w-full"
+        >
+            <div className="text-center mb-4 sm:mb-5">
+                <h2 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">
+                    {step === 1 ? 'Create Account' : 'Almost There!'}
+                </h2>
+                <p className="text-[9px] sm:text-[10px] font-bold text-gray-600 uppercase tracking-[0.2em] mt-1 px-4">
+                    {step === 1 ? 'Join us as a Customer, Tailor, or Partner' : `Complete your ${selectedRole} profile`}
                 </p>
             </div>
 
             {error && (
-                <div className="mb-6 p-4 text-sm text-red-600 bg-red-50 rounded-2xl border border-red-100 animate-in fade-in slide-in-from-top-2">
+                <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-4 p-2.5 text-[10px] font-bold uppercase tracking-wider text-pink-600 bg-pink-50 rounded-xl border border-pink-100 flex items-center justify-center gap-2"
+                >
+                    <span className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-pulse" />
                     {error}
-                </div>
+                </motion.div>
             )}
 
-            {step === 1 ? (
-                <div>
-                    <RoleSelector selectedRole={selectedRole} onSelect={handleRoleSelect} />
-                    <div className="text-center mt-4">
-                        <p className="text-sm text-gray-500">
-                            Already have an account? <Link to="/login" className="text-[#FF5C8A] font-semibold hover:underline">Sign In</Link>
-                        </p>
-                    </div>
-                </div>
-            ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">Full Name</label>
-                        <Input
-                            name="name"
-                            placeholder="John Doe"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
+            <AnimatePresence mode='wait'>
+                {step === 1 ? (
+                    <motion.div
+                        key="step1"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <RoleSelector selectedRole={selectedRole} onSelect={handleRoleSelect} />
+                    </motion.div>
+                ) : (
+                    <motion.form
+                        key="step2"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.3 }}
+                        onSubmit={handleSubmit}
+                        className="space-y-4"
+                    >
+                        <div className="space-y-3">
+                            <div className="bg-[#F8FAFC] rounded-2xl p-1 border border-slate-100 shadow-inner">
+                                <Input
+                                    name="name"
+                                    placeholder="Full Name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    required
+                                    className="bg-transparent border-none focus:ring-0 font-bold placeholder:text-gray-500 placeholder:font-medium"
+                                />
+                            </div>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">Email</label>
-                        <Input
-                            name="email"
-                            type="email"
-                            placeholder="john@example.com"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
+                            <div className="bg-[#F8FAFC] rounded-2xl p-1 border border-slate-100 shadow-inner">
+                                <Input
+                                    name="email"
+                                    type="email"
+                                    placeholder="Email Address"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    required
+                                    className="bg-transparent border-none focus:ring-0 font-bold placeholder:text-gray-500 placeholder:font-medium"
+                                />
+                            </div>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">Phone Number</label>
-                        <Input
-                            name="phoneNumber"
-                            placeholder="9876543210"
-                            value={formData.phoneNumber}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
+                            <div className="bg-[#F8FAFC] rounded-2xl p-1 border border-slate-100 shadow-inner">
+                                <Input
+                                    name="phoneNumber"
+                                    placeholder="Phone Number"
+                                    value={formData.phoneNumber}
+                                    onChange={handleChange}
+                                    required
+                                    className="bg-transparent border-none focus:ring-0 font-bold placeholder:text-slate-300 placeholder:font-medium"
+                                />
+                            </div>
 
-
-
-                    {selectedRole === 'customer' && (
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                                Referral Code <span className="text-[10px] bg-pink-100 text-[#FF5C8A] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Optional</span>
-                            </label>
-                            <Input
-                                name="referralCode"
-                                placeholder="TRXXXXXX"
-                                value={formData.referralCode}
-                                onChange={handleChange}
-                                className="border-pink-100 focus:border-[#FF5C8A] uppercase placeholder:normal-case font-semibold tracking-wider"
-                            />
+                            {selectedRole === 'customer' && (
+                                <div className="bg-[#FFF9FB] rounded-2xl p-1 border border-pink-50 shadow-inner">
+                                    <Input
+                                        name="referralCode"
+                                        placeholder="Referral Code (Optional)"
+                                        value={formData.referralCode}
+                                        onChange={handleChange}
+                                        className="bg-transparent border-none focus:ring-0 font-bold text-[#FF5C8A] placeholder:text-pink-400 placeholder:font-medium uppercase tracking-wider"
+                                    />
+                                </div>
+                            )}
                         </div>
-                    )}
 
-                    <div className="flex gap-3 pt-2">
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            className="flex-1"
-                            onClick={() => setStep(1)}
-                        >
-                            Back
-                        </Button>
-                        <Button
-                            type="submit"
-                            className="flex-1 bg-[#FF5C8A] hover:bg-[#cc496e] text-white rounded-full"
-                            disabled={isLoading}
-                        >
-                            {isLoading ? 'Creating...' : 'Create Account'}
-                        </Button>
-                    </div>
-                </form>
-            )}
-        </div>
+                        <div className="flex gap-3 pt-2">
+                            <button
+                                type="button"
+                                className="flex-1 h-11 sm:h-12 rounded-full font-black text-xs tracking-widest uppercase text-gray-600 hover:text-gray-900 transition-colors"
+                                onClick={() => setStep(1)}
+                            >
+                                ← Back
+                            </button>
+                            <Button
+                                type="submit"
+                                className="flex-[2] h-11 sm:h-12 rounded-full bg-[#FF5C8A] hover:bg-[#E04D79] text-white font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg shadow-[#FF5C8A]/10"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? 'Creating...' : (
+                                    <span className="flex items-center justify-center gap-2">
+                                        JOIN NOW <span className="text-lg">›</span>
+                                    </span>
+                                )}
+                            </Button>
+                        </div>
+                    </motion.form>
+                )}
+            </AnimatePresence>
+        </motion.div>
     );
 };
 

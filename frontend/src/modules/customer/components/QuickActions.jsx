@@ -19,7 +19,7 @@ const actions = [
     },
     {
         label: 'My Orders',
-        icon: <img src="https://cdn-icons-png.flaticon.com/512/4129/4129437.png" alt="Orders" className="w-8 h-8 sm:w-10 sm:h-10 object-contain drop-shadow-xl" />,
+        icon: <ClipboardList size={28} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]" />,
         color: 'bg-gradient-to-br from-[#F0F7FF] to-[#DCEBFE]', // Premium Ice Blue
         path: '/orders'
     },
@@ -31,7 +31,7 @@ const actions = [
     },
     {
         label: 'Style Add-ons',
-        icon: <img src="https://cdn-icons-png.flaticon.com/512/4041/4041302.png" alt="Addons" className="w-8 h-8 sm:w-10 sm:h-10 object-contain drop-shadow-xl" />,
+        icon: <Sparkles size={28} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]" />,
         color: 'bg-gradient-to-br from-[#FDF4FF] to-[#F5D0FE]', // Royal Purple
         path: '/embellishments'
     },
@@ -40,6 +40,12 @@ const actions = [
         icon: <img src="https://cdn-icons-png.flaticon.com/512/4333/4333609.png" alt="Bridal" className="w-8 h-8 sm:w-10 sm:h-10 object-contain drop-shadow-xl" />,
         color: 'bg-gradient-to-br from-[#FFF0F5] to-[#FDD4E4]', // Elegant Blush Pink
         action: 'modal_bridal'
+    },
+    {
+        label: 'Bulk Order',
+        icon: <Scissors size={28} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]" />, // Using Scissors as a proxy for bulk tailoring
+        color: 'bg-gradient-to-br from-[#E0F7FA] to-[#80DEEA]', // Refreshing Teal/Cyan
+        path: '/bulk-order'
     }
 ];
 
@@ -85,12 +91,12 @@ const QuickActions = () => {
     const displayedActions = isExpanded ? actions : actions.slice(0, 4);
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
             {/* Header with Title and Toggle */}
-            <div className="flex justify-between items-center mb-5 sm:mb-8">
+            <div className="flex justify-between items-center mb-4 sm:mb-6">
                 <div>
-                    <h2 className="text-xl font-black text-gray-900 tracking-tight">Quick Actions</h2>
-                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Order fast, track easy</p>
+                    <h2 className="text-lg sm:text-xl font-black text-gray-900 tracking-tight">Quick Actions</h2>
+                    <p className="text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">Order fast, track easy</p>
                 </div>
                 {actions.length > 4 && (
                     <button 
@@ -106,29 +112,27 @@ const QuickActions = () => {
                 <AnimatePresence mode="popLayout">
                     {actions.map((action, index) => {
                         // On mobile, hide items > index 3 if not expanded
+                        // Responsive visibility: items > 3 are hidden on mobile unless expanded, 
+                        // but always visible on small screens (sm) and above (laptops/tablets)
                         const isHiddenOnMobile = !isExpanded && index > 3;
                         
                         return (
                             <motion.div
                                 key={index}
                                 layout
-                                initial={{ opacity: 1, scale: 1 }}
-                                animate={{ 
-                                    opacity: isHiddenOnMobile ? 0 : 1,
-                                    scale: isHiddenOnMobile ? 0.9 : 1,
-                                    display: isHiddenOnMobile ? 'none' : 'flex'
-                                }}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.9 }}
-                                className={`flex-col items-center gap-2.5 cursor-pointer group sm:flex`}
+                                className={`flex-col items-center gap-2 cursor-pointer group ${isHiddenOnMobile ? 'hidden sm:flex' : 'flex'}`}
                                 whileTap={{ scale: 0.92 }}
                                 onClick={() => handleActionClick(action)}
                             >
-                                <div className={`w-full aspect-square rounded-[1.5rem] shadow-sm ${action.color} flex items-center justify-center border border-white/80 backdrop-blur-md transition-all duration-300 group-hover:shadow-md group-hover:-translate-y-1`}>
-                                    <div className="p-3 bg-white/40 rounded-xl shadow-inner border border-white/20 group-hover:bg-white/60 transition-colors">
+                                <div className={`w-[70%] sm:w-full aspect-square rounded-full shadow-lg bg-zinc-950 flex items-center justify-center border-2 border-[#FF5C8A]/30 backdrop-blur-md transition-all duration-300 group-hover:border-[#FF5C8A] group-hover:shadow-[#FF5C8A]/20 group-hover:-translate-y-1 mx-auto`}>
+                                    <div className="p-1.5 sm:p-3 transition-colors">
                                         {action.icon}
                                     </div>
                                 </div>
-                                <span className="text-[10px] font-black text-center text-gray-500 uppercase tracking-widest leading-none truncate w-full px-1">
+                                <span className="text-[9px] sm:text-[10px] font-black text-center text-gray-500 uppercase tracking-widest leading-none truncate w-full px-1">
                                     {action.label}
                                 </span>
                             </motion.div>

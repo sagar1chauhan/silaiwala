@@ -38,6 +38,11 @@ const settingsSchema = new mongoose.Schema(
       androidVersion: { type: String, default: "1.0.0" },
       iosVersion: { type: String, default: "1.0.0" },
       forceUpdate: { type: Boolean, default: false },
+    },
+    visitFee: {
+      baseFee: { type: Number, default: 150 },
+      perKmFee: { type: Number, default: 20 },
+      freeKm: { type: Number, default: 3 },
     }
   },
   {

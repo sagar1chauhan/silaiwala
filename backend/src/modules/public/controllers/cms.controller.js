@@ -1,7 +1,17 @@
 const Banner = require("../../../models/Banner");
 const CMSContent = require("../../../models/CMSContent");
+const Settings = require("../../../models/Settings");
 
 // --- PUBLIC CMS CONTROLLERS ---
+
+exports.getSettings = async (req, res) => {
+  try {
+    const settings = await Settings.getSettings();
+    res.status(200).json({ success: true, data: settings });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 exports.getActiveBanners = async (req, res) => {
   try {

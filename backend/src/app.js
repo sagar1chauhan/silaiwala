@@ -82,6 +82,7 @@ app.use("/api/v1/deliveries", require("./modules/deliveries/routes/delivery.rout
 app.use("/api/v1/wallet", require("./modules/wallet/wallet.routes"));
 app.use("/api/v1/admin", require("./modules/admin/routes/admin.routes"));
 app.use("/api/v1/custom-bookings", require("./modules/bookings/routes/booking.routes"));
+app.use("/api/v1/bulk-orders", require("./modules/bulk-orders/routes/bulkOrder.routes"));
 app.use("/api/v1/style-addons", require("./modules/styleAddons/routes/styleAddon.routes"));
 app.use("/api/v1/cms", require("./modules/public/routes/cms.routes"));
 app.use("/api/v1/upload", require("./routes/upload.routes"));

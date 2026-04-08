@@ -1,134 +1,191 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-const silaiwalaLogo = '/logo.png';
+import React, { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import useAuthStore from '../../../store/authStore';
-import { Navigation2, ArrowLeft } from 'lucide-react';
 
 const DeliverySignup = () => {
     const navigate = useNavigate();
     const signup = useAuthStore((state) => state.signup);
     const isLoading = useAuthStore((state) => state.isLoading);
 
+    const [currentStep, setCurrentStep] = useState(1);
     const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phoneNumber: '',
-        vehicleNumber: ''
+        name: '', email: '', phone: '', emergencyContact: '', aadharNumber: '',
+        vehicleType: 'bike', vehicleNumber: '', address: '',
+        drivingLicense: null, drivingLicenseBack: null,
+        aadharCard: null, aadharCardBack: null,
     });
-
     const [error, setError] = useState('');
+    const fileInputRefs = useRef({});
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value, files } = e.target;
+        if (['drivingLicense', 'drivingLicenseBack', 'aadharCard', 'aadharCardBack'].includes(name)) {
+            setFormData((prev) => ({ ...prev, [name]: files?.[0] || null }));
+            return;
+        }
+        setFormData({ ...formData, [name]: value });
     };
+
+    const validateStep = (step) => {
+        setError('');
+        if (step === 1) {
+            if (!formData.name || !formData.email || !formData.phone) {
+                setError('Name, email, and phone are required');
+                return false;
+            }
+        }
+        if (step === 2) {
+            if (!formData.drivingLicense || !formData.aadharCard) {
+                setError('Primary documents are required');
+                return false;
+            }
+        }
+        return true;
+    };
+
+    const nextStep = () => {
+        if (validateStep(currentStep)) setCurrentStep((s) => Math.min(s + 1, 3));
+    };
+    
+    const prevStep = () => setCurrentStep((s) => Math.max(s - 1, 1));
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        if (!validateStep(3)) return;
+
         try {
-            await signup({ ...formData, role: 'delivery' });
+            // Note: In real setup, you may need a multipart/form-data upload system for files.
+            // For now, passing formData fields to signup function.
+            await signup({ 
+                ...formData, 
+                phoneNumber: formData.phone, // alias for backend compatibility
+                role: 'delivery' 
+            });
             navigate('/delivery');
         } catch (err) {
             setError(err.message || 'Signup failed');
         }
     };
 
-    return (
-        <div className="w-full">
-            <div className="relative flex flex-col items-center mb-6">
-                <button 
-                    onClick={() => navigate('/delivery/login')} 
-                    className="absolute left-0 top-0 p-2.5 bg-slate-50 text-slate-400 rounded-xl hover:text-slate-900 transition-all border border-slate-100"
-                >
-                    <ArrowLeft size={16} />
-                </button>
-                
-                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-xl border border-slate-50 mb-4 transition-transform hover:rotate-3">
-                    <img src={silaiwalaLogo} alt="Silaiwala" className="w-10 h-10 object-contain" />
-                </div>
-                
-                <h2 className="text-2xl font-black text-gray-900 tracking-tight text-center leading-none">Join the Fleet</h2>
-                <div className="w-10 h-1 bg-[#FF5C8A] rounded-full mt-2 opacity-20"></div>
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.1em] mt-3 text-center">Delivery Partner Program</p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-3">
-                {error && (
-                    <div className="p-3 text-sm text-red-600 bg-red-50 rounded-xl border border-red-100 font-bold">
-                        {error}
-                    </div>
-                )}
-
-                <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700 uppercase tracking-wider pl-1">Full Name</label>
-                    <Input
-                        name="name"
-                        placeholder="Enter your name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                        className="rounded-2xl border-slate-200 focus:ring-pink-500 focus:border-pink-500"
-                    />
-                </div>
-
-                <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700 uppercase tracking-wider pl-1">Email Address</label>
-                    <Input
-                        name="email"
-                        type="email"
-                        placeholder="rider@silaiwala.com"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        className="rounded-2xl border-slate-200 focus:ring-pink-500 focus:border-pink-500"
-                    />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700 uppercase tracking-wider pl-1">Phone</label>
-                        <Input
-                            name="phoneNumber"
-                            placeholder="Mobile No."
-                            value={formData.phoneNumber}
-                            onChange={handleChange}
-                            required
-                            className="rounded-2xl border-slate-200 focus:ring-pink-500 focus:border-pink-500"
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700 uppercase tracking-wider pl-1">Vehicle No.</label>
-                        <Input
-                            name="vehicleNumber"
-                            placeholder="DL 1CB 1234"
-                            value={formData.vehicleNumber}
-                            onChange={handleChange}
-                            required
-                            className="rounded-2xl border-slate-200 focus:ring-pink-500 focus:border-pink-500"
-                        />
-                    </div>
-                </div>
-
-                <Button
-                    type="submit"
-                    className="w-full bg-[#FF5C8A] hover:bg-[#cc496e] text-white py-3.5 rounded-2xl font-semibold text-[11px] uppercase tracking-[0.15em] shadow-lg shadow-pink-900/10 active:scale-95 transition-all mt-4"
-                    disabled={isLoading}
-                >
-                    {isLoading ? 'Processing...' : 'Create Driver Profile'}
-                </Button>
-            </form>
-
-            <div className="mt-8 text-center">
-                <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">
-                    Already a partner?{' '}
-                </p>
-                <Link to="/delivery/login" className="inline-block mt-3 text-pink-800 font-bold text-sm uppercase tracking-wider hover:underline">
-                    Sign In Here
-                </Link>
+    const DocUpload = ({ name, label }) => (
+        <div 
+            onClick={() => fileInputRefs.current[name]?.click()}
+            className="flex-1 bg-[#F8FAFC] rounded-xl border border-dashed border-slate-300 p-3 text-center cursor-pointer hover:border-pink-300 transition-colors"
+        >
+            <input
+                ref={(el) => (fileInputRefs.current[name] = el)}
+                type="file" name={name} accept="image/*" onChange={handleChange} className="hidden"
+            />
+            <div className="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider">
+                {formData[name] ? <span className="text-emerald-500">Selected</span> : label}
             </div>
         </div>
+    );
+
+    return (
+        <motion.div 
+            initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}
+            className="w-full"
+        >
+            <div className="text-center mb-4 sm:mb-5">
+                <h2 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">Join the Fleet</h2>
+                <div className="flex justify-center items-center gap-2 mt-2">
+                    {[1, 2, 3].map(step => (
+                        <div key={step} className={`h-1.5 rounded-full transition-all duration-300 ${currentStep >= step ? 'w-6 bg-[#FF5C8A]' : 'w-2 bg-slate-200'}`} />
+                    ))}
+                </div>
+            </div>
+
+            {error && (
+                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-4 p-2 text-[10px] font-bold uppercase tracking-wider text-pink-600 bg-pink-50 rounded-xl border border-pink-100 flex justify-center text-center">
+                    {error}
+                </motion.div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <AnimatePresence mode="wait">
+                    {currentStep === 1 && (
+                        <motion.div key="step1" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} className="space-y-3">
+                            <div className="bg-[#F8FAFC] rounded-2xl p-1 border border-slate-100 shadow-inner">
+                                <Input name="name" placeholder="Full Name" value={formData.name} onChange={handleChange} className="bg-transparent border-none focus:ring-0 font-bold placeholder:text-gray-500 placeholder:font-medium" />
+                            </div>
+                            <div className="bg-[#F8FAFC] rounded-2xl p-1 border border-slate-100 shadow-inner">
+                                <Input name="email" type="email" placeholder="Email Address" value={formData.email} onChange={handleChange} className="bg-transparent border-none focus:ring-0 font-bold placeholder:text-gray-500 placeholder:font-medium" />
+                            </div>
+                            <div className="bg-[#F8FAFC] rounded-2xl p-1 border border-slate-100 shadow-inner">
+                                <Input name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleChange} className="bg-transparent border-none focus:ring-0 font-bold placeholder:text-gray-500 placeholder:font-medium" />
+                            </div>
+                            <div className="bg-[#F8FAFC] rounded-2xl p-1 border border-slate-100 shadow-inner">
+                                <Input name="emergencyContact" placeholder="Emergency Contact" value={formData.emergencyContact} onChange={handleChange} className="bg-transparent border-none focus:ring-0 font-bold placeholder:text-gray-500 placeholder:font-medium" />
+                            </div>
+                            <div className="bg-[#F8FAFC] rounded-2xl p-1 border border-slate-100 shadow-inner">
+                                <Input name="aadharNumber" placeholder="Aadhaar Number" value={formData.aadharNumber} onChange={handleChange} className="bg-transparent border-none focus:ring-0 font-bold placeholder:text-gray-500 placeholder:font-medium" />
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {currentStep === 2 && (
+                        <motion.div key="step2" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} className="space-y-3">
+                            <div>
+                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1 ml-1">Driving License</p>
+                                <div className="flex gap-2">
+                                    <DocUpload name="drivingLicense" label="Upload Front" />
+                                    <DocUpload name="drivingLicenseBack" label="Upload Back" />
+                                </div>
+                            </div>
+                            <div>
+                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1 ml-1">Aadhaar Card</p>
+                                <div className="flex gap-2">
+                                    <DocUpload name="aadharCard" label="Upload Front" />
+                                    <DocUpload name="aadharCardBack" label="Upload Back" />
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {currentStep === 3 && (
+                        <motion.div key="step3" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} className="space-y-3">
+                            <div className="bg-[#F8FAFC] rounded-2xl p-2 border border-slate-100 shadow-inner">
+                                <select name="vehicleType" value={formData.vehicleType} onChange={handleChange} className="w-full bg-transparent border-none focus:ring-0 font-bold text-slate-700 outline-none px-2">
+                                    <option value="bike">Bike</option>
+                                    <option value="scooter">Scooter</option>
+                                    <option value="car">Car</option>
+                                    <option value="cycle">Cycle</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div className="bg-[#FFF9FB] rounded-2xl p-1 border border-pink-50 shadow-inner">
+                                <Input name="vehicleNumber" placeholder="Vehicle No. (e.g., DL 1CB 1234)" value={formData.vehicleNumber} onChange={handleChange} className="bg-transparent border-none focus:ring-0 font-bold text-[#FF5C8A] placeholder:text-pink-400 placeholder:font-medium tracking-wider" />
+                            </div>
+                            <div className="bg-[#F8FAFC] rounded-2xl p-1 border border-slate-100 shadow-inner">
+                                <Input name="address" placeholder="Full Address" value={formData.address} onChange={handleChange} className="bg-transparent border-none focus:ring-0 font-bold placeholder:text-gray-500 placeholder:font-medium" />
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                <div className="pt-4 flex gap-3">
+                    {currentStep > 1 && (
+                        <Button type="button" onClick={prevStep} className="flex-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-xs uppercase tracking-widest transition-all">
+                            Back
+                        </Button>
+                    )}
+                    {currentStep < 3 ? (
+                        <Button type="button" onClick={nextStep} className="flex-[2] rounded-full bg-[#FF5C8A] hover:bg-[#E04D79] text-white font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-[#FF5C8A]/20">
+                            Next Step
+                        </Button>
+                    ) : (
+                        <Button type="submit" disabled={isLoading} className="flex-[2] rounded-full bg-[#FF5C8A] hover:bg-[#E04D79] text-white font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-[#FF5C8A]/20">
+                            {isLoading ? 'Creating...' : 'Submit Profile !'}
+                        </Button>
+                    )}
+                </div>
+            </form>
+        </motion.div>
     );
 };
 

@@ -364,6 +364,28 @@ exports.updateDeliveryStatus = asyncHandler(async (req, res, next) => {
 
   await order.save();
 
+  // --- Socket Emissions ---
+  try {
+    const { getIO } = require("../../../config/socket");
+    const io = getIO();
+    if (io) {
+        // 1. Notify Customer
+        io.to(`user_${order.customer}`).emit('order_status_updated', {
+            orderId: order.orderId,
+            status: status
+        });
+
+        // 2. Notify Tailor
+        io.to(`user_${order.tailor}`).emit('order_status_updated', {
+            orderId: order.orderId,
+            status: status
+        });
+    }
+  } catch (err) {
+    console.error("Socket emission failed in updateDeliveryStatus:", err.message);
+  }
+  // ------------------------
+
   res.status(200).json({
     success: true,
     data: order,
@@ -467,6 +489,9 @@ exports.acceptOrder = asyncHandler(async (req, res, next) => {
   const io = getIO();
   if (io) {
     io.to("delivery_partners").emit("task_claimed", { orderId: order._id });
+    
+    // Also join the delivery partner to the order room for live tracking if needed later
+    // socket.join(`order_${order._id}`); // Note: context of 'socket' not available in controller usually
   }
 
   res.status(200).json({

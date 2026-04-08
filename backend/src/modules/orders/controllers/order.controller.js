@@ -90,7 +90,6 @@ exports.verifyPayment = asyncHandler(async (req, res, next) => {
         data: { orderId: order._id, targetUrl: "/partner/orders" }
     });
 
-    // Notify Customer about successful payment and order placement
     await sendNotification({
         recipient: order.customer,
         type: "PAYMENT_SUCCESS",
@@ -98,6 +97,23 @@ exports.verifyPayment = asyncHandler(async (req, res, next) => {
         message: `Your payment for order ${order.orderId} was successful. Our tailor will start working on it soon.`,
         data: { orderId: order._id, targetUrl: "/profile/orders" }
     });
+
+    // --- Socket Emission for Tailor ---
+    try {
+        const io = getIO();
+        if (io) {
+            io.to(`user_${order.tailor}`).emit('receive_new_order', {
+                orderId: order.orderId,
+                _id: order._id,
+                totalAmount: order.totalAmount,
+                status: order.status
+            });
+            console.log(`📡 Socket: Notified Tailor ${order.tailor} of new paid order`);
+        }
+    } catch (err) {
+        console.error("Socket emission failed in verifyPayment:", err.message);
+    }
+    // ---------------------------------
 
     // --- Referral Flow ---
     // Check if this is the customer's first order
@@ -248,6 +264,22 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
             : "Order placed successfully" 
     }],
   });
+  // 7. Socket Emission for Tailor (if order is created - e.g. COD or during development)
+  try {
+    const io = getIO();
+    if (io) {
+        io.to(`user_${targetTailorUserId}`).emit('receive_new_order', {
+            orderId: order.orderId,
+            _id: order._id,
+            totalAmount: order.totalAmount,
+            status: order.status
+        });
+        console.log(`📡 Socket: Notified Tailor ${targetTailorUserId} of new order creation`);
+    }
+  } catch (err) {
+    console.error("Socket emission failed in createOrder:", err.message);
+  }
+
   res.status(201).json({
     success: true,
     data: order,

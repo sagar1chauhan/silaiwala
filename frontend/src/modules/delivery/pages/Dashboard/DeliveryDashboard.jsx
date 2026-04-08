@@ -244,35 +244,6 @@ const DeliveryDashboard = () => {
                 </div>
             </div>
 
-            {/* Premium Status Toggle */}
-            <div className="bg-white/50 backdrop-blur-md p-1.5 rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden h-[72px]">
-                <div className="flex items-center h-full relative z-10">
-                    <button 
-                        onClick={() => !isOnline && navigate('/delivery/profile')}
-                        className={`flex-1 h-full rounded-[1.8rem] flex items-center justify-center gap-2 transition-all duration-500 ${isOnline ? 'text-primary-dark font-black' : 'text-slate-400 font-bold'}`}
-                    >
-                        <span className="text-[11px] uppercase tracking-[0.2em] ml-2">Online</span>
-                    </button>
-                    <button 
-                        onClick={() => isOnline && navigate('/delivery/profile')}
-                        className={`flex-1 h-full rounded-[1.8rem] flex items-center justify-center gap-2 transition-all duration-500 ${!isOnline ? 'text-white font-black' : 'text-slate-400 font-bold'}`}
-                    >
-                        <span className="text-[11px] uppercase tracking-[0.2em] mr-2">Offline</span>
-                        {!isOnline && <CheckCircle2 size={18} className="text-white" />}
-                    </button>
-                </div>
-                
-                {/* Sliding Background Indicator */}
-                <motion.div 
-                    animate={{ x: isOnline ? 0 : '100%' }}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    className="absolute inset-y-1.5 left-1.5 w-[calc(50%-6px)] rounded-[1.8rem] z-0 shadow-lg"
-                    style={{ 
-                        background: isOnline ? 'rgba(255, 92, 138, 0.1)' : '#00D161',
-                        border: isOnline ? '1px solid rgba(255, 92, 138, 0.2)' : 'none'
-                    }}
-                />
-            </div>
 
             {/* Today's Stats Hero Card */}
             <div className="bg-white rounded-[2.5rem] p-7 shadow-2xl shadow-slate-200/50 border border-slate-50 relative overflow-hidden group">
@@ -281,7 +252,7 @@ const DeliveryDashboard = () => {
                 <div className="relative z-10">
                     <div className="flex justify-between items-center mb-4">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Today's Earnings</p>
-                        <button className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline">View Details</button>
+                        <button onClick={() => navigate('/delivery/wallet')} className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline">View Details</button>
                     </div>
 
                     <div className="flex items-end gap-2 mb-6">

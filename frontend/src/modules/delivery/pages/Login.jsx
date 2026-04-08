@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-const silaiwalaLogo = '/logo.png';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../../../components/ui/Button';
-import { Input } from '../../../components/ui/Input';
 import useAuthStore from '../../../store/authStore';
+
 const DeliveryLogin = () => {
     const navigate = useNavigate();
     const { otpLogin, sendOTP, isLoading } = useAuthStore();
@@ -50,92 +50,115 @@ const DeliveryLogin = () => {
     };
 
     return (
-        <div className="w-full">
-            <div className="flex flex-col items-center mb-10">
-                <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-xl border border-slate-50 mb-6 group-hover:rotate-3 transition-transform">
-                    <img src={silaiwalaLogo} alt="Silaiwala" className="w-14 h-14 object-contain" />
-                </div>
-                <h2 className="text-3xl font-bold text-slate-900 tracking-tight text-center">Partner Login</h2>
-                <div className="w-12 h-1 bg-pink-600 rounded-full mt-3 opacity-20"></div>
-                <p className="text-[11px] font-semibold text-pink-800 uppercase tracking-[0.15em] mt-4 opacity-70">Delivery Command Center</p>
+        <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="w-full"
+        >
+            <div className="text-center mb-4 sm:mb-5">
+                <h2 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">Welcome Back!</h2>
+                <p className="text-[9px] sm:text-[10px] font-bold text-gray-600 uppercase tracking-[0.2em] mt-1">
+                    {otpSent ? 'Enter code sent to mobile' : 'OTP will be sent for verification'}
+                </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                 {error && (
-                    <div className="p-3 text-sm text-red-600 bg-red-50 rounded-xl border border-red-100 font-bold">
+                    <motion.div 
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="p-3.5 text-[11px] font-bold uppercase tracking-wider text-pink-600 bg-pink-50 rounded-2xl border border-pink-100 flex items-center justify-center gap-2"
+                    >
+                        <span className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-pulse" />
                         {error}
-                    </div>
+                    </motion.div>
                 )}
 
-                <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700 uppercase tracking-wider pl-1">Mobile Number</label>
-                    <div className="flex gap-2">
-                        <Input
-                            type="tel"
-                            placeholder="9876543210"
-                            value={mobileNumber}
-                            onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ''))}
-                            maxLength={10}
-                            required
-                            disabled={otpSent || sendingOtp}
-                            className="rounded-2xl border-slate-200 focus:ring-pink-500 focus:border-pink-500 flex-1"
-                        />
-                        {!otpSent && (
-                            <Button 
-                                type="button" 
-                                onClick={handleSendOtp} 
-                                disabled={!mobileNumber || mobileNumber.length < 10 || sendingOtp}
-                                className="bg-[#FF5C8A] hover:bg-[#cc496e] text-white shrink-0 rounded-2xl px-6 font-bold"
-                            >
-                                {sendingOtp ? 'Sending...' : 'Send OTP'}
-                            </Button>
-                        )}
-                    </div>
-                </div>
-
-                {otpSent && (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
-                        <div className="space-y-2">
-                            <div className="flex justify-between items-center">
-                                <label className="text-sm font-semibold text-slate-700 uppercase tracking-wider pl-1">Enter OTP</label>
-                                <button 
-                                    type="button" 
-                                    onClick={() => setOtpSent(false)} 
-                                    className="text-[10px] text-[#FF5C8A] font-bold uppercase tracking-wider hover:underline"
-                                >
-                                    Change Number?
-                                </button>
-                            </div>
-                            <Input
-                                type="text"
-                                placeholder="123456"
-                                value={otp}
-                                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                                maxLength={6}
+                <div className="space-y-3">
+                    <div className="bg-[#F8FAFC] rounded-[1.2rem] sm:rounded-[1.5rem] p-1 border border-slate-50 shadow-inner group transition-all duration-300 focus-within:ring-2 focus-within:ring-pink-100 focus-within:border-pink-200">
+                        <div className="flex items-center px-3 sm:px-4 py-1.5 sm:py-2 gap-2 sm:gap-3">
+                            <span className="text-gray-800 font-bold text-sm">+91</span>
+                            <div className="w-px h-6 bg-slate-200" />
+                            <input
+                                type="tel"
+                                placeholder="Mobile Number"
+                                value={mobileNumber}
+                                onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ''))}
+                                maxLength={10}
                                 required
-                                className="rounded-2xl border-slate-200 focus:ring-pink-500 focus:border-pink-500 text-center tracking-widest font-bold text-lg"
+                                disabled={otpSent || sendingOtp}
+                                className="flex-1 bg-transparent border-none focus:ring-0 text-black font-bold placeholder:text-gray-500 placeholder:font-medium tracking-wide outline-none"
                             />
                         </div>
-                        <Button
-                            type="submit"
-                            className="w-full bg-[#FF5C8A] hover:bg-[#cc496e] text-white py-3.5 rounded-2xl font-semibold text-[11px] uppercase tracking-[0.15em] shadow-lg shadow-pink-900/10 active:scale-95 transition-all"
-                            disabled={isLoading}
-                        >
-                            {isLoading ? 'Verifying...' : 'Sign In To Dashboard'}
-                        </Button>
                     </div>
-                )}
-            </form>
 
-            <div className="mt-8 text-center">
-                <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">
-                    Want to join our fleet?{' '}
-                </p>
-                <Link to="/delivery/signup" className="inline-block mt-3 text-pink-800 font-bold text-sm uppercase tracking-wider hover:underline">
-                    Register As Rider
-                </Link>
-            </div>
-        </div>
+                    {!otpSent && (
+                        <Button
+                            type="button"
+                            onClick={handleSendOtp}
+                            disabled={!mobileNumber || mobileNumber.length < 10 || sendingOtp}
+                            className={`w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-md ${
+                                !mobileNumber || mobileNumber.length < 10 || sendingOtp
+                                    ? 'bg-gray-200 text-gray-500'
+                                    : 'bg-[#FF5C8A] hover:bg-[#E04D79] text-white shadow-[#FF5C8A]/20 hover:shadow-lg'
+                            }`}
+                        >
+                            {sendingOtp ? 'Sending...' : (
+                                <span className="flex items-center justify-center gap-2">
+                                    CONTINUE <span className="text-lg">›</span>
+                                </span>
+                            )}
+                        </Button>
+                    )}
+                </div>
+
+                <AnimatePresence>
+                    {otpSent && (
+                        <motion.div 
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="space-y-4 overflow-hidden pt-2"
+                        >
+                            <div className="bg-[#F8FAFC] rounded-[1.2rem] sm:rounded-[1.5rem] p-1 border border-slate-50 shadow-inner group transition-all duration-300 focus-within:ring-2 focus-within:ring-pink-100 focus-within:border-pink-200">
+                                <div className="flex items-center px-3 sm:px-4 py-1.5 sm:py-2 gap-2 sm:gap-3">
+                                    <input
+                                        type="text"
+                                        placeholder="Verification Code"
+                                        value={otp}
+                                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                                        maxLength={6}
+                                        required
+                                        className="flex-1 bg-transparent border-none focus:ring-0 text-black font-bold placeholder:text-gray-500 placeholder:font-medium tracking-[0.5em] text-center outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            <Button
+                                type="submit"
+                                className="w-full h-11 sm:h-12 rounded-full bg-[#FF5C8A] hover:bg-[#E04D79] text-white font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg shadow-[#FF5C8A]/20"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? 'Verifying...' : (
+                                    <span className="flex items-center justify-center gap-2">
+                                        VERIFY & SIGN IN <span className="text-lg">›</span>
+                                    </span>
+                                )}
+                            </Button>
+
+                            <button
+                                type="button"
+                                onClick={() => setOtpSent(false)}
+                                className="w-full text-[10px] font-bold text-pink-400 hover:text-pink-500 uppercase tracking-widest transition-colors flex items-center justify-center gap-1 mt-2"
+                            >
+                                ← Change mobile number
+                            </button>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </form>
+        </motion.div>
     );
 };
 

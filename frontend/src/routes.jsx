@@ -98,6 +98,11 @@ const AppRoutes = () => {
                 {/* Delivery Public Auth Routes */}
                 <Route path="/delivery/login" element={<DeliveryLogin />} />
                 <Route path="/delivery/signup" element={<DeliverySignup />} />
+
+                {/* Partner Public Auth Routes */}
+                <Route path="/partner/login" element={<TailorLogin />} />
+                <Route path="/partner/signup" element={<TailorRegistration />} />
+                <Route path="/partner/register" element={<Navigate to="/partner/signup" replace />} />
             </Route>
 
             {/* Customer Routes */}
@@ -140,8 +145,6 @@ const AppRoutes = () => {
             </Route>
 
             {/* Tailor/Partner Public Routes */}
-            <Route path="/partner/login" element={<TailorLogin />} />
-            <Route path="/partner/register" element={<TailorRegistration />} />
             <Route path="/partner/under-review" element={<UnderReview />} />
             <Route path="/partner/rejected" element={<RejectedPage />} />
 

@@ -2,14 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// 4 Silai/Tailoring themed images from public folder
-const images = [
-    "/download.jpeg",
-    "/40 2 Polyester Sewing Thread for Sewing.jpeg",
-    "/A Comprehensive Guide to Digital Sewing Patterns.jpeg",
-    "/Hacoupian brand identity Photoshooting.jpeg"
-];
-
 // 🩷🟠🔵🟢 Gradient overlay colors — one per image
 const overlayGradients = [
     "linear-gradient(135deg, #FFB6C1 0%, #FF69B4 50%, #FFD1DC 100%)",   // 🩷 Pink  (Image 1)
@@ -26,8 +18,6 @@ const bgGradients = [
     "linear-gradient(135deg, #F0FFF5 0%, #E4FFEC 40%, #F5FFF7 100%)"
 ];
 
-const headings = ["STITCH PERFECT", "THREADS OF ART", "MADE FOR YOU", "SILAI MAGIC"];
-
 /*
   CYCLE for each image (1→🩷, 2→🟠, 3→🔵, 4→🟢):
     Phase 0 "reveal"  (1.8s) : gradient fades OUT → image visible
@@ -38,6 +28,48 @@ const PHASE_DURATIONS = [1800, 2200, 1200];
 
 const AuthLayout = () => {
     const location = useLocation();
+    const isDelivery = location.pathname.startsWith('/delivery');
+    const isPartner = location.pathname.startsWith('/partner');
+    const isLogin = location.pathname.endsWith('/login');
+
+    const config = isDelivery ? {
+        images: [
+            "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?auto=format&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1617469165786-8007eda3caa7?auto=format&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?auto=format&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&q=80"
+        ],
+        brand: "FAST DELIVERY",
+        headings: ["QUICK DELIVERY", "ON TIME", "YOUR PACKAGE", "SAFE HANDS"],
+        subheading: "Delivering Happiness Daily",
+        loginLink: "/delivery/login",
+        signupLink: "/delivery/signup"
+    } : isPartner ? {
+        images: [
+            "/A Comprehensive Guide to Digital Sewing Patterns.jpeg",
+            "/Hacoupian brand identity Photoshooting.jpeg",
+            "/40 2 Polyester Sewing Thread for Sewing.jpeg",
+            "/download.jpeg"
+        ],
+        brand: "PARTNER PORTAL",
+        headings: ["GROW YOUR BRAND", "MASTER CRAFT", "GLOBAL REACH", "SEAMLESS EARNINGS"],
+        subheading: "Join our expert tailor network",
+        loginLink: "/partner/login",
+        signupLink: "/partner/signup"
+    } : {
+        images: [
+            "/download.jpeg",
+            "/40 2 Polyester Sewing Thread for Sewing.jpeg",
+            "/A Comprehensive Guide to Digital Sewing Patterns.jpeg",
+            "/Hacoupian brand identity Photoshooting.jpeg"
+        ],
+        brand: "SILAIWALE",
+        headings: ["STITCH PERFECT", "THREADS OF ART", "MADE FOR YOU", "SILAI MAGIC"],
+        subheading: "Stitching Memories Together",
+        loginLink: "/login",
+        signupLink: "/signup"
+    };
+
     const imgRef = useRef(0);   // tracks current image index without stale closure issues
     const [currentImage, setCurrentImage] = useState(0);
     const [overlayOpacity, setOverlayOpacity] = useState(1);
@@ -61,13 +93,13 @@ const AuthLayout = () => {
                 setPhase(1);
             } else if (phase === 1) {
                 // hold done → cover with NEXT gradient
-                const next = (imgRef.current + 1) % images.length;
+                const next = (imgRef.current + 1) % config.images.length;
                 setOverlayColorIndex(next);
                 setOverlayOpacity(1);
                 setPhase(2);
             } else {
                 // cover done → switch image underneath, then reveal
-                const next = (imgRef.current + 1) % images.length;
+                const next = (imgRef.current + 1) % config.images.length;
                 setCurrentImage(next);
                 // Small delay so image swaps while fully covered, then fade out
                 setTimeout(() => {
@@ -78,9 +110,7 @@ const AuthLayout = () => {
         }, PHASE_DURATIONS[phase]);
 
         return () => clearTimeout(timer);
-    }, [phase]);
-
-    const isLogin = location.pathname === '/login';
+    }, [phase, config.images.length]);
 
     return (
         <div 
@@ -97,7 +127,7 @@ const AuthLayout = () => {
                 {/* ─── Image Section ─── */}
                 <div className="relative h-[180px] sm:h-[210px] w-full overflow-hidden">
                     {/* All 4 images stacked — only currentImage is visible */}
-                    {images.map((src, idx) => (
+                    {config.images.map((src, idx) => (
                         <div
                             key={idx}
                             className="absolute inset-0 transition-opacity duration-[600ms] ease-in-out"
@@ -122,7 +152,7 @@ const AuthLayout = () => {
                         <div className="w-7 h-7 rounded-lg bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40">
                             <img src="/logo.png" alt="" className="w-4 h-4 object-contain invert grayscale brightness-200" />
                         </div>
-                        <span className="text-white font-black text-lg tracking-tighter drop-shadow-lg">SILAIWALE</span>
+                        <span className="text-white font-black text-lg tracking-tighter drop-shadow-lg">{config.brand}</span>
                     </div>
 
                     {/* Heading */}
@@ -136,17 +166,17 @@ const AuthLayout = () => {
                                 transition={{ duration: 0.5 }}
                                 className="text-white text-2xl sm:text-3xl font-black uppercase tracking-tight drop-shadow-lg"
                             >
-                                {headings[currentImage]}
+                                {config.headings[currentImage]}
                             </motion.h1>
                         </AnimatePresence>
                         <p className="text-white/80 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] mt-1 drop-shadow-md">
-                            Stitching Memories Together
+                            {config.subheading}
                         </p>
                     </div>
 
                     {/* Dot Indicators */}
                     <div className="absolute bottom-12 sm:bottom-14 left-0 right-0 z-20 flex justify-center gap-1.5">
-                        {images.map((_, idx) => (
+                        {config.images.map((_, idx) => (
                             <div
                                 key={idx}
                                 className="rounded-full transition-all duration-500"
@@ -181,13 +211,13 @@ const AuthLayout = () => {
                     {/* Tab Selection */}
                     <div className="bg-[#FFF9FB] p-1 rounded-[1.5rem] flex items-center relative mb-5 sm:mb-6 shadow-inner border border-pink-50/50">
                         <Link 
-                            to="/login"
+                            to={config.loginLink}
                             className={`flex-1 text-center py-2.5 text-xs sm:text-sm font-black tracking-wide z-10 transition-colors duration-300 ${isLogin ? 'text-[#FF5C8A]' : 'text-pink-300'}`}
                         >
                             LOGIN
                         </Link>
                         <Link 
-                            to="/signup"
+                            to={config.signupLink}
                             className={`flex-1 text-center py-2.5 text-xs sm:text-sm font-black tracking-wide z-10 transition-colors duration-300 ${!isLogin ? 'text-[#FF5C8A]' : 'text-pink-300'}`}
                         >
                             SIGN UP

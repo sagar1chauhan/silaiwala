@@ -10,7 +10,7 @@ const deliverySchema = new mongoose.Schema(
     },
     vehicleType: {
       type: String,
-      enum: ["bike", "scooter", "cycle", "other"],
+      enum: ["bike", "scooter", "car", "cycle", "other"],
       required: true,
     },
     vehicleNumber: {
@@ -69,6 +69,14 @@ const deliverySchema = new mongoose.Schema(
       default: 0,
     },
     emergencyContact: {
+      type: String,
+      trim: true,
+    },
+    aadharNumber: {
+      type: String,
+      trim: true,
+    },
+    address: {
       type: String,
       trim: true,
     },

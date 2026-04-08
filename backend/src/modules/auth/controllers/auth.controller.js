@@ -85,6 +85,10 @@ exports.register = asyncHandler(async (req, res, next) => {
         profile = await Delivery.create({ 
           user: user._id,
           vehicleType: req.body.vehicleType || "bike",
+          vehicleNumber: req.body.vehicleNumber,
+          emergencyContact: req.body.emergencyContact,
+          aadharNumber: req.body.aadharNumber,
+          address: req.body.address,
           currentLocation: {
             type: "Point",
             coordinates: coordinates || [0, 0]

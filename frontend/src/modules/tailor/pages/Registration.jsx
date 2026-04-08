@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import AppContainer from '../../../components/Common/AppContainer';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../components/UIElements';
 import { Step1Basic, Step2Business } from '../components/Registration/Steps1_2';
 import { Step3Docs, Step4Portfolio } from '../components/Registration/Steps3_4';
 import { ChevronLeft, CheckCircle2 } from 'lucide-react';
-import { useTailorAuth, TAILOR_STATUS } from '../context/AuthContext';
+import { useTailorAuth } from '../context/AuthContext';
 import api from '../services/api';
 
-const Registration = () => {
+const TailorRegistration = () => {
     const [step, setStep] = useState(1);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const { login } = useTailorAuth();
     const navigate = useNavigate();
 
-    const { register, handleSubmit, watch, setValue, trigger, formState: { errors, isValid } } = useForm({
+    const { register, handleSubmit, watch, setValue, trigger, formState: { errors } } = useForm({
         mode: 'onChange'
     });
 
@@ -67,7 +67,6 @@ const Registration = () => {
     const onSubmit = async (data) => {
         setIsLoading(true);
         try {
-            // 1. Upload all documents first
             const [aadharFrontUrl, aadharBackUrl, panUrl, licenseUrl, portfolio1Url, portfolio2Url] = await Promise.all([
                 uploadFile(data.aadharFront),
                 uploadFile(data.aadharBack),
@@ -84,9 +83,8 @@ const Registration = () => {
                 { name: 'Shop License', url: licenseUrl, status: 'pending' },
                 { name: 'Portfolio 1', url: portfolio1Url, status: 'pending' },
                 { name: 'Portfolio 2', url: portfolio2Url, status: 'pending' }
-            ].filter(doc => doc.url); // Only include successfully uploaded docs
+            ].filter(doc => doc.url);
 
-            // 2. Map frontend data to backend schema
             const payload = {
                 name: data.fullName,
                 email: data.email,
@@ -96,7 +94,7 @@ const Registration = () => {
                 experienceInYears: Number(data.experienceInYears),
                 specializations: data.specializations.split(',').map(s => s.trim()).filter(s => s),
                 documents,
-                coordinates: [72.8777, 19.0760] // Mumbai default
+                coordinates: [72.8777, 19.0760]
             };
 
             const response = await api.post('/auth/register', payload);
@@ -104,8 +102,6 @@ const Registration = () => {
             if (response.data.success) {
                 const { token, data: result } = response.data;
                 setIsSubmitted(true);
-                
-                // Login the user (they will be restricted by their status)
                 login(result.user, token);
             }
         } catch (error) {
@@ -127,102 +123,115 @@ const Registration = () => {
     };
 
     const stepTitles = [
-        'Basic Details',
-        'Business Info',
-        'Verify Identity',
-        'Portfolio & Availability'
+        'Personal Information',
+        'Business Details',
+        'Upload Documents',
+        'Portfolio & Scope'
     ];
 
     if (isSubmitted) {
         return (
-            <AppContainer>
-                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-in zoom-in duration-500">
-                    <div className="h-24 w-24 bg-pink-50 text-[#FF5C8A] rounded-full flex items-center justify-center mb-6 shadow-xl shadow-pink-900/10">
-                        <CheckCircle2 size={48} strokeWidth={2.5} />
-                    </div>
-                    <h2 className="text-2xl font-bold text-[#FF5C8A]">Application Submitted!</h2>
-                    <p className="text-gray-500 mt-4 leading-relaxed font-medium">
-                        Your documents are being reviewed by our team. You'll receive a notification once your account is approved.
-                    </p>
-                    <div className="mt-10 p-4 bg-gray-50 rounded-2xl w-full border border-gray-100 font-semibold text-[#FF5C8A] text-xs uppercase tracking-wider">
-                        Status: Pending Approval
-                    </div>
-                    <Button className="mt-10" onClick={() => navigate('/partner/under-review')}>
-                        View Application Status
-                    </Button>
+            <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="w-full flex flex-col items-center justify-center py-6 text-center"
+            >
+                <div className="h-20 w-20 bg-pink-50 text-[#FF5C8A] rounded-full flex items-center justify-center mb-5 shadow-xl shadow-pink-900/10">
+                    <CheckCircle2 size={40} strokeWidth={2.5} />
                 </div>
-            </AppContainer>
+                <h2 className="text-xl font-black text-slate-800 tracking-tight">Application Sent!</h2>
+                <p className="text-xs text-gray-500 mt-2 font-medium px-4">
+                    Your details are under review. We will notify you once approved.
+                </p>
+                <button 
+                    onClick={() => navigate('/partner/under-review')}
+                    className="mt-6 text-xs font-black bg-[#FF5C8A] text-white px-8 py-3 rounded-full hover:bg-[#E04D79] transition-colors shadow-lg shadow-pink-200"
+                >
+                    View Status
+                </button>
+            </motion.div>
         );
     }
 
     return (
-        <AppContainer>
-            {/* Header */}
-            <header className="px-6 py-4 bg-white sticky top-0 z-20 shadow-[0_4px_20px_rgba(0,0,0,0.03)] rounded-b-3xl">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        {step > 1 && (
-                            <button onClick={prevStep} className="p-2 -ml-2 text-gray-400 hover:text-gray-900 transition-colors bg-gray-50 rounded-full">
-                                <ChevronLeft size={20} />
-                            </button>
-                        )}
-                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg border border-gray-50 overflow-hidden shrink-0">
-                            <img src="/logo.png" alt="Silaiwala" className="w-7 h-7 object-contain" />
-                        </div>
-                        <div>
-                            <h1 className="text-lg font-black tracking-tight text-gray-900 leading-none">Join Silaiwala</h1>
-                            <p className="text-[9px] font-semibold uppercase text-[#FF5C8A] tracking-[0.15em] mt-0.5 opacity-80">{stepTitles[step - 1]}</p>
-                        </div>
-                    </div>
-                    <div className="flex flex-col items-end">
-                        <div className="h-10 w-10 bg-[#FF5C8A] rounded-2xl flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-pink-900/20">
-                            {step}<span className="text-white/60 text-xs translate-y-[1px]">/4</span>
-                        </div>
+        <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="w-full"
+        >
+            <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                    {step > 1 && (
+                        <button type="button" onClick={prevStep} className="p-1 -ml-1 text-gray-400 hover:text-[#FF5C8A] transition-colors">
+                            <ChevronLeft size={20} />
+                        </button>
+                    )}
+                    <div>
+                        <h2 className="text-base sm:text-lg font-black text-slate-800 tracking-tight leading-tight">
+                            {stepTitles[step - 1]}
+                        </h2>
+                        <p className="text-[9px] font-black text-[#FF5C8A] uppercase tracking-[0.2em] mt-0.5">
+                            Step {step} of 4
+                        </p>
                     </div>
                 </div>
-            </header>
 
-            {/* Progress Bar Container - Lifted slightly to overlap header shadow naturally */}
-            <div className="w-full px-6 -mt-2 relative z-30">
-                <div className="h-1.5 w-full bg-gray-200 rounded-full flex overflow-hidden">
-                    {[1, 2, 3, 4].map((s) => (
-                        <div
-                            key={s}
-                            className={`flex-1 transition-all duration-700 ${s <= step ? 'bg-[#FF5C8A]' : 'bg-transparent'}`}
-                        />
+                <div className="flex gap-1">
+                    {[1, 2, 3, 4].map(i => (
+                        <div key={i} className={`h-1.5 w-6 rounded-full transition-colors duration-500 ${i <= step ? 'bg-[#FF5C8A]' : 'bg-pink-50'}`} />
                     ))}
                 </div>
             </div>
 
-            {/* Form Content */}
-            <div className="flex-1 overflow-y-auto px-6 py-6 no-scrollbar">
-                {renderStep()}
-            </div>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={step}
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        transition={{ duration: 0.3 }}
+                        className="space-y-3"
+                    >
+                        {renderStep()}
+                    </motion.div>
+                </AnimatePresence>
 
-            {/* Footer Actions */}
-            <footer className="p-6 pb-12 bg-white border-t mt-auto flex-shrink-0 z-10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] text-center">
-                {step < 4 ? (
-                    <Button onClick={handleNext} className="shadow-[#FF5C8A]/20 w-full mb-4">
-                        Continue
-                    </Button>
-                ) : (
-                    <Button onClick={handleSubmit(onSubmit)} loading={isLoading} className="bg-[#FF5C8A] text-white w-full mb-4 font-bold text-sm h-[52px] rounded-full active:scale-95 transition-all">
-                        Submit Application
-                    </Button>
-                )}
+                <div className="pt-2">
+                    {step < 4 ? (
+                        <button
+                            type="button"
+                            onClick={handleNext}
+                            className="w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg bg-[#FF5C8A] hover:bg-[#E04D79] text-white shadow-[#FF5C8A]/20"
+                        >
+                            <span className="flex items-center justify-center gap-2">
+                                NEXT <span className="text-lg">›</span>
+                            </span>
+                        </button>
+                    ) : (
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className={`w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg ${isLoading ? 'bg-gray-300 text-gray-600' : 'bg-[#FF5C8A] hover:bg-[#E04D79] text-white shadow-[#FF5C8A]/20'}`}
+                        >
+                            {isLoading ? 'Submitting...' : 'SUBMIT APPLICATION'}
+                        </button>
+                    )}
+                </div>
 
-                <button
-                    type="button"
-                    onClick={() => navigate('/partner/login')}
-                    className="flex flex-col items-center justify-center w-full group mt-4"
-                >
-                    <p className="text-[11px] text-gray-500 font-medium">
-                        Already have an account? <span className="font-bold text-primary hover:underline">Sign In</span>
-                    </p>
-                </button>
-            </footer>
-        </AppContainer>
+                <div className="text-center mt-2 pb-1">
+                    <button
+                        type="button"
+                        onClick={() => navigate('/partner/login')}
+                        className="text-[10px] sm:text-xs text-gray-500 font-medium"
+                    >
+                        Already have an account? <span className="font-bold text-[#FF5C8A] hover:underline">Log in</span>
+                    </button>
+                </div>
+            </form>
+        </motion.div>
     );
 };
 
-export default Registration;
+export default TailorRegistration;

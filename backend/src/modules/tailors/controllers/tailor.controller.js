@@ -545,6 +545,33 @@ exports.updateOrderStatus = asyncHandler(async (req, res, next) => {
     data: { orderId: order._id, targetUrl: "/orders" }
   });
 
+  // --- Socket Emission for Customer & Delivery ---
+  try {
+    const io = getIO();
+    if (io) {
+        // 1. Notify Customer
+        io.to(`user_${order.customer}`).emit('order_status_updated', {
+            orderId: order.orderId,
+            _id: order._id,
+            status: finalStatus
+        });
+
+        // 2. Notify Delivery Partners if a new task is available
+        if (finalStatus === 'ready-for-pickup' || finalStatus === 'fabric-ready-for-pickup') {
+            io.to('delivery_partners').emit('receive_new_order', {
+                orderId: order.orderId,
+                _id: order._id,
+                status: finalStatus,
+                taskType: finalStatus === 'ready-for-pickup' ? 'order-delivery' : 'fabric-pickup'
+            });
+            console.log(`📡 Socket: Broadcasted task ${order.orderId} to Delivery Room`);
+        }
+    }
+  } catch (err) {
+    console.error("Socket emission failed in updateOrderStatus:", err.message);
+  }
+  // ----------------------------------------------
+
   res.status(200).json({
     success: true,
     data: order,

@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate, Link } from 'react-router-dom';
-import AppContainer from '../../../components/Common/AppContainer';
-import { Button, Input } from '../components/UIElements';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTailorAuth } from '../context/AuthContext';
 import api from '../services/api';
 
-
-const Login = () => {
+const TailorLogin = () => {
     const { login } = useTailorAuth();
     const navigate = useNavigate();
+    
     const [otpSent, setOtpSent] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [sendingOtp, setSendingOtp] = useState(false);
@@ -18,11 +17,11 @@ const Login = () => {
 
     const handleSendOTP = async () => {
         if (!mobileNumber || mobileNumber.length < 10) {
-            setFormError('mobileNumber', { type: 'manual', message: 'Enter a valid 10-digit number' });
+            setFormError('root', { type: 'manual', message: 'Enter a valid 10-digit number' });
             return;
         }
 
-        clearErrors('mobileNumber');
+        clearErrors('root');
         setSendingOtp(true);
         try {
             await api.post('/auth/send-otp', { phoneNumber: mobileNumber });
@@ -42,7 +41,6 @@ const Login = () => {
         clearErrors('root');
         
         try {
-            // Backend maps email to phoneNumber for login search
             const response = await api.post('/auth/login', {
                 email: data.mobileNumber,
                 otp: data.otp
@@ -51,7 +49,6 @@ const Login = () => {
             if (response.data.success) {
                 const { token, data: userData } = response.data;
                 
-                // Ensure only tailors can login to this portal
                 if (userData.role !== 'tailor') {
                     setFormError('root', { type: 'manual', message: 'This portal is only for registered tailors.' });
                     return;
@@ -69,29 +66,39 @@ const Login = () => {
     };
 
     return (
-        <AppContainer className="bg-white items-center justify-center">
-            <div className="flex-1 flex flex-col w-full px-8 pt-12 pb-6 max-w-[400px] mx-auto overflow-hidden">
+        <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="w-full"
+        >
+            <div className="text-center mb-4 sm:mb-5">
+                <h2 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">Welcome Back!</h2>
+                <p className="text-[9px] sm:text-[10px] font-bold text-gray-600 uppercase tracking-[0.2em] mt-1">
+                    {otpSent ? 'Enter code sent to mobile' : 'Access your shop dashboard'}
+                </p>
+            </div>
 
-                <div className="flex flex-col items-center mb-8">
-                    <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-xl border border-gray-50 mb-4 transition-transform hover:rotate-3">
-                        <img src="/logo.png" alt="Silaiwala" className="w-10 h-10 object-contain" />
-                    </div>
-                    <h1 className="text-2xl font-black text-gray-900 tracking-tight text-center">Welcome Back</h1>
-                    <p className="text-gray-400 font-bold mt-1 uppercase tracking-widest text-[10px] text-center">Login to manage your shop</p>
-                </div>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
+                {errors.root && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="p-3.5 text-[11px] font-bold uppercase tracking-wider text-pink-600 bg-pink-50 rounded-2xl border border-pink-100 flex items-center justify-center gap-2"
+                    >
+                        <span className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-pulse" />
+                        {errors.root.message}
+                    </motion.div>
+                )}
 
-                <form onSubmit={handleSubmit(onSubmit)} className="flex-1 space-y-4">
-                    {errors.root && (
-                        <div className="p-3 text-sm text-red-600 bg-red-50 rounded-xl border border-red-100 font-bold">
-                            {errors.root.message}
-                        </div>
-                    )}
-
-                    <div className="flex gap-2 items-end w-full">
-                        <div className="flex-1">
-                            <Input
-                                label="Mobile Number"
-                                placeholder="9876543210"
+                <div className="space-y-3">
+                    <div className="bg-[#F8FAFC] rounded-[1.2rem] sm:rounded-[1.5rem] p-1 border border-slate-50 shadow-inner group transition-all duration-300 focus-within:ring-2 focus-within:ring-pink-100 focus-within:border-pink-200">
+                        <div className="flex items-center px-3 sm:px-4 py-1.5 sm:py-2 gap-2 sm:gap-3">
+                            <span className="text-gray-800 font-bold text-sm">+91</span>
+                            <div className="w-px h-6 bg-slate-200" />
+                            <input
+                                type="tel"
+                                placeholder="Mobile Number"
                                 maxLength={10}
                                 {...register('mobileNumber', { 
                                     required: 'Mobile number is required',
@@ -100,75 +107,79 @@ const Login = () => {
                                         message: 'Invalid mobile number'
                                     }
                                 })}
-                                error={errors.mobileNumber?.message}
                                 disabled={otpSent || sendingOtp}
+                                className="flex-1 bg-transparent border-none focus:ring-0 text-black font-bold placeholder:text-gray-500 placeholder:font-medium tracking-wide outline-none w-full"
                             />
                         </div>
-                        {!otpSent && (
-                            <button
-                                type="button"
-                                onClick={handleSendOTP}
-                                disabled={!mobileNumber || mobileNumber.length < 10 || sendingOtp}
-                                className="px-5 py-3 h-[52px] bg-[#FF5C8A] hover:bg-[#cc496e] text-white rounded-2xl font-bold text-sm whitespace-nowrap active:scale-95 disabled:opacity-50 disabled:active:scale-100 transition-all shadow-lg shadow-pink-900/10 mb-1"
-                            >
-                                {sendingOtp ? 'Sending...' : 'Send OTP'}
-                            </button>
-                        )}
                     </div>
 
-                    {otpSent && (
-                        <div className="animate-in slide-in-from-top-2 duration-300 space-y-4 pt-2">
-                            <Input
-                                label="Enter OTP"
-                                placeholder="000000"
-                                maxLength={6}
-                                {...register('otp', {
-                                    required: 'OTP is required',
-                                    pattern: {
-                                        value: /^[0-9]{6}$/,
-                                        message: 'Please enter a valid 6-digit OTP'
-                                    }
-                                })}
-                                error={errors.otp?.message}
-                                className="text-center font-bold tracking-[0.2em] text-lg"
-                            />
-                            
-                            <div className="flex justify-end mt-1">
-                                <button
-                                    type="button"
-                                    onClick={() => setOtpSent(false)}
-                                    className="text-[10px] font-black text-[#FF5C8A] uppercase tracking-widest hover:underline"
-                                >
-                                    Change Mobile Number?
-                                </button>
-                            </div>
-
-                            <div className="pt-2">
-                                <Button type="submit" loading={isLoading} className="bg-[#FF5C8A] hover:bg-[#cc496e] active:scale-95 text-white shadow-lg shadow-pink-900/20">
-                                    Sign In
-                                </Button>
-                            </div>
-                        </div>
+                    {!otpSent && (
+                        <button
+                            type="button"
+                            onClick={handleSendOTP}
+                            disabled={!mobileNumber || mobileNumber.length < 10 || sendingOtp}
+                            className={`w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-md ${
+                                !mobileNumber || mobileNumber.length < 10 || sendingOtp
+                                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                                    : 'bg-[#FF5C8A] hover:bg-[#E04D79] text-white shadow-[#FF5C8A]/20 hover:shadow-lg'
+                            }`}
+                        >
+                            {sendingOtp ? 'Sending...' : (
+                                <span className="flex items-center justify-center gap-2">
+                                    CONTINUE <span className="text-lg">›</span>
+                                </span>
+                            )}
+                        </button>
                     )}
-                </form>
-
-                <div className="mt-auto text-center pt-6 border-t border-gray-50">
-                    <button
-                        type="button"
-                        onClick={() => navigate('/partner/register')}
-                        className="flex flex-col items-center justify-center w-full group"
-                    >
-                        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest group-hover:text-gray-600 transition-colors">
-                            Don't have an account?
-                        </p>
-                        <span className="mt-2 text-[#FF5C8A] font-black text-sm uppercase tracking-widest group-hover:underline">
-                            Create Shop Profile
-                        </span>
-                    </button>
                 </div>
-            </div>
-        </AppContainer>
+
+                <AnimatePresence>
+                    {otpSent && (
+                        <motion.div 
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="space-y-4 overflow-hidden pt-2"
+                        >
+                            <div className="bg-[#F8FAFC] rounded-[1.2rem] sm:rounded-[1.5rem] p-1 border border-slate-50 shadow-inner group transition-all duration-300 focus-within:ring-2 focus-within:ring-pink-100 focus-within:border-pink-200">
+                                <div className="flex items-center px-3 sm:px-4 py-1.5 sm:py-2 gap-2 sm:gap-3">
+                                    <input
+                                        type="text"
+                                        placeholder="Verification Code"
+                                        maxLength={6}
+                                        {...register('otp', {
+                                            required: 'OTP is required',
+                                        })}
+                                        className="flex-1 bg-transparent border-none focus:ring-0 text-black font-bold placeholder:text-gray-500 placeholder:font-medium tracking-[0.5em] text-center outline-none w-full"
+                                    />
+                                </div>
+                            </div>
+
+                            <button
+                                type="submit"
+                                className={`w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg ${isLoading ? 'bg-gray-300 text-gray-600' : 'bg-[#FF5C8A] hover:bg-[#E04D79] text-white shadow-[#FF5C8A]/20'}`}
+                                disabled={isLoading}
+                            >
+                                {isLoading ? 'Verifying...' : (
+                                    <span className="flex items-center justify-center gap-2">
+                                        VERIFY & SIGN IN <span className="text-lg">›</span>
+                                    </span>
+                                )}
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => { setOtpSent(false); clearErrors('root'); }}
+                                className="w-full text-[10px] font-bold text-pink-400 hover:text-pink-500 uppercase tracking-widest transition-colors flex items-center justify-center gap-1 mt-2"
+                            >
+                                ← Change mobile number
+                            </button>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </form>
+        </motion.div>
     );
 };
 
-export default Login;
+export default TailorLogin;

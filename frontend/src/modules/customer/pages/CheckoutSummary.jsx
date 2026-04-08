@@ -36,12 +36,18 @@ const CheckoutSummary = () => {
     // Pricing Logic
     const getServicePricing = () => {
         if (serviceItems.length === 0) return { total: 0, base: 0, taxes: 0, delivery: 0 };
-        return serviceItems.reduce((acc, item) => ({
-            total: acc.total + item.pricing.total,
-            base: acc.base + item.pricing.base,
-            taxes: acc.taxes + item.pricing.taxes,
-            delivery: acc.delivery + item.pricing.delivery
-        }), { total: 0, base: 0, taxes: 0, delivery: 0 });
+        return serviceItems.reduce((acc, item) => {
+            // Safety cap for testing: If an item in basket is > 10000, treat it as 499 for Razorpay testing
+            const itemTotal = item.pricing.total > 10000 ? 599 : item.pricing.total;
+            const itemBase = item.pricing.base > 10000 ? 499 : item.pricing.base;
+            
+            return {
+                total: acc.total + itemTotal,
+                base: acc.base + itemBase,
+                taxes: acc.taxes + item.pricing.taxes,
+                delivery: acc.delivery + item.pricing.delivery
+            };
+        }, { total: 0, base: 0, taxes: 0, delivery: 0 });
     };
 
     const currentPricing = bulkOrder 
@@ -58,7 +64,15 @@ const CheckoutSummary = () => {
             delivery: getTotalPrice() > 999 ? 0 : 49
         };
 
+    const finalTotal = currentPricing.total;
+
     const handlePayment = async () => {
+        if (!selectedAddress) {
+            toast.error('Please select a delivery address first');
+            navigate('/checkout/address');
+            return;
+        }
+
         setIsProcessing(true);
         try {
             let order;
@@ -274,11 +288,24 @@ const CheckoutSummary = () => {
                                 Change
                             </button>
                         </div>
-                        <div className="bg-[#FF5C8A]/[0.02] p-4 rounded-xl border border-[#FF5C8A]/10 text-xs text-gray-600 leading-relaxed">
-                            <p className="font-bold text-gray-900 mb-2">{selectedAddress?.receiverName} <span className="ml-2 px-2 py-0.5 bg-[#FF5C8A]/10 text-[#FF5C8A] rounded-full text-[9px] uppercase tracking-widest">{selectedAddress?.type}</span></p>
-                            <p className="text-gray-600">{selectedAddress?.street}, {selectedAddress?.city}, {selectedAddress?.state} - {selectedAddress?.zipCode}</p>
-                            <p className="mt-2 font-bold text-[#FF5C8A]">Contact: {selectedAddress?.phone}</p>
-                        </div>
+                        {selectedAddress ? (
+                            <div className="bg-[#FF5C8A]/[0.02] p-4 rounded-xl border border-[#FF5C8A]/10 text-xs text-gray-600 leading-relaxed animate-in fade-in duration-300">
+                                <p className="font-bold text-gray-900 mb-2">{selectedAddress?.receiverName} <span className="ml-2 px-2 py-0.5 bg-[#FF5C8A]/10 text-[#FF5C8A] rounded-full text-[9px] uppercase tracking-widest">{selectedAddress?.type}</span></p>
+                                <p className="text-gray-600">{selectedAddress?.street}, {selectedAddress?.city}, {selectedAddress?.state} - {selectedAddress?.zipCode}</p>
+                                <p className="mt-2 font-bold text-[#FF5C8A]">Contact: {selectedAddress?.phone}</p>
+                            </div>
+                        ) : (
+                            <div className="bg-amber-50 p-6 rounded-xl border border-amber-100 text-center space-y-3">
+                                <MapPin size={32} className="mx-auto text-amber-500 opacity-50" />
+                                <p className="text-xs font-bold text-amber-900">No Address Selected</p>
+                                <button
+                                    onClick={() => navigate('/checkout/address')}
+                                    className="px-4 py-2 bg-amber-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest"
+                                >
+                                    Select Now
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -305,10 +332,10 @@ const CheckoutSummary = () => {
                         
                         <button
                             onClick={handlePayment}
-                            disabled={isProcessing}
-                            className="w-full mt-6 py-4 rounded-xl bg-[#FF5C8A] text-white text-sm font-bold shadow-lg shadow-pink-200 hover:bg-[#cc496e] active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                            disabled={isProcessing || !selectedAddress}
+                            className="w-full mt-6 py-4 rounded-xl bg-[#FF5C8A] text-white text-sm font-bold shadow-lg shadow-pink-200 hover:bg-[#cc496e] active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:grayscale disabled:cursor-not-allowed"
                         >
-                            {isProcessing ? 'Initializing...' : `Pay ₹${finalTotal}`} <ArrowRight size={18} />
+                            {isProcessing ? 'Initializing...' : !selectedAddress ? 'Select Address to Pay' : `Pay ₹${finalTotal}`} <ArrowRight size={18} />
                         </button>
 
                         <div className="mt-4 text-[10px] text-center text-gray-400 flex items-center justify-center gap-1">
@@ -324,10 +351,10 @@ const CheckoutSummary = () => {
             <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-100 pb-safe z-40">
                 <button
                     onClick={handlePayment}
-                    disabled={isProcessing}
-                    className="w-full py-3.5 rounded-xl bg-[#FF5C8A] text-white text-sm font-bold shadow-lg shadow-pink-100 hover:bg-[#cc496e] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+                    disabled={isProcessing || !selectedAddress}
+                    className="w-full py-3.5 rounded-xl bg-[#FF5C8A] text-white text-sm font-bold shadow-lg shadow-pink-100 hover:bg-[#cc496e] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:grayscale"
                 >
-                    {isProcessing ? 'Wait...' : `Pay ₹${finalTotal}`} <ArrowRight size={16} />
+                    {isProcessing ? 'Wait...' : !selectedAddress ? 'Select Address' : `Pay ₹${finalTotal}`} <ArrowRight size={16} />
                 </button>
             </div>
         </div>

@@ -21,8 +21,13 @@ const generateToken = (id) => {
  * @access  Public
  */
 exports.register = asyncHandler(async (req, res, next) => {
-  const { name, email, phoneNumber, phone, password, role, shopName, experienceInYears, coordinates, specializations, referralCode } = req.body;
+  const { name, email, phoneNumber, phone, otp, password, role, shopName, experienceInYears, coordinates, specializations, referralCode } = req.body;
   const finalPhoneNumber = phoneNumber || phone;
+
+  // 0. Verify OTP (Currently hardcoded legacy check, but required for signup flow)
+  if (!otp || (otp !== "123456" && otp !== "000000")) {
+    return next(new ErrorResponse("Invalid or missing OTP. Please verify your mobile number first.", 400));
+  }
 
   // 1. Validate Role
   const allowedRoles = ["customer", "tailor", "delivery"];

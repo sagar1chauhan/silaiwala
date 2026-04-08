@@ -7,6 +7,9 @@ const rateLimit = require("express-rate-limit");
 
 const app = express();
 
+// Trust Vercel's proxy (required for express-rate-limit)
+app.set("trust proxy", 1);
+
 // ─── Security Middlewares ────────────────────────────────────────────────────
 
 // Set secure HTTP headers
@@ -34,6 +37,7 @@ const globalLimiter = rateLimit({
   max: 10000, // Increased from 100
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { trustProxy: false },
   message: {
     success: false,
     message: "Too many requests, please try again later.",
@@ -58,6 +62,14 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 // ─── Health Check ────────────────────────────────────────────────────────────
+app.get("/favicon.ico", (req, res) => res.status(204).end());
+
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Tailor Platform API is live 🚀",
+  });
+});
 
 app.get("/health", (req, res) => {
   res.status(200).json({

@@ -23,7 +23,7 @@ const NewTaskAlert = ({ onTaskAccepted }) => {
 
     useEffect(() => {
         const socket = io(SOCKET_URL);
-        
+
         socket.emit('join', 'delivery_partners');
         if (user?._id) {
             socket.emit('join', `user_${user._id}`);
@@ -37,7 +37,7 @@ const NewTaskAlert = ({ onTaskAccepted }) => {
                 ...payload,
                 message: taskData.message || payload.message
             });
-            
+
             // Auto close after 30 seconds
             const timer = setTimeout(() => {
                 setNewTask(null);
@@ -62,7 +62,7 @@ const NewTaskAlert = ({ onTaskAccepted }) => {
     const handleAccept = async () => {
         const orderId = newTask?._id || newTask?.orderId;
         if (!orderId || isAccepting) return;
-        
+
         setIsAccepting(true);
         try {
             const res = await deliveryService.acceptOrder(orderId);
@@ -71,7 +71,7 @@ const NewTaskAlert = ({ onTaskAccepted }) => {
                     icon: '🚀',
                     style: {
                         borderRadius: '1rem',
-                        background: '#FF5C8A',
+                        background: '#FD0053',
                         color: '#fff',
                         fontWeight: '900',
                         fontSize: '12px',
@@ -120,7 +120,7 @@ const NewTaskAlert = ({ onTaskAccepted }) => {
                                 <p className="text-[10px] font-bold text-pink-300/80 tracking-widest leading-none">EST. EARNINGS: ₹20.00</p>
                             </div>
                         </div>
-                        <button 
+                        <button
                             onClick={() => setNewTask(null)}
                             className="w-8 h-8 bg-white/5 hover:bg-white/10 rounded-full flex items-center justify-center text-white/40 transition-all"
                         >
@@ -141,13 +141,13 @@ const NewTaskAlert = ({ onTaskAccepted }) => {
                                     <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em] mb-1">Route Context</p>
                                     <div className="flex flex-col gap-1">
                                         <p className="text-sm font-black text-white leading-tight">
-                                            {newTask.taskType === 'fabric-pickup' 
-                                                ? `Pickup: ${newTask.customer?.name || 'Customer'}` 
+                                            {newTask.taskType === 'fabric-pickup'
+                                                ? `Pickup: ${newTask.customer?.name || 'Customer'}`
                                                 : `Pickup: ${newTask.tailor?.shopName || 'Artisan'}`}
                                         </p>
                                         <p className="text-[11px] font-bold text-pink-300/60 leading-tight">
-                                            {newTask.taskType === 'fabric-pickup' 
-                                                ? `Drop to: ${newTask.tailor?.shopName || 'Workshop'}` 
+                                            {newTask.taskType === 'fabric-pickup'
+                                                ? `Drop to: ${newTask.tailor?.shopName || 'Workshop'}`
                                                 : `Drop to: ${newTask.customer?.name || 'Requester'}`}
                                         </p>
                                     </div>
@@ -161,7 +161,7 @@ const NewTaskAlert = ({ onTaskAccepted }) => {
 
                         {/* Swipe to Accept - Rapido Style */}
                         <div className="relative h-16 bg-white/5 rounded-2xl border border-white/10 p-1.5 overflow-hidden">
-                            <motion.div 
+                            <motion.div
                                 style={{ opacity: textOpacity }}
                                 className="absolute inset-0 flex items-center justify-center pointer-events-none"
                             >
@@ -171,7 +171,7 @@ const NewTaskAlert = ({ onTaskAccepted }) => {
                             </motion.div>
 
                             {/* Success State Overlay in Swipe */}
-                            <motion.div 
+                            <motion.div
                                 style={{ opacity: checkOpacity, scale: checkScale }}
                                 className="absolute inset-0 flex items-center justify-center bg-primary/20 pointer-events-none"
                             >

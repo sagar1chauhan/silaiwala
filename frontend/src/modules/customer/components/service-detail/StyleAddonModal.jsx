@@ -16,10 +16,10 @@ const StyleAddonModal = ({ isOpen, onClose, selectedAddons = [], onUpdate, categ
             try {
                 // Determine search category - mapping known UI categories to DB synonyms if needed
                 let searchCat = category?.name || category || '';
-                
+
                 // Fetch addons. Try specific category first, then fallback to all if needed
                 const response = await api.get(`/style-addons?isActive=true${searchCat ? `&category=${searchCat}` : ''}`);
-                
+
                 if (response.data.success) {
                     // If no specific category items found, fetch all as fallback so user isn't stuck
                     if (response.data.data.length === 0 && searchCat) {
@@ -38,7 +38,7 @@ const StyleAddonModal = ({ isOpen, onClose, selectedAddons = [], onUpdate, categ
         fetchAddons();
     }, [isOpen, category]);
 
-    const filteredAddons = addons.filter(addon => 
+    const filteredAddons = addons.filter(addon =>
         addon.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -63,7 +63,7 @@ const StyleAddonModal = ({ isOpen, onClose, selectedAddons = [], onUpdate, categ
                     onClick={onClose}
                     className="absolute inset-0 bg-black/60 backdrop-blur-sm"
                 />
-                
+
                 <motion.div
                     initial={{ y: '100%', opacity: 0.5 }}
                     animate={{ y: 0, opacity: 1 }}
@@ -74,7 +74,7 @@ const StyleAddonModal = ({ isOpen, onClose, selectedAddons = [], onUpdate, categ
                     {/* Header */}
                     <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-pink-50/50 to-white">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-[#FF5C8A] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-pink-100">
+                            <div className="w-10 h-10 bg-[#FD0053] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-pink-100">
                                 <Wand2 size={20} />
                             </div>
                             <div>
@@ -96,7 +96,7 @@ const StyleAddonModal = ({ isOpen, onClose, selectedAddons = [], onUpdate, categ
                                 placeholder="Search styles (e.g. Pockets, Embroidery)"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-white border border-gray-100 rounded-2xl text-xs focus:ring-2 focus:ring-[#FF5C8A]/10 focus:outline-none transition-all placeholder:text-gray-400"
+                                className="w-full pl-10 pr-4 py-3 bg-white border border-gray-100 rounded-2xl text-xs focus:ring-2 focus:ring-[#FD0053]/10 focus:outline-none transition-all placeholder:text-gray-400"
                             />
                         </div>
                     </div>
@@ -105,10 +105,10 @@ const StyleAddonModal = ({ isOpen, onClose, selectedAddons = [], onUpdate, categ
                     <div className="p-6 max-h-[60vh] overflow-y-auto no-scrollbar space-y-4">
                         {isLoading ? (
                             <div className="flex flex-col items-center justify-center py-12 gap-3 opacity-40">
-                                <motion.div 
+                                <motion.div
                                     animate={{ rotate: 360 }}
                                     transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
-                                    className="w-10 h-10 border-2 border-[#FF5C8A] border-t-transparent rounded-full font-black"
+                                    className="w-10 h-10 border-2 border-[#FD0053] border-t-transparent rounded-full font-black"
                                 />
                                 <p className="text-[10px] font-black uppercase tracking-widest">Designing Options...</p>
                             </div>
@@ -127,15 +127,15 @@ const StyleAddonModal = ({ isOpen, onClose, selectedAddons = [], onUpdate, categ
                                             onClick={() => toggleAddon(addon)}
                                             className={cn(
                                                 "p-4 rounded-[1.5rem] border transition-all cursor-pointer flex items-center gap-4 group",
-                                                isSelected 
-                                                    ? "border-[#FF5C8A] bg-pink-50/30 shadow-sm" 
-                                                    : "border-gray-100 bg-white hover:border-[#FF5C8A]/30"
+                                                isSelected
+                                                    ? "border-[#FD0053] bg-pink-50/30 shadow-sm"
+                                                    : "border-gray-100 bg-white hover:border-[#FD0053]/30"
                                             )}
                                         >
                                             <div className="w-16 h-16 rounded-2xl overflow-hidden shrink-0 border border-gray-100">
-                                                <img 
-                                                    src={addon.image} 
-                                                    alt={addon.name} 
+                                                <img
+                                                    src={addon.image}
+                                                    alt={addon.name}
                                                     className="w-full h-full object-cover transition-transform group-hover:scale-110"
                                                     onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544441893-675973e31d85?w=200'; }}
                                                 />
@@ -143,11 +143,11 @@ const StyleAddonModal = ({ isOpen, onClose, selectedAddons = [], onUpdate, categ
                                             <div className="flex-1">
                                                 <h4 className="text-sm font-black text-gray-900 leading-none mb-1">{addon.name}</h4>
                                                 <p className="text-[10px] text-gray-400 line-clamp-1 font-medium">{addon.description}</p>
-                                                <p className="text-xs font-black text-[#FF5C8A] mt-2">+₹{addon.price}</p>
+                                                <p className="text-xs font-black text-[#FD0053] mt-2">+₹{addon.price}</p>
                                             </div>
                                             <div className={cn(
                                                 "w-10 h-10 rounded-2xl flex items-center justify-center transition-all",
-                                                isSelected ? "bg-[#FF5C8A] text-white" : "bg-gray-50 text-gray-300"
+                                                isSelected ? "bg-[#FD0053] text-white" : "bg-gray-50 text-gray-300"
                                             )}>
                                                 {isSelected ? <Check size={18} /> : <Plus size={18} />}
                                             </div>
@@ -166,7 +166,7 @@ const StyleAddonModal = ({ isOpen, onClose, selectedAddons = [], onUpdate, categ
                         </div>
                         <button
                             onClick={onClose}
-                            className="bg-[#FF5C8A] text-white px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-pink-100 active:scale-95 transition-all"
+                            className="bg-[#FD0053] text-white px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-pink-100 active:scale-95 transition-all"
                         >
                             Confirm Selection
                         </button>

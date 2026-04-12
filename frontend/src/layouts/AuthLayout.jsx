@@ -113,12 +113,12 @@ const AuthLayout = () => {
     }, [phase, config.images.length]);
 
     return (
-        <div 
-            className="min-h-[100dvh] flex items-center justify-center p-2 sm:p-4 font-sans selection:bg-[#FF5C8A]/20 transition-all duration-[1500ms] ease-in-out"
+        <div
+            className="min-h-[100dvh] flex items-center justify-center p-2 sm:p-4 font-sans selection:bg-[#FD0053]/20 transition-all duration-[1500ms] ease-in-out"
             style={{ background: bgGradients[currentImage] }}
         >
             {/* Main Card */}
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: "easeOut" }}
@@ -158,7 +158,7 @@ const AuthLayout = () => {
                     {/* Heading */}
                     <div className="absolute top-14 sm:top-16 left-0 right-0 z-20 text-center px-6">
                         <AnimatePresence mode='wait'>
-                            <motion.h1 
+                            <motion.h1
                                 key={currentImage}
                                 initial={{ y: 15, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
@@ -183,7 +183,7 @@ const AuthLayout = () => {
                                 style={{
                                     width: idx === currentImage ? 18 : 5,
                                     height: 5,
-                                    backgroundColor: idx === currentImage ? '#FF5C8A' : 'rgba(255,255,255,0.5)',
+                                    backgroundColor: idx === currentImage ? '#FD0053' : 'rgba(255,255,255,0.5)',
                                 }}
                             />
                         ))}
@@ -210,20 +210,20 @@ const AuthLayout = () => {
                 <div className="pt-12 sm:pt-14 pb-6 sm:pb-8 px-5 sm:px-7">
                     {/* Tab Selection */}
                     <div className="bg-[#FFF9FB] p-1 rounded-[1.5rem] flex items-center relative mb-5 sm:mb-6 shadow-inner border border-pink-50/50">
-                        <Link 
+                        <Link
                             to={config.loginLink}
-                            className={`flex-1 text-center py-2.5 text-xs sm:text-sm font-black tracking-wide z-10 transition-colors duration-300 ${isLogin ? 'text-[#FF5C8A]' : 'text-pink-300'}`}
+                            className={`flex-1 text-center py-2.5 text-xs sm:text-sm font-black tracking-wide z-10 transition-colors duration-300 ${isLogin ? 'text-[#FD0053]' : 'text-pink-300'}`}
                         >
                             LOGIN
                         </Link>
-                        <Link 
+                        <Link
                             to={config.signupLink}
-                            className={`flex-1 text-center py-2.5 text-xs sm:text-sm font-black tracking-wide z-10 transition-colors duration-300 ${!isLogin ? 'text-[#FF5C8A]' : 'text-pink-300'}`}
+                            className={`flex-1 text-center py-2.5 text-xs sm:text-sm font-black tracking-wide z-10 transition-colors duration-300 ${!isLogin ? 'text-[#FD0053]' : 'text-pink-300'}`}
                         >
                             SIGN UP
                         </Link>
-                        
-                        <motion.div 
+
+                        <motion.div
                             animate={{ x: isLogin ? 0 : '100%' }}
                             transition={{ type: "spring", stiffness: 350, damping: 30 }}
                             className="absolute top-1 left-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-[1.3rem] shadow-sm border border-pink-50"

@@ -117,7 +117,7 @@ const DeliveryProfile = () => {
                     emergencyContact: personalInfo.emergencyPhone,
                     vehicleNumber: personalInfo.vehicle
                 });
-                
+
                 if (setUser && user) {
                     setUser({ ...user, name: personalInfo.name });
                 }
@@ -176,7 +176,7 @@ const DeliveryProfile = () => {
     if (loading) {
         return (
             <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-4">
-                <Loader2 className="w-10 h-10 text-[#FF5C8A] animate-spin" />
+                <Loader2 className="w-10 h-10 text-[#FD0053] animate-spin" />
                 <p className="text-sm font-bold text-slate-400 uppercase tracking-widest leading-none">Scanning Profile...</p>
             </div>
         );
@@ -188,7 +188,7 @@ const DeliveryProfile = () => {
             <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] flex items-center justify-between relative z-20 group">
                 <div>
                     <h2 className="text-xl font-black text-slate-900 tracking-tight">Availability</h2>
-                    <p className={`text-[10px] font-bold tracking-widest mt-0.5 transition-colors capitalize ${isOnline ? 'text-[#FF5C8A]' : 'text-slate-400'}`}>
+                    <p className={`text-[10px] font-bold tracking-widest mt-0.5 transition-colors capitalize ${isOnline ? 'text-[#FD0053]' : 'text-slate-400'}`}>
                         {isOnline ? 'Active & Receiving Tasks' : 'Currently Off Duty'}
                     </p>
                 </div>
@@ -196,14 +196,14 @@ const DeliveryProfile = () => {
                 {/* Interactive Toggle Switch */}
                 <button
                     onClick={handleToggleDuty}
-                    className={`w-14 h-8 rounded-full p-1 transition-colors duration-500 ease-in-out relative flex items-center shadow-inner ${isOnline ? 'bg-[#FF5C8A]' : 'bg-slate-200'
+                    className={`w-14 h-8 rounded-full p-1 transition-colors duration-500 ease-in-out relative flex items-center shadow-inner ${isOnline ? 'bg-[#FD0053]' : 'bg-slate-200'
                         }`}
                 >
                     <div
                         className={`w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center transform transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${isOnline ? 'translate-x-6' : 'translate-x-0'
                             }`}
                     >
-                        {isOnline && <div className="w-2 h-2 bg-[#FF5C8A] rounded-full animate-pulse"></div>}
+                        {isOnline && <div className="w-2 h-2 bg-[#FD0053] rounded-full animate-pulse"></div>}
                     </div>
                 </button>
             </div>
@@ -212,19 +212,19 @@ const DeliveryProfile = () => {
 
             {/* New Categorized Menu - Matching Reference */}
             <div className="space-y-6">
-                
+
                 {/* 1. Identity & Duty */}
                 <div className="space-y-3">
                     <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2 italic">Identity & Performance</h3>
                     <div className="bg-white rounded-[2rem] p-4 border border-slate-100 shadow-sm">
-                        <MenuOption 
+                        <MenuOption
                             icon={User}
                             color="bg-green-500"
                             label="Identity Profile"
                             subLabel={deliveryProfile?.user?.isVerified ? "Verified Partner" : "Update details"}
                             onClick={() => setIsEditing('personal')}
                         />
-                        <MenuOption 
+                        <MenuOption
                             icon={Star}
                             color="bg-orange-400"
                             label="Performance Rating"
@@ -239,7 +239,7 @@ const DeliveryProfile = () => {
                 <div className="space-y-3">
                     <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2 italic">Earnings & Bank</h3>
                     <div className="bg-white rounded-[2rem] p-4 border border-slate-100 shadow-sm">
-                        <MenuOption 
+                        <MenuOption
                             icon={Wallet}
                             color="bg-purple-600"
                             label="Wallet & Earnings"
@@ -247,7 +247,7 @@ const DeliveryProfile = () => {
                             extra={<span className="bg-green-50 text-[10px] font-black px-2.5 py-1 rounded-full text-green-600 border border-green-100 italic">₹ 1,240</span>}
                             to="/delivery/wallet"
                         />
-                        <MenuOption 
+                        <MenuOption
                             icon={CreditCard}
                             color="bg-pink-500"
                             label="Financial Routing"
@@ -261,28 +261,28 @@ const DeliveryProfile = () => {
                 <div className="space-y-3">
                     <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2 italic">Platform Settings</h3>
                     <div className="bg-white rounded-[2rem] p-4 border border-slate-100 shadow-sm">
-                        <MenuOption 
+                        <MenuOption
                             icon={Bell}
                             color="bg-red-500"
                             label="Notifications"
                             subLabel="Alert preferences"
                             to="/delivery/notifications"
                         />
-                        <MenuOption 
+                        <MenuOption
                             icon={Globe}
                             color="bg-blue-600"
                             label="Language"
                             extra={<span className="text-[10px] font-bold text-gray-400 mr-1">EN</span>}
                             to="/delivery/language"
                         />
-                        <MenuOption 
+                        <MenuOption
                             icon={FileText}
                             color="bg-amber-600"
                             label="KYC Documents"
                             subLabel={kycStatus}
                             onClick={() => setShowKYCModal(true)}
                         />
-                        <MenuOption 
+                        <MenuOption
                             icon={LifeBuoy}
                             color="bg-cyan-500"
                             label="Help & Support"
@@ -464,7 +464,7 @@ const DeliveryProfile = () => {
                                                 const file = e.target.files[0];
                                                 const formData = new FormData();
                                                 formData.append('image', file);
-                                                
+
                                                 try {
                                                     const res = await api.post('/upload', formData);
                                                     setAadharImage(res.data.data);
@@ -477,7 +477,7 @@ const DeliveryProfile = () => {
                                         {aadharImage ? (
                                             <div className="absolute inset-0 w-full h-full bg-slate-900/10 flex items-center justify-center backdrop-blur-sm">
                                                 <img src={aadharImage} alt="Aadhar" className="w-full h-full object-cover opacity-60" />
-                                                <CheckCircle2 size={32} className="text-[#FF5C8A] absolute drop-shadow-md bg-white rounded-full" />
+                                                <CheckCircle2 size={32} className="text-[#FD0053] absolute drop-shadow-md bg-white rounded-full" />
                                             </div>
                                         ) : (
                                             <>
@@ -500,7 +500,7 @@ const DeliveryProfile = () => {
                                                 const file = e.target.files[0];
                                                 const formData = new FormData();
                                                 formData.append('image', file);
-                                                
+
                                                 try {
                                                     const res = await api.post('/upload', formData);
                                                     setLicenseImage(res.data.data);
@@ -513,7 +513,7 @@ const DeliveryProfile = () => {
                                         {licenseImage ? (
                                             <div className="absolute inset-0 w-full h-full bg-slate-900/10 flex items-center justify-center backdrop-blur-sm">
                                                 <img src={licenseImage} alt="License" className="w-full h-full object-cover opacity-60" />
-                                                <CheckCircle2 size={32} className="text-[#FF5C8A] absolute drop-shadow-md bg-white rounded-full" />
+                                                <CheckCircle2 size={32} className="text-[#FD0053] absolute drop-shadow-md bg-white rounded-full" />
                                             </div>
                                         ) : (
                                             <>
@@ -529,7 +529,7 @@ const DeliveryProfile = () => {
                                 onClick={handleKYCSubmit}
                                 className="w-full bg-slate-900 text-white rounded-2xl p-4 font-black tracking-widest text-xs hover:bg-black active:scale-95 transition-all shadow-xl flex items-center justify-center gap-2 uppercase"
                             >
-                                <CheckCircle2 size={16} className="text-[#FF5C8A]" /> Submit To Admin
+                                <CheckCircle2 size={16} className="text-[#FD0053]" /> Submit To Admin
                             </button>
 
                             <p className="text-center mt-4 text-[9px] font-black text-slate-300 uppercase tracking-widest leading-relaxed">

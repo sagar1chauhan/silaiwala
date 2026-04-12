@@ -8,7 +8,7 @@ import api from '../services/api';
 const TailorLogin = () => {
     const { login } = useTailorAuth();
     const navigate = useNavigate();
-    
+
     const [otpSent, setOtpSent] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [sendingOtp, setSendingOtp] = useState(false);
@@ -27,9 +27,9 @@ const TailorLogin = () => {
             await api.post('/auth/send-otp', { phoneNumber: mobileNumber });
             setOtpSent(true);
         } catch (error) {
-            setFormError('root', { 
-                type: 'manual', 
-                message: error.response?.data?.message || 'Failed to send OTP' 
+            setFormError('root', {
+                type: 'manual',
+                message: error.response?.data?.message || 'Failed to send OTP'
             });
         } finally {
             setSendingOtp(false);
@@ -39,7 +39,7 @@ const TailorLogin = () => {
     const onSubmit = async (data) => {
         setIsLoading(true);
         clearErrors('root');
-        
+
         try {
             const response = await api.post('/auth/login', {
                 email: data.mobileNumber,
@@ -48,7 +48,7 @@ const TailorLogin = () => {
 
             if (response.data.success) {
                 const { token, data: userData } = response.data;
-                
+
                 if (userData.role !== 'tailor') {
                     setFormError('root', { type: 'manual', message: 'This portal is only for registered tailors.' });
                     return;
@@ -66,7 +66,7 @@ const TailorLogin = () => {
     };
 
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -81,7 +81,7 @@ const TailorLogin = () => {
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
                 {errors.root && (
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="p-3.5 text-[11px] font-bold uppercase tracking-wider text-pink-600 bg-pink-50 rounded-2xl border border-pink-100 flex items-center justify-center gap-2"
@@ -100,7 +100,7 @@ const TailorLogin = () => {
                                 type="tel"
                                 placeholder="Mobile Number"
                                 maxLength={10}
-                                {...register('mobileNumber', { 
+                                {...register('mobileNumber', {
                                     required: 'Mobile number is required',
                                     pattern: {
                                         value: /^[0-9]{10}$/,
@@ -118,11 +118,10 @@ const TailorLogin = () => {
                             type="button"
                             onClick={handleSendOTP}
                             disabled={!mobileNumber || mobileNumber.length < 10 || sendingOtp}
-                            className={`w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-md ${
-                                !mobileNumber || mobileNumber.length < 10 || sendingOtp
+                            className={`w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-md ${!mobileNumber || mobileNumber.length < 10 || sendingOtp
                                     ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                                    : 'bg-[#FF5C8A] hover:bg-[#E04D79] text-white shadow-[#FF5C8A]/20 hover:shadow-lg'
-                            }`}
+                                    : 'bg-[#FD0053] hover:bg-[#E04D79] text-white shadow-[#FD0053]/20 hover:shadow-lg'
+                                }`}
                         >
                             {sendingOtp ? 'Sending...' : (
                                 <span className="flex items-center justify-center gap-2">
@@ -135,7 +134,7 @@ const TailorLogin = () => {
 
                 <AnimatePresence>
                     {otpSent && (
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
@@ -157,7 +156,7 @@ const TailorLogin = () => {
 
                             <button
                                 type="submit"
-                                className={`w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg ${isLoading ? 'bg-gray-300 text-gray-600' : 'bg-[#FF5C8A] hover:bg-[#E04D79] text-white shadow-[#FF5C8A]/20'}`}
+                                className={`w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg ${isLoading ? 'bg-gray-300 text-gray-600' : 'bg-[#FD0053] hover:bg-[#E04D79] text-white shadow-[#FD0053]/20'}`}
                                 disabled={isLoading}
                             >
                                 {isLoading ? 'Verifying...' : (

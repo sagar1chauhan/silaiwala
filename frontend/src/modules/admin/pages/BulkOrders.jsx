@@ -11,7 +11,7 @@ const statusConfig = {
     accepted: { color: 'text-green-500', bg: 'bg-green-50', label: 'Awaiting Assignment' },
     'accepted-by-tailor': { color: 'text-indigo-600', bg: 'bg-indigo-50', label: 'Master Tailor Assigned' },
     'fabric-ready-for-pickup': { color: 'text-orange-600', bg: 'bg-orange-50', label: 'Fabric Scheduled' },
-    'in-production': { color: 'text-[#FF5C8A]', bg: 'bg-pink-50', label: 'In Production' },
+    'in-production': { color: 'text-[#FD0053]', bg: 'bg-pink-50', label: 'In Production' },
     'ready-for-pickup': { color: 'text-cyan-600', bg: 'bg-cyan-50', label: 'Quality Checked' },
     shipped: { color: 'text-sky-600', bg: 'bg-sky-50', label: 'In Transit' },
     delivered: { color: 'text-emerald-600', bg: 'bg-emerald-50', label: 'Completed' },
@@ -91,7 +91,7 @@ const AdminBulkOrders = () => {
         }
     };
 
-    const filteredOrders = orders.filter(o => 
+    const filteredOrders = orders.filter(o =>
         o.orderId.toLowerCase().includes(searchQuery.toLowerCase()) ||
         o.organizationName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         o.contactPerson.toLowerCase().includes(searchQuery.toLowerCase())
@@ -109,16 +109,16 @@ const AdminBulkOrders = () => {
                 <div className="flex items-center gap-3 w-full sm:w-auto flex-1">
                     <div className="relative flex-1 max-w-sm">
                         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                        <input 
-                            type="text" 
-                            placeholder="Search organization or ID..." 
+                        <input
+                            type="text"
+                            placeholder="Search organization or ID..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-9 pr-4 py-2 text-xs font-semibold bg-gray-50 border border-transparent focus:border-gray-200 rounded-xl outline-none transition-all" 
+                            className="w-full pl-9 pr-4 py-2 text-xs font-semibold bg-gray-50 border border-transparent focus:border-gray-200 rounded-xl outline-none transition-all"
                         />
                     </div>
                 </div>
-                <button 
+                <button
                     onClick={fetchOrders}
                     className="p-2.5 text-gray-400 hover:text-primary hover:bg-gray-50 rounded-xl border border-transparent transition-all"
                 >
@@ -150,7 +150,7 @@ const AdminBulkOrders = () => {
                             ) : filteredOrders.map((order) => {
                                 const config = statusConfig[order.status] || statusConfig.pending;
                                 return (
-                                    <tr 
+                                    <tr
                                         key={order._id}
                                         className="hover:bg-primary/5 transition-colors cursor-pointer group"
                                         onClick={() => setSelectedOrder(order)}
@@ -311,7 +311,7 @@ const AdminBulkOrders = () => {
                                 {/* Quoting Area (Only if Send Quote is active) */}
                                 <AnimatePresence>
                                     {isQuoting ? (
-                                        <motion.div 
+                                        <motion.div
                                             initial={{ opacity: 0, scale: 0.95 }}
                                             animate={{ opacity: 1, scale: 1 }}
                                             className="bg-primary/5 border border-primary/10 p-6 rounded-[2rem] space-y-4"
@@ -324,8 +324,8 @@ const AdminBulkOrders = () => {
                                                 <div className="grid grid-cols-2 gap-3">
                                                     <div>
                                                         <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Price / Unit (₹)</label>
-                                                        <input 
-                                                            type="number" 
+                                                        <input
+                                                            type="number"
                                                             required
                                                             placeholder="0.00"
                                                             className="w-full p-3 bg-white border border-gray-100 rounded-xl text-xs font-bold outline-none focus:ring-1 focus:ring-primary/20"
@@ -335,7 +335,7 @@ const AdminBulkOrders = () => {
                                                                 const total = price * selectedOrder.estimatedQuantity;
                                                                 const deposit = (total * (parseFloat(quoteDraft.depositPercentage) || 0)) / 100;
                                                                 setQuoteDraft({
-                                                                    ...quoteDraft, 
+                                                                    ...quoteDraft,
                                                                     pricePerUnit: e.target.value,
                                                                     totalAmount: total.toString(),
                                                                     depositRequired: Math.round(deposit).toString()
@@ -345,8 +345,8 @@ const AdminBulkOrders = () => {
                                                     </div>
                                                     <div>
                                                         <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Total Quote (₹)</label>
-                                                        <input 
-                                                            type="number" 
+                                                        <input
+                                                            type="number"
                                                             required
                                                             placeholder="Calculated"
                                                             className="w-full p-3 bg-white border border-gray-100 rounded-xl text-xs font-bold outline-none focus:ring-1 focus:ring-primary/20"
@@ -355,7 +355,7 @@ const AdminBulkOrders = () => {
                                                                 const total = parseFloat(e.target.value) || 0;
                                                                 const deposit = (total * (parseFloat(quoteDraft.depositPercentage) || 0)) / 100;
                                                                 setQuoteDraft({
-                                                                    ...quoteDraft, 
+                                                                    ...quoteDraft,
                                                                     totalAmount: e.target.value,
                                                                     depositRequired: Math.round(deposit).toString()
                                                                 });
@@ -366,8 +366,8 @@ const AdminBulkOrders = () => {
                                                 <div className="grid grid-cols-2 gap-3">
                                                     <div>
                                                         <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Deposit %</label>
-                                                        <input 
-                                                            type="number" 
+                                                        <input
+                                                            type="number"
                                                             placeholder="20"
                                                             className="w-full p-3 bg-white border border-gray-100 rounded-xl text-xs font-bold outline-none focus:ring-1 focus:ring-primary/20"
                                                             value={quoteDraft.depositPercentage}
@@ -376,7 +376,7 @@ const AdminBulkOrders = () => {
                                                                 const total = parseFloat(quoteDraft.totalAmount) || 0;
                                                                 const deposit = (total * percent) / 100;
                                                                 setQuoteDraft({
-                                                                    ...quoteDraft, 
+                                                                    ...quoteDraft,
                                                                     depositPercentage: e.target.value,
                                                                     depositRequired: Math.round(deposit).toString()
                                                                 });
@@ -385,22 +385,22 @@ const AdminBulkOrders = () => {
                                                     </div>
                                                     <div>
                                                         <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Security Deposit (₹)</label>
-                                                        <input 
-                                                            type="number" 
+                                                        <input
+                                                            type="number"
                                                             placeholder="Security fee"
                                                             className="w-full p-3 bg-white border border-gray-100 rounded-xl text-xs font-bold outline-none focus:ring-1 focus:ring-primary/20"
                                                             value={quoteDraft.depositRequired}
-                                                            onChange={(e) => setQuoteDraft({...quoteDraft, depositRequired: e.target.value})}
+                                                            onChange={(e) => setQuoteDraft({ ...quoteDraft, depositRequired: e.target.value })}
                                                         />
                                                     </div>
                                                 </div>
                                                 <div>
                                                     <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Admin Remarks</label>
-                                                    <textarea 
+                                                    <textarea
                                                         className="w-full p-3 bg-white border border-gray-100 rounded-xl text-xs font-medium outline-none focus:ring-1 focus:ring-primary/20 resize-none h-16"
                                                         placeholder="Fabric details, timeline etc."
                                                         value={quoteDraft.adminNotes}
-                                                        onChange={(e) => setQuoteDraft({...quoteDraft, adminNotes: e.target.value})}
+                                                        onChange={(e) => setQuoteDraft({ ...quoteDraft, adminNotes: e.target.value })}
                                                     ></textarea>
                                                 </div>
                                                 <div className="flex gap-2">
@@ -411,7 +411,7 @@ const AdminBulkOrders = () => {
                                         </motion.div>
                                     ) : (
                                         selectedOrder.status === 'pending' || selectedOrder.status === 'reviewing' ? (
-                                            <button 
+                                            <button
                                                 onClick={() => setIsQuoting(true)}
                                                 className="w-full py-5 bg-primary text-white rounded-[2rem] text-[11px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 active:scale-95 transition-all"
                                             >
@@ -422,7 +422,7 @@ const AdminBulkOrders = () => {
                                             selectedOrder.quote && (
                                                 <div className="bg-purple-50 border border-purple-100 p-6 rounded-[2rem] space-y-4">
                                                     <div className="flex items-center justify-between">
-                                                         <div className="flex items-center gap-2 text-purple-600">
+                                                        <div className="flex items-center gap-2 text-purple-600">
                                                             <DollarSign size={18} strokeWidth={3} />
                                                             <h3 className="text-sm font-black uppercase tracking-widest">Existing Quote</h3>
                                                         </div>
@@ -443,7 +443,7 @@ const AdminBulkOrders = () => {
                                         )
                                     )}
                                 </AnimatePresence>
-                                
+
                                 {/* Professional Assignment Section */}
                                 {['accepted', 'accepted-by-tailor', 'fabric-ready-for-pickup', 'in-production'].includes(selectedOrder.status) && (
                                     <div className="bg-green-50/50 border border-green-100 p-6 rounded-[2rem] space-y-4">
@@ -457,20 +457,20 @@ const AdminBulkOrders = () => {
                                                     <label className="text-[9px] font-black text-gray-400 uppercase block mb-1.5">Assign Tailor (Master Craftsman)</label>
                                                     <div className="relative">
                                                         <Scissors size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                                                        <select 
+                                                        <select
                                                             className="w-full pl-10 pr-4 py-3 bg-white border border-gray-100 rounded-xl text-xs font-bold outline-none focus:ring-1 focus:ring-green-500/20 appearance-none transition-all cursor-pointer"
                                                             value={selectedOrder.tailor?._id || selectedOrder.tailor || ''}
                                                             onChange={async (e) => {
                                                                 const tailorId = e.target.value;
                                                                 try {
-                                                                    await api.put(`/bulk-orders/${selectedOrder._id}`, { 
+                                                                    await api.put(`/bulk-orders/${selectedOrder._id}`, {
                                                                         tailor: tailorId,
                                                                         status: 'accepted-by-tailor',
-                                                                        message: "Master Tailor assigned to Bulk Production." 
+                                                                        message: "Master Tailor assigned to Bulk Production."
                                                                     });
                                                                     toast.success('Tailor assigned successfully');
                                                                     fetchOrders();
-                                                                    setSelectedOrder(prev => ({...prev, tailor: tailorId, status: 'accepted-by-tailor'}));
+                                                                    setSelectedOrder(prev => ({ ...prev, tailor: tailorId, status: 'accepted-by-tailor' }));
                                                                 } catch (err) {
                                                                     toast.error('Assignment failed');
                                                                 }
@@ -487,20 +487,20 @@ const AdminBulkOrders = () => {
                                                     <label className="text-[9px] font-black text-gray-400 uppercase block mb-1.5">Assign Logistics Partner</label>
                                                     <div className="relative">
                                                         <Package size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                                                        <select 
+                                                        <select
                                                             className="w-full pl-10 pr-4 py-3 bg-white border border-gray-100 rounded-xl text-xs font-bold outline-none focus:ring-1 focus:ring-green-500/20 appearance-none transition-all cursor-pointer"
                                                             value={selectedOrder.deliveryPartner?._id || selectedOrder.deliveryPartner || ''}
                                                             onChange={async (e) => {
                                                                 const riderId = e.target.value;
                                                                 try {
-                                                                    await api.put(`/bulk-orders/${selectedOrder._id}`, { 
+                                                                    await api.put(`/bulk-orders/${selectedOrder._id}`, {
                                                                         deliveryPartner: riderId,
                                                                         status: 'fabric-ready-for-pickup',
-                                                                        message: "Logistics partner assigned for material pickup." 
+                                                                        message: "Logistics partner assigned for material pickup."
                                                                     });
                                                                     toast.success('Rider assigned successfully');
                                                                     fetchOrders();
-                                                                    setSelectedOrder(prev => ({...prev, deliveryPartner: riderId, status: 'fabric-ready-for-pickup'}));
+                                                                    setSelectedOrder(prev => ({ ...prev, deliveryPartner: riderId, status: 'fabric-ready-for-pickup' }));
                                                                 } catch (err) {
                                                                     toast.error('Assignment failed');
                                                                 }

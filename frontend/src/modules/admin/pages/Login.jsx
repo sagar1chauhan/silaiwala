@@ -47,7 +47,7 @@ const AdminLogin = () => {
     const handleVerifyOTP = async (e) => {
         e.preventDefault();
         setError('');
-        
+
         const otpValue = otp.join('');
         if (otpValue.length !== 6) {
             setError('Please enter the 6-digit verification code.');
@@ -56,7 +56,7 @@ const AdminLogin = () => {
 
         try {
             const user = await otpLogin(email, otpValue);
-            
+
             if (user.role !== 'admin') {
                 setError('Access Denied. Internal Admin accounts only.');
                 useAuthStore.getState().logout();
@@ -96,19 +96,19 @@ const AdminLogin = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#FF5C8A] relative overflow-hidden font-sans">
+        <div className="min-h-screen flex items-center justify-center bg-[#FD0053] relative overflow-hidden font-sans">
             {/* Ambient Animated Gradients */}
             <div className="absolute top-[-10%] left-[-5%] w-[60%] h-[60%] bg-pink-400 rounded-full blur-[140px] opacity-40 animate-pulse"></div>
             <div className="absolute bottom-[-10%] right-[-5%] w-[50%] h-[50%] bg-primary-dark rounded-full blur-[120px] opacity-60"></div>
 
             <div className="w-full max-w-md bg-white/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] overflow-hidden relative z-10 mx-4 border border-white">
                 <div className="p-8 sm:p-12 flex flex-col items-center">
-                    
+
                     {/* Brand Identity */}
                     <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center p-3 shadow-2xl border border-gray-50 mb-8 transform transition-all hover:scale-105 active:rotate-6">
-                         <img src="/logo.png" alt="Logo" className="w-14 h-14 object-contain" />
+                        <img src="/logo.png" alt="Logo" className="w-14 h-14 object-contain" />
                     </div>
-                    
+
                     <div className="text-center space-y-1 mb-10">
                         <h2 className="text-3xl font-black text-gray-900 tracking-tight">Admin Gate</h2>
                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">Authorized Personnel Only</p>
@@ -126,7 +126,7 @@ const AdminLogin = () => {
                                 <div className="space-y-2">
                                     <label className="text-[10px] uppercase tracking-widest font-black text-gray-400 ml-1">Work Email Address</label>
                                     <div className="relative group">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#FF5C8A] transition-colors">
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#FD0053] transition-colors">
                                             <Mail size={18} />
                                         </span>
                                         <input
@@ -134,7 +134,7 @@ const AdminLogin = () => {
                                             placeholder="admin@silaiwala.com"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value.toLowerCase())}
-                                            className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-[1.25rem] text-sm font-bold text-gray-900 outline-none focus:border-[#FF5C8A] focus:bg-white transition-all shadow-inner"
+                                            className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-[1.25rem] text-sm font-bold text-gray-900 outline-none focus:border-[#FD0053] focus:bg-white transition-all shadow-inner"
                                             required
                                         />
                                     </div>
@@ -143,7 +143,7 @@ const AdminLogin = () => {
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="w-full py-5 bg-[#FF5C8A] hover:bg-[#cc496e] text-white text-[11px] font-black rounded-2xl shadow-xl shadow-pink-500/40 transition-all uppercase tracking-[0.15em] active:scale-[0.98] disabled:opacity-50 flex justify-center items-center gap-2"
+                                    className="w-full py-5 bg-[#FD0053] hover:bg-[#cc496e] text-white text-[11px] font-black rounded-2xl shadow-xl shadow-pink-500/40 transition-all uppercase tracking-[0.15em] active:scale-[0.98] disabled:opacity-50 flex justify-center items-center gap-2"
                                 >
                                     {isLoading ? (
                                         <RefreshCw size={18} className="animate-spin" />
@@ -155,8 +155,8 @@ const AdminLogin = () => {
                         ) : (
                             <form onSubmit={handleVerifyOTP} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 <div className="text-center space-y-2">
-                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-pink-50 text-[#FF5C8A] rounded-full text-[10px] font-black uppercase tracking-wider">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-[#FF5C8A] animate-ping"></div>
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-pink-50 text-[#FD0053] rounded-full text-[10px] font-black uppercase tracking-wider">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-[#FD0053] animate-ping"></div>
                                         Safety Token Sent
                                     </div>
                                     <p className="text-[11px] text-gray-500 font-medium">Verify login for <span className="font-black text-gray-900">{email}</span></p>
@@ -167,7 +167,7 @@ const AdminLogin = () => {
                                         <input
                                             key={index}
                                             ref={el => otpInputs.current[index] = el}
-                                            className="w-12 h-14 text-center text-xl font-black bg-gray-50 border-2 border-gray-100 rounded-xl outline-none focus:border-[#FF5C8A] focus:bg-white focus:ring-4 focus:ring-pink-50 transition-all text-gray-900 shadow-sm"
+                                            className="w-12 h-14 text-center text-xl font-black bg-gray-50 border-2 border-gray-100 rounded-xl outline-none focus:border-[#FD0053] focus:bg-white focus:ring-4 focus:ring-pink-50 transition-all text-gray-900 shadow-sm"
                                             type="text"
                                             maxLength="1"
                                             value={data}
@@ -182,7 +182,7 @@ const AdminLogin = () => {
                                     <button
                                         type="submit"
                                         disabled={isLoading || otp.join('').length !== 6}
-                                        className="w-full py-5 bg-[#FF5C8A] hover:bg-[#cc496e] text-white text-[11px] font-black rounded-2xl shadow-xl shadow-pink-500/40 transition-all uppercase tracking-[0.15em] active:scale-[0.98] disabled:opacity-50 flex justify-center items-center gap-2"
+                                        className="w-full py-5 bg-[#FD0053] hover:bg-[#cc496e] text-white text-[11px] font-black rounded-2xl shadow-xl shadow-pink-500/40 transition-all uppercase tracking-[0.15em] active:scale-[0.98] disabled:opacity-50 flex justify-center items-center gap-2"
                                     >
                                         {isLoading ? (
                                             <RefreshCw size={18} className="animate-spin" />
@@ -190,21 +190,21 @@ const AdminLogin = () => {
                                             <>Verify & Authorize <ShieldCheck size={18} /></>
                                         )}
                                     </button>
-                                    
+
                                     <div className="flex flex-col items-center gap-3">
                                         <button
                                             type="button"
                                             onClick={() => setStep('identifier')}
-                                            className="text-[10px] text-gray-400 font-bold uppercase hover:text-[#FF5C8A] transition-colors"
+                                            className="text-[10px] text-gray-400 font-bold uppercase hover:text-[#FD0053] transition-colors"
                                         >
                                             Change Email Address
                                         </button>
-                                        
+
                                         <button
                                             type="button"
                                             onClick={handleSendOTP}
                                             disabled={timer > 0 || isLoading}
-                                            className="text-[10px] text-[#FF5C8A] font-black uppercase tracking-widest disabled:text-gray-300"
+                                            className="text-[10px] text-[#FD0053] font-black uppercase tracking-widest disabled:text-gray-300"
                                         >
                                             {timer > 0 ? `Resend Code in ${timer}s` : 'Resend Security Code'}
                                         </button>
@@ -217,10 +217,10 @@ const AdminLogin = () => {
 
                 {/* Footer Assurance */}
                 <div className="bg-gray-50/80 p-6 border-t border-gray-100 flex items-center justify-center gap-2">
-                     <ShieldCheck size={14} className="text-[#FF5C8A]" />
-                     <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
-                         Secure SSL Encrypted Session
-                     </p>
+                    <ShieldCheck size={14} className="text-[#FD0053]" />
+                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
+                        Secure SSL Encrypted Session
+                    </p>
                 </div>
             </div>
         </div>

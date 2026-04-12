@@ -175,7 +175,7 @@ const ServiceDetail = () => {
             try {
                 await addMeasurement({
                     profileName: measurements.saveProfile.name,
-                    garmentType: serviceData.category || "Other",
+                    garmentType: serviceData.category?.name || "Other",
                     measurements: measurements.data,
                     notes: measurements.data.notes
                 });

@@ -26,33 +26,33 @@ const AdminOrders = () => {
 
     const fetchOrders = async () => {
         try {
-             const res = await api.get('/admin/orders');
-             const formatted = res.data.data.map(o => ({
-                 id: o.orderId || o._id.substring(0, 8),
-                 fullId: o._id,
-                 date: new Date(o.createdAt).toLocaleDateString(),
-                 customer: o.customer?.name || 'Unknown Customer',
-                 phone: o.customer?.phoneNumber || 'N/A',
-                 email: o.customer?.email || 'N/A',
-                 address: o.deliveryAddress ? `${o.deliveryAddress.street}, ${o.deliveryAddress.city}` : 'Shipping address provided',
-                 service: o.items?.[0]?.service?.title || o.items?.[0]?.product?.name || 'Custom Request',
-                 type: o.items?.[0]?.product ? 'Store' : 'Stitching',
-                 tailor: o.tailor?.name || 'Unassigned',
-                 tailorId: o.tailor?._id,
-                 deliveryPartner: o.deliveryPartner?.name || 'Unassigned',
-                 deliveryPartnerId: o.deliveryPartner?._id,
-                 amount: `₹${(o.totalAmount || 0).toLocaleString()}`,
-                 status: o.status || 'pending',
-                 paymentStatus: o.paymentStatus || 'pending',
-                 measurements: 'Standard Profile',
-                 trackingHistory: o.trackingHistory || []
-             }));
-             setOrdersData(formatted);
+            const res = await api.get('/admin/orders');
+            const formatted = res.data.data.map(o => ({
+                id: o.orderId || o._id.substring(0, 8),
+                fullId: o._id,
+                date: new Date(o.createdAt).toLocaleDateString(),
+                customer: o.customer?.name || 'Unknown Customer',
+                phone: o.customer?.phoneNumber || 'N/A',
+                email: o.customer?.email || 'N/A',
+                address: o.deliveryAddress ? `${o.deliveryAddress.street}, ${o.deliveryAddress.city}` : 'Shipping address provided',
+                service: o.items?.[0]?.service?.title || o.items?.[0]?.product?.name || 'Custom Request',
+                type: o.items?.[0]?.product ? 'Store' : 'Stitching',
+                tailor: o.tailor?.name || 'Unassigned',
+                tailorId: o.tailor?._id,
+                deliveryPartner: o.deliveryPartner?.name || 'Unassigned',
+                deliveryPartnerId: o.deliveryPartner?._id,
+                amount: `₹${(o.totalAmount || 0).toLocaleString()}`,
+                status: o.status || 'pending',
+                paymentStatus: o.paymentStatus || 'pending',
+                measurements: 'Standard Profile',
+                trackingHistory: o.trackingHistory || []
+            }));
+            setOrdersData(formatted);
         } catch (err) {
-             console.error('Failed to fetch orders:', err);
-             setOrdersData([]);
+            console.error('Failed to fetch orders:', err);
+            setOrdersData([]);
         } finally {
-             setIsLoading(false);
+            setIsLoading(false);
         }
     };
 
@@ -86,7 +86,7 @@ const AdminOrders = () => {
         const params = new URLSearchParams(window.location.search);
         const searchVal = params.get('search');
         if (searchVal) setSearchQuery(searchVal);
-        
+
         fetchOrders();
         fetchUsers();
     }, []);
@@ -130,15 +130,15 @@ const AdminOrders = () => {
         try {
             const updateData = {};
             updateData[assignRole] = userId;
-            
+
             await api.put(`/admin/orders/${selectedOrder.fullId}/status`, updateData);
-            
+
             fetchOrders();
             // Update selected order UI
             if (selectedOrder) {
                 const userName = (assignRole === 'tailor' ? tailorsList : deliveryList).find(u => u._id === userId)?.name || 'Assigned';
                 setSelectedOrder(prev => ({
-                    ...prev, 
+                    ...prev,
                     [assignRole]: userName,
                     [`${assignRole}Id`]: userId
                 }));
@@ -167,14 +167,14 @@ const AdminOrders = () => {
     };
 
     const filteredOrders = ordersData.filter(o => {
-        const matchesTab = 
-            selectedTab === 'All Orders' || 
-            (selectedTab === 'Stitching Service' && o.type === 'Stitching') || 
+        const matchesTab =
+            selectedTab === 'All Orders' ||
+            (selectedTab === 'Stitching Service' && o.type === 'Stitching') ||
             (selectedTab === 'Readymade Store' && o.type === 'Store');
 
-        const matchesSearch = 
-            o.id.toLowerCase().includes(searchQuery.toLowerCase()) || 
-            o.customer.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        const matchesSearch =
+            o.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            o.customer.toLowerCase().includes(searchQuery.toLowerCase()) ||
             o.service.toLowerCase().includes(searchQuery.toLowerCase());
 
         return matchesTab && matchesSearch;
@@ -193,10 +193,10 @@ const AdminOrders = () => {
             default: return 'bg-gray-100 text-gray-700 border-gray-200';
         }
     };
-    
+
     const availableStatuses = [
-        "pending", "fabric-ready-for-pickup", "fabric-picked-up", "fabric-delivered", 
-        "accepted", "in-progress", "completed", "ready-for-pickup", 
+        "pending", "fabric-ready-for-pickup", "fabric-picked-up", "fabric-delivered",
+        "accepted", "in-progress", "completed", "ready-for-pickup",
         "out-for-delivery", "delivered", "failed-delivery", "cancelled"
     ];
 
@@ -224,12 +224,12 @@ const AdminOrders = () => {
                 <div className="flex items-center gap-3 w-full sm:w-auto">
                     <div className="relative flex-1 sm:w-64">
                         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                        <input 
-                            type="text" 
-                            placeholder="Search orders..." 
+                        <input
+                            type="text"
+                            placeholder="Search orders..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-9 pr-4 py-2 text-xs font-semibold bg-gray-50 border border-transparent focus:border-gray-200 rounded-xl outline-none transition-all" 
+                            className="w-full pl-9 pr-4 py-2 text-xs font-semibold bg-gray-50 border border-transparent focus:border-gray-200 rounded-xl outline-none transition-all"
                         />
                     </div>
                     <button className="p-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 hover:text-primary transition-colors shrink-0 border border-transparent">
@@ -241,9 +241,9 @@ const AdminOrders = () => {
             {/* Table */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm flex-1 overflow-hidden flex flex-col relative">
                 {isLoading && (
-                     <div className="w-full h-1 bg-gray-100 overflow-hidden absolute top-0 left-0 z-10">
-                         <div className="h-full bg-primary animate-pulse w-1/3"></div>
-                     </div>
+                    <div className="w-full h-1 bg-gray-100 overflow-hidden absolute top-0 left-0 z-10">
+                        <div className="h-full bg-primary animate-pulse w-1/3"></div>
+                    </div>
                 )}
                 <div className="overflow-x-auto">
                     <table className="w-full text-left whitespace-nowrap">
@@ -425,7 +425,7 @@ const AdminOrders = () => {
                                             <p className="text-xs font-bold text-gray-900 capitalize">{selectedOrder.paymentStatus}</p>
                                         </div>
                                         {selectedOrder.paymentStatus.toLowerCase() !== 'paid' && (
-                                            <button 
+                                            <button
                                                 onClick={() => handleUpdatePaymentStatus(selectedOrder.fullId, 'paid')}
                                                 className="mt-2 text-[10px] font-black uppercase text-green-600 bg-green-50 px-3 py-1.5 rounded-lg hover:bg-green-600 hover:text-white transition-all w-full flex items-center justify-center gap-1"
                                             >
@@ -452,9 +452,9 @@ const AdminOrders = () => {
                                                         </div>
                                                         <p className="text-[10px] text-gray-500 font-medium mt-1 leading-relaxed">{event.message}</p>
                                                         {event.proof && (
-                                                           <a href={event.proof} target="_blank" rel="noreferrer" className="mt-2 block w-20 h-20 rounded-lg overflow-hidden border border-gray-100">
-                                                               <img src={event.proof} alt="Proof" className="w-full h-full object-cover" />
-                                                           </a>
+                                                            <a href={event.proof} target="_blank" rel="noreferrer" className="mt-2 block w-20 h-20 rounded-lg overflow-hidden border border-gray-100">
+                                                                <img src={event.proof} alt="Proof" className="w-full h-full object-cover" />
+                                                            </a>
                                                         )}
                                                     </div>
                                                 </div>
@@ -469,37 +469,37 @@ const AdminOrders = () => {
                             {/* Action Bottom */}
                             <div className="p-6 border-t border-gray-100 bg-white flex items-center justify-between gap-3 relative">
                                 <div className="relative">
-                                     <button 
+                                    <button
                                         onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
                                         className="px-6 py-3 border border-gray-200 text-gray-700 text-xs font-black rounded-xl hover:bg-gray-50 transition-colors uppercase tracking-widest min-w-[150px]"
-                                     >
-                                         {isUpdatingStatus ? 'Updating...' : 'Update Status'}
-                                     </button>
-                                     <AnimatePresence>
-                                         {statusDropdownOpen && (
-                                              <motion.div 
+                                    >
+                                        {isUpdatingStatus ? 'Updating...' : 'Update Status'}
+                                    </button>
+                                    <AnimatePresence>
+                                        {statusDropdownOpen && (
+                                            <motion.div
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 exit={{ opacity: 0, y: 10 }}
                                                 className="absolute bottom-full left-0 mb-2 w-48 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden z-50 py-1"
-                                              >
-                                                  {availableStatuses.map(status => (
-                                                      <button
+                                            >
+                                                {availableStatuses.map(status => (
+                                                    <button
                                                         key={status}
                                                         onClick={() => handleUpdateStatus(selectedOrder.fullId, status)}
                                                         className="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 hover:text-primary uppercase tracking-wider"
-                                                      >
-                                                          {status.replace(/-/g, ' ')}
-                                                      </button>
-                                                  ))}
-                                              </motion.div>
-                                         )}
-                                     </AnimatePresence>
+                                                    >
+                                                        {status.replace(/-/g, ' ')}
+                                                    </button>
+                                                ))}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
                                 </div>
-                                <button 
+                                <button
                                     onClick={() => handleManageOrderDetails(selectedOrder.fullId)}
                                     disabled={isLoadingDetails || selectedOrder.isCustomBooking}
-                                    className="px-6 py-3 bg-[#FF5C8A] text-white text-xs font-bold rounded-xl hover:bg-[#cc496e] shadow-lg shadow-[#FF5C8A]/20 transition-all uppercase tracking-wider flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-6 py-3 bg-[#FD0053] text-white text-xs font-bold rounded-xl hover:bg-[#cc496e] shadow-lg shadow-[#FD0053]/20 transition-all uppercase tracking-wider flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isLoadingDetails ? 'Loading...' : 'Manage Order Details'}
                                 </button>
@@ -512,12 +512,12 @@ const AdminOrders = () => {
             {/* ===== MANAGE ORDER DETAILS MODAL ===== */}
             <AnimatePresence>
                 {isManageOpen && manageOrderData && (
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                         className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[70] flex items-center justify-center p-4"
                         onClick={() => setIsManageOpen(false)}
                     >
-                        <motion.div 
+                        <motion.div
                             initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
                             className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] shadow-2xl flex flex-col overflow-hidden"
                             onClick={(e) => e.stopPropagation()}
@@ -526,7 +526,7 @@ const AdminOrders = () => {
                             <div className="p-5 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center shrink-0">
                                 <div>
                                     <h2 className="text-lg font-bold text-gray-900 tracking-tight flex items-center gap-2">
-                                        <Package size={18} className="text-[#FF5C8A]" />
+                                        <Package size={18} className="text-[#FD0053]" />
                                         Order Details — {manageOrderData.orderId || manageOrderData._id?.substring(0, 8)}
                                     </h2>
                                     <p className="text-[10px] text-gray-500 font-medium mt-1">
@@ -655,7 +655,7 @@ const AdminOrders = () => {
                                                                     <p className="text-[9px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Style Add-ons</p>
                                                                     <div className="flex flex-wrap gap-1">
                                                                         {item.styleAddons.map((addon, addonIdx) => (
-                                                                            <span key={addonIdx} className="text-[10px] bg-pink-50 text-[#FF5C8A] px-2 py-0.5 rounded-full border border-pink-100 font-medium">
+                                                                            <span key={addonIdx} className="text-[10px] bg-pink-50 text-[#FD0053] px-2 py-0.5 rounded-full border border-pink-100 font-medium">
                                                                                 {addon.name} (+₹{addon.price || 0})
                                                                             </span>
                                                                         ))}
@@ -679,7 +679,7 @@ const AdminOrders = () => {
                                                             )}
                                                         </div>
                                                         <div className="text-right ml-4 shrink-0">
-                                                            <p className="text-sm font-bold text-[#FF5C8A]">₹{(item.price || 0).toLocaleString()}</p>
+                                                            <p className="text-sm font-bold text-[#FD0053]">₹{(item.price || 0).toLocaleString()}</p>
                                                             {item.styleAddonsTotal > 0 && (
                                                                 <p className="text-[10px] text-gray-400 mt-0.5">+₹{item.styleAddonsTotal} add-ons</p>
                                                             )}
@@ -721,7 +721,7 @@ const AdminOrders = () => {
                                         )}
                                         <div className="flex justify-between text-sm pt-2 mt-2 border-t border-gray-200">
                                             <span className="font-bold text-gray-900">Total</span>
-                                            <span className="font-bold text-[#FF5C8A]">₹{(manageOrderData.totalAmount || 0).toLocaleString()}</span>
+                                            <span className="font-bold text-[#FD0053]">₹{(manageOrderData.totalAmount || 0).toLocaleString()}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -735,7 +735,7 @@ const AdminOrders = () => {
                                         <div className="relative pl-6 space-y-4 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100">
                                             {[...manageOrderData.trackingHistory].reverse().map((event, idx) => (
                                                 <div key={idx} className="relative">
-                                                    <div className={`absolute -left-[19px] top-1 h-3 w-3 rounded-full border-2 border-white shadow-sm ${idx === 0 ? 'bg-[#FF5C8A]' : 'bg-gray-300'}`} />
+                                                    <div className={`absolute -left-[19px] top-1 h-3 w-3 rounded-full border-2 border-white shadow-sm ${idx === 0 ? 'bg-[#FD0053]' : 'bg-gray-300'}`} />
                                                     <div className="bg-white p-3 rounded-xl border border-gray-50 shadow-sm">
                                                         <div className="flex justify-between items-start">
                                                             <p className="text-[11px] font-bold text-gray-900 uppercase tracking-tight">{event.status?.replace(/-/g, ' ')}</p>
@@ -754,7 +754,7 @@ const AdminOrders = () => {
 
                             {/* Modal Footer */}
                             <div className="p-4 border-t border-gray-100 bg-white flex items-center justify-end gap-3 shrink-0">
-                                <button 
+                                <button
                                     onClick={() => setIsManageOpen(false)}
                                     className="px-5 py-2.5 border border-gray-200 text-gray-600 text-xs font-semibold rounded-xl hover:bg-gray-50 transition-colors"
                                 >
@@ -769,11 +769,11 @@ const AdminOrders = () => {
             {/* Assign Modal */}
             <AnimatePresence>
                 {isAssignModalOpen && (
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                         className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
                     >
-                        <motion.div 
+                        <motion.div
                             initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
                             className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl"
                         >
@@ -785,7 +785,7 @@ const AdminOrders = () => {
                             </div>
                             <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
                                 {(assignRole === 'tailor' ? tailorsList : deliveryList).map(user => (
-                                    <button 
+                                    <button
                                         key={user.id}
                                         onClick={() => handleAssign(user.id)}
                                         className={`w-full text-left p-3 rounded-xl border transition-all text-xs font-bold flex justify-between items-center ${user.isActive ? 'border-gray-100 hover:border-primary hover:bg-primary/5 bg-white text-gray-700' : 'border-gray-50 bg-gray-50 opacity-50 cursor-not-allowed text-gray-400'}`}

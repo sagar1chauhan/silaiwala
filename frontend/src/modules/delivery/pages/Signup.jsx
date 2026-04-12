@@ -49,7 +49,7 @@ const DeliverySignup = () => {
     const nextStep = () => {
         if (validateStep(currentStep)) setCurrentStep((s) => Math.min(s + 1, 3));
     };
-    
+
     const prevStep = () => setCurrentStep((s) => Math.max(s - 1, 1));
 
     const handleSubmit = async (e) => {
@@ -60,10 +60,10 @@ const DeliverySignup = () => {
         try {
             // Note: In real setup, you may need a multipart/form-data upload system for files.
             // For now, passing formData fields to signup function.
-            await signup({ 
-                ...formData, 
+            await signup({
+                ...formData,
                 phoneNumber: formData.phone, // alias for backend compatibility
-                role: 'delivery' 
+                role: 'delivery'
             });
             navigate('/delivery');
         } catch (err) {
@@ -72,7 +72,7 @@ const DeliverySignup = () => {
     };
 
     const DocUpload = ({ name, label }) => (
-        <div 
+        <div
             onClick={() => fileInputRefs.current[name]?.click()}
             className="flex-1 bg-[#F8FAFC] rounded-xl border border-dashed border-slate-300 p-3 text-center cursor-pointer hover:border-pink-300 transition-colors"
         >
@@ -87,7 +87,7 @@ const DeliverySignup = () => {
     );
 
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}
             className="w-full"
         >
@@ -95,7 +95,7 @@ const DeliverySignup = () => {
                 <h2 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">Join the Fleet</h2>
                 <div className="flex justify-center items-center gap-2 mt-2">
                     {[1, 2, 3].map(step => (
-                        <div key={step} className={`h-1.5 rounded-full transition-all duration-300 ${currentStep >= step ? 'w-6 bg-[#FF5C8A]' : 'w-2 bg-slate-200'}`} />
+                        <div key={step} className={`h-1.5 rounded-full transition-all duration-300 ${currentStep >= step ? 'w-6 bg-[#FD0053]' : 'w-2 bg-slate-200'}`} />
                     ))}
                 </div>
             </div>
@@ -159,7 +159,7 @@ const DeliverySignup = () => {
                                 </select>
                             </div>
                             <div className="bg-[#FFF9FB] rounded-2xl p-1 border border-pink-50 shadow-inner">
-                                <Input name="vehicleNumber" placeholder="Vehicle No. (e.g., DL 1CB 1234)" value={formData.vehicleNumber} onChange={handleChange} className="bg-transparent border-none focus:ring-0 font-bold text-[#FF5C8A] placeholder:text-pink-400 placeholder:font-medium tracking-wider" />
+                                <Input name="vehicleNumber" placeholder="Vehicle No. (e.g., DL 1CB 1234)" value={formData.vehicleNumber} onChange={handleChange} className="bg-transparent border-none focus:ring-0 font-bold text-[#FD0053] placeholder:text-pink-400 placeholder:font-medium tracking-wider" />
                             </div>
                             <div className="bg-[#F8FAFC] rounded-2xl p-1 border border-slate-100 shadow-inner">
                                 <Input name="address" placeholder="Full Address" value={formData.address} onChange={handleChange} className="bg-transparent border-none focus:ring-0 font-bold placeholder:text-gray-500 placeholder:font-medium" />
@@ -175,11 +175,11 @@ const DeliverySignup = () => {
                         </Button>
                     )}
                     {currentStep < 3 ? (
-                        <Button type="button" onClick={nextStep} className="flex-[2] rounded-full bg-[#FF5C8A] hover:bg-[#E04D79] text-white font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-[#FF5C8A]/20">
+                        <Button type="button" onClick={nextStep} className="flex-[2] rounded-full bg-[#FD0053] hover:bg-[#E04D79] text-white font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-[#FD0053]/20">
                             Next Step
                         </Button>
                     ) : (
-                        <Button type="submit" disabled={isLoading} className="flex-[2] rounded-full bg-[#FF5C8A] hover:bg-[#E04D79] text-white font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-[#FF5C8A]/20">
+                        <Button type="submit" disabled={isLoading} className="flex-[2] rounded-full bg-[#FD0053] hover:bg-[#E04D79] text-white font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-[#FD0053]/20">
                             {isLoading ? 'Creating...' : 'Submit Profile !'}
                         </Button>
                     )}

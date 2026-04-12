@@ -34,7 +34,7 @@ const AdminLayout = () => {
 
     React.useEffect(() => {
         const socket = io(SOCKET_URL);
-        
+
         socket.on('new_order', (data) => {
             setHasUnread(true);
             toast.success(`New Order Received: ${data.orderId || 'Check dashboard'}`, {
@@ -44,11 +44,11 @@ const AdminLayout = () => {
         });
 
         socket.on('order_status_updated', (data) => {
-             setHasUnread(true);
-             toast(`Order ${data.orderId} updated to ${data.status}`, {
-                 icon: '🔄',
-                 position: 'top-right'
-             });
+            setHasUnread(true);
+            toast(`Order ${data.orderId} updated to ${data.status}`, {
+                icon: '🔄',
+                position: 'top-right'
+            });
         });
 
         return () => socket.disconnect();
@@ -124,7 +124,7 @@ const AdminLayout = () => {
                 </nav>
 
                 <div className="p-4 border-t border-white/5 bg-black">
-                    <button 
+                    <button
                         onClick={() => {
                             useAuthStore.getState().logout();
                             window.location.href = '/admin/login';
@@ -157,7 +157,7 @@ const AdminLayout = () => {
                             <span className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></span>
                             <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">System Live</span>
                         </div>
-                        <button 
+                        <button
                             onClick={() => setHasUnread(false)}
                             className="relative p-2.5 text-gray-400 hover:text-primary hover:bg-gray-50 rounded-full transition-all"
                         >
@@ -169,12 +169,12 @@ const AdminLayout = () => {
                         <div className="flex items-center gap-3 lg:gap-4 pl-3 lg:pl-6 border-l border-gray-100">
                             <div className="text-right hidden lg:block">
                                 <p className="text-xs font-black text-gray-900 leading-none uppercase tracking-tighter">Super Admin</p>
-                                <p className="text-[9px] text-[#FF5C8A] font-black uppercase mt-1 tracking-[0.1em]">Full Platform Access</p>
+                                <p className="text-[9px] text-[#FD0053] font-black uppercase mt-1 tracking-[0.1em]">Full Platform Access</p>
                             </div>
-                            <div className="h-10 w-10 lg:h-11 lg:w-11 rounded-2xl bg-[#FF5C8A] flex items-center justify-center text-white font-black text-xs shadow-lg shadow-pink-900/20 shrink-0 border-2 border-white">
+                            <div className="h-10 w-10 lg:h-11 lg:w-11 rounded-2xl bg-[#FD0053] flex items-center justify-center text-white font-black text-xs shadow-lg shadow-pink-900/20 shrink-0 border-2 border-white">
                                 SA
                             </div>
-                            <button 
+                            <button
                                 onClick={() => {
                                     useAuthStore.getState().logout();
                                     window.location.href = '/admin/login';

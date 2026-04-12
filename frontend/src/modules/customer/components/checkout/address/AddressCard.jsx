@@ -33,7 +33,7 @@ const AddressCard = ({ address, isSelected, onSelect }) => {
 
                 {isSelected ? (
                     <div className="text-primary">
-                        <CheckCircle2 size={20} fill="#FF5C8A" className="text-white" />
+                        <CheckCircle2 size={20} fill="#FD0053" className="text-white" />
                     </div>
                 ) : (
                     <div className="w-5 h-5 rounded-full border-2 border-gray-300 group-hover:border-gray-400" />

@@ -35,7 +35,7 @@ const ProductGrid = ({ filters, categoryId, categoryName, searchQuery }) => {
 
     return (
         <div className="bg-gray-50 pb-8 min-h-[50vh]">
-            <h2 className="text-xl font-bold text-[#FF5C8A] px-4 py-4">
+            <h2 className="text-xl font-bold text-[#FD0053] px-4 py-4">
                 {categoryName && categoryName !== 'All' ? `${categoryName} Collection` : 'Explore Fabrics'}
             </h2>
 
@@ -46,10 +46,10 @@ const ProductGrid = ({ filters, categoryId, categoryName, searchQuery }) => {
             ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 px-2 md:px-4">
                     {items.map((product, index) => (
-                        <ProductCard 
-                            key={`${product.id || product._id}-${index}`} 
-                            product={product} 
-                            onAddClick={(p) => setSelectedProduct(p)} 
+                        <ProductCard
+                            key={`${product.id || product._id}-${index}`}
+                            product={product}
+                            onAddClick={(p) => setSelectedProduct(p)}
                         />
                     ))}
                 </div>
@@ -57,14 +57,14 @@ const ProductGrid = ({ filters, categoryId, categoryName, searchQuery }) => {
 
             {isLoading && (
                 <div className="flex justify-center p-6">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF5C8A]"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FD0053]"></div>
                 </div>
             )}
 
-            <AddToCartModal 
-                isOpen={!!selectedProduct} 
-                onClose={() => setSelectedProduct(null)} 
-                product={selectedProduct} 
+            <AddToCartModal
+                isOpen={!!selectedProduct}
+                onClose={() => setSelectedProduct(null)}
+                product={selectedProduct}
             />
         </div>
     );

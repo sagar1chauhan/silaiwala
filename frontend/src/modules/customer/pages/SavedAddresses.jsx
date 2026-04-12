@@ -57,57 +57,57 @@ const AddressPage = () => {
         <div className="min-h-screen bg-gray-50 pb-24 font-sans text-gray-900">
             {/* Header */}
             <header className="bg-white px-6 pt-12 pb-6 flex items-center gap-4 sticky top-0 z-30 border-b border-gray-100 shadow-sm">
-                <button onClick={() => navigate('/profile')} className="p-2 -ml-2 rounded-full hover:bg-gray-50 text-[#FF5C8A]">
+                <button onClick={() => navigate('/profile')} className="p-2 -ml-2 rounded-full hover:bg-gray-50 text-[#FD0053]">
                     <ChevronLeft size={24} />
                 </button>
-                <h1 className="text-xl font-bold text-[#FF5C8A]">Saved Addresses</h1>
+                <h1 className="text-xl font-bold text-[#FD0053]">Saved Addresses</h1>
             </header>
 
             <div className="max-w-md mx-auto px-4 py-6">
-                
+
                 <AnimatePresence mode="wait">
                     {isAdding ? (
-                        <motion.div 
+                        <motion.div
                             key="form"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95 }}
                             className="bg-white rounded-[2.5rem] p-8 shadow-xl border border-gray-100"
                         >
-                            <h2 className="text-lg font-bold text-[#FF5C8A] mb-6">Add New Address</h2>
+                            <h2 className="text-lg font-bold text-[#FD0053] mb-6">Add New Address</h2>
                             <form onSubmit={handleAdd} className="space-y-4">
                                 <div className="flex bg-gray-50 p-1 rounded-2xl mb-4">
                                     {['Home', 'Work', 'Other'].map(t => (
-                                        <button 
+                                        <button
                                             key={t}
                                             type="button"
-                                            onClick={() => setFormData({...formData, type: t})}
-                                            className={`flex-1 py-3 rounded-xl text-xs font-bold transition-all ${formData.type === t ? 'bg-[#FF5C8A] text-white shadow-lg shadow-pink-100' : 'text-gray-400'}`}
+                                            onClick={() => setFormData({ ...formData, type: t })}
+                                            className={`flex-1 py-3 rounded-xl text-xs font-bold transition-all ${formData.type === t ? 'bg-[#FD0053] text-white shadow-lg shadow-pink-100' : 'text-gray-400'}`}
                                         >
                                             {t}
                                         </button>
                                     ))}
                                 </div>
-                                <Input placeholder="Receiver Name" value={formData.receiverName} onChange={(e) => setFormData({...formData, receiverName: e.target.value})} required />
-                                <Input placeholder="Phone Number" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} required />
-                                <Input placeholder="House No, Street Name" value={formData.street} onChange={(e) => setFormData({...formData, street: e.target.value})} required />
+                                <Input placeholder="Receiver Name" value={formData.receiverName} onChange={(e) => setFormData({ ...formData, receiverName: e.target.value })} required />
+                                <Input placeholder="Phone Number" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} required />
+                                <Input placeholder="House No, Street Name" value={formData.street} onChange={(e) => setFormData({ ...formData, street: e.target.value })} required />
                                 <div className="grid grid-cols-2 gap-4">
-                                    <Input placeholder="City" value={formData.city} onChange={(e) => setFormData({...formData, city: e.target.value})} required />
-                                    <Input placeholder="Zip Code" value={formData.zipCode} onChange={(e) => setFormData({...formData, zipCode: e.target.value})} required />
+                                    <Input placeholder="City" value={formData.city} onChange={(e) => setFormData({ ...formData, city: e.target.value })} required />
+                                    <Input placeholder="Zip Code" value={formData.zipCode} onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })} required />
                                 </div>
-                                <Input placeholder="State" value={formData.state} onChange={(e) => setFormData({...formData, state: e.target.value})} required />
-                                
+                                <Input placeholder="State" value={formData.state} onChange={(e) => setFormData({ ...formData, state: e.target.value })} required />
+
                                 <div className="flex gap-4 pt-4">
                                     <Button type="button" onClick={() => setIsAdding(false)} className="flex-1 bg-gray-100 text-gray-600 h-14 rounded-full font-bold">Cancel</Button>
-                                    <Button type="submit" disabled={isLoading} className="flex-1 bg-[#FF5C8A] h-14 rounded-full text-white font-bold shadow-lg shadow-pink-100">Save</Button>
+                                    <Button type="submit" disabled={isLoading} className="flex-1 bg-[#FD0053] h-14 rounded-full text-white font-bold shadow-lg shadow-pink-100">Save</Button>
                                 </div>
                             </form>
                         </motion.div>
                     ) : (
                         <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-                            <button 
+                            <button
                                 onClick={() => setIsAdding(true)}
-                                className="w-full p-6 dashed-border rounded-3xl flex items-center justify-center gap-3 text-[#FF5C8A] font-bold bg-white hover:bg-pink-50 transition-colors border-2 border-dashed border-pink-100"
+                                className="w-full p-6 dashed-border rounded-3xl flex items-center justify-center gap-3 text-[#FD0053] font-bold bg-white hover:bg-pink-50 transition-colors border-2 border-dashed border-pink-100"
                             >
                                 <Plus size={20} /> Add New Address
                             </button>
@@ -122,20 +122,20 @@ const AddressPage = () => {
                                 </div>
                             ) : (
                                 addresses.map((addr) => (
-                                    <div 
+                                    <div
                                         key={addr._id}
                                         onClick={() => toggleDefault(addr)}
                                         className={`bg-white p-6 rounded-3xl shadow-sm border transition-all cursor-pointer hover:shadow-md ${addr.isDefault ? 'border-pink-500 ring-1 ring-pink-500' : 'border-gray-100'} relative`}
                                     >
                                         <div className="flex items-start justify-between">
                                             <div className="flex gap-4">
-                                                <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${addr.isDefault ? 'bg-[#FF5C8A] text-white' : 'bg-gray-100 text-gray-500'}`}>
+                                                <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${addr.isDefault ? 'bg-[#FD0053] text-white' : 'bg-gray-100 text-gray-500'}`}>
                                                     {getIcon(addr.type)}
                                                 </div>
                                                 <div className="flex-1">
                                                     <div className="flex items-center gap-2">
                                                         <h4 className="font-bold text-gray-900 text-sm">{addr.type}</h4>
-                                                        {addr.isDefault && <Check size={14} className="text-[#FF5C8A]" />}
+                                                        {addr.isDefault && <Check size={14} className="text-[#FD0053]" />}
                                                     </div>
                                                     <div className="text-gray-500 text-xs mt-1 leading-relaxed">
                                                         <p className="font-bold text-gray-700 text-[13px]">{addr.receiverName || 'No Name'}</p>
@@ -145,18 +145,18 @@ const AddressPage = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            
+
                                             <div className="flex items-center gap-2">
                                                 {!addr.isDefault && (
-                                                    <div className="text-[10px] uppercase font-black text-[#FF5C8A] bg-pink-50 px-3 py-1.5 rounded-md tracking-wider">
+                                                    <div className="text-[10px] uppercase font-black text-[#FD0053] bg-pink-50 px-3 py-1.5 rounded-md tracking-wider">
                                                         Set Default
                                                     </div>
                                                 )}
-                                                <button 
+                                                <button
                                                     onClick={(e) => {
                                                         e.stopPropagation(); // Prevents setting default when deleting
                                                         handleDelete(addr._id);
-                                                    }} 
+                                                    }}
                                                     className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all z-10"
                                                 >
                                                     <Trash2 size={18} />

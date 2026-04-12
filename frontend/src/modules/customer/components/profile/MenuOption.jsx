@@ -8,14 +8,14 @@ const MenuOption = ({ icon: Icon, label, subLabel, to, onClick, isDanger, color,
     const getIconColor = () => {
         if (isDanger) return 'bg-red-50 text-red-500 group-hover:bg-red-100';
         if (color) return `${color} text-white`;
-        return 'bg-pink-50 text-[#FF5C8A] group-hover:bg-[#FF5C8A] group-hover:text-white';
+        return 'bg-pink-50 text-[#FD0053] group-hover:bg-[#FD0053] group-hover:text-white';
     };
 
     return (
         <Component
             to={to}
             onClick={onClick}
-            className={`w-full flex items-center justify-between p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-[#FF5C8A]/20 hover:bg-[#FF5C8A]/[0.02] transition-all group mb-3 ${isDanger ? 'hover:bg-red-50 hover:border-red-100' : ''}`}
+            className={`w-full flex items-center justify-between p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-[#FD0053]/20 hover:bg-[#FD0053]/[0.02] transition-all group mb-3 ${isDanger ? 'hover:bg-red-50 hover:border-red-100' : ''}`}
         >
             <div className="flex items-center gap-4">
                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm transition-all duration-300 group-hover:scale-110 group-active:scale-95 ${getIconColor()}`}>
@@ -36,7 +36,7 @@ const MenuOption = ({ icon: Icon, label, subLabel, to, onClick, isDanger, color,
                 <div className="p-1.5 bg-gray-50 rounded-lg group-hover:bg-pink-50 transition-colors">
                     <ChevronRight
                         size={16}
-                        className={`transition-colors ${isDanger ? 'text-red-300 group-hover:text-red-500' : 'text-gray-300 group-hover:text-[#FF5C8A]'}`}
+                        className={`transition-colors ${isDanger ? 'text-red-300 group-hover:text-red-500' : 'text-gray-300 group-hover:text-[#FD0053]'}`}
                     />
                 </div>
             </div>

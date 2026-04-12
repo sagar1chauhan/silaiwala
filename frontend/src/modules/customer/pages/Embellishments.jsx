@@ -35,7 +35,7 @@ const Embellishments = () => {
                         });
                         return acc;
                     }, {});
-                    setCategories(Object.values(grouped).sort((a,b) => a.name.localeCompare(b.name)));
+                    setCategories(Object.values(grouped).sort((a, b) => a.name.localeCompare(b.name)));
                 }
             } catch (error) {
                 console.error('Failed to fetch embellishments:', error);
@@ -62,7 +62,7 @@ const Embellishments = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#fcf8f9] pb-40 font-sans selection:bg-[#FF5C8A] selection:text-white">
+        <div className="min-h-screen bg-[#fcf8f9] pb-40 font-sans selection:bg-[#FD0053] selection:text-white">
             {/* Header */}
             <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
                 <div className="px-5 py-6 flex items-center justify-between">

@@ -54,7 +54,7 @@ const Login = () => {
     };
 
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -69,7 +69,7 @@ const Login = () => {
 
             <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                 {error && (
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="p-3.5 text-[11px] font-bold uppercase tracking-wider text-pink-600 bg-pink-50 rounded-2xl border border-pink-100 flex items-center justify-center gap-2"
@@ -102,11 +102,10 @@ const Login = () => {
                             type="button"
                             onClick={handleSendOtp}
                             disabled={!mobileNumber || mobileNumber.length < 10 || sendingOtp}
-                            className={`w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-md ${
-                                !mobileNumber || mobileNumber.length < 10 || sendingOtp
+                            className={`w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-md ${!mobileNumber || mobileNumber.length < 10 || sendingOtp
                                     ? 'bg-gray-200 text-gray-500'
-                                    : 'bg-[#FF5C8A] hover:bg-[#E04D79] text-white shadow-[#FF5C8A]/20 hover:shadow-lg'
-                            }`}
+                                    : 'bg-[#FD0053] hover:bg-[#E04D79] text-white shadow-[#FD0053]/20 hover:shadow-lg'
+                                }`}
                         >
                             {sendingOtp ? 'Sending...' : (
                                 <span className="flex items-center justify-center gap-2">
@@ -119,7 +118,7 @@ const Login = () => {
 
                 <AnimatePresence>
                     {otpSent && (
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
@@ -141,7 +140,7 @@ const Login = () => {
 
                             <Button
                                 type="submit"
-                                className="w-full h-11 sm:h-12 rounded-full bg-[#FF5C8A] hover:bg-[#E04D79] text-white font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg shadow-[#FF5C8A]/20"
+                                className="w-full h-11 sm:h-12 rounded-full bg-[#FD0053] hover:bg-[#E04D79] text-white font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg shadow-[#FD0053]/20"
                                 disabled={isLoading}
                             >
                                 {isLoading ? 'Verifying...' : (

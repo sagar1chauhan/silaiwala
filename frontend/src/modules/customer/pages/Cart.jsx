@@ -31,7 +31,7 @@ const CartPage = () => {
                 <p className="text-sm text-gray-500 mb-6 max-w-xs">Looks like you haven't added anything to your cart yet.</p>
                 <Link
                     to="/store"
-                    className="px-6 py-3 rounded-xl bg-[#FF5C8A] text-white font-bold text-sm shadow-lg hover:bg-[#cc496e] transition-all"
+                    className="px-6 py-3 rounded-xl bg-[#FD0053] text-white font-bold text-sm shadow-lg hover:bg-[#cc496e] transition-all"
                 >
                     Start Shopping
                 </Link>
@@ -92,13 +92,13 @@ const CartPage = () => {
                             <div className="flex justify-between text-xs text-gray-600">
                                 <span>Delivery Fee</span>
                                 {deliveryFee === 0 ? (
-                                    <span className="text-[#FF5C8A] font-bold">FREE</span>
+                                    <span className="text-[#FD0053] font-bold">FREE</span>
                                 ) : (
                                     <span>₹{deliveryFee}</span>
                                 )}
                             </div>
                             {deliveryFee === 0 && (
-                                <div className="text-[10px] text-[#FF5C8A] bg-pink-50 px-2 py-1.5 rounded-lg flex items-center gap-2">
+                                <div className="text-[10px] text-[#FD0053] bg-pink-50 px-2 py-1.5 rounded-lg flex items-center gap-2">
                                     <Info size={12} />
                                     Free delivery applied over ₹999
                                 </div>
@@ -114,7 +114,7 @@ const CartPage = () => {
                             <button
                                 onClick={handleCheckout}
                                 disabled={isCheckoutLoading}
-                                className="w-full py-4 rounded-xl bg-[#FF5C8A] text-white text-sm font-bold shadow-lg shadow-pink-200 hover:bg-[#cc496e] active:scale-[0.98] transition-all flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
+                                className="w-full py-4 rounded-xl bg-[#FD0053] text-white text-sm font-bold shadow-lg shadow-pink-200 hover:bg-[#cc496e] active:scale-[0.98] transition-all flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
                             >
                                 {isCheckoutLoading ? 'Processing...' : 'Proceed to Checkout'}
                             </button>
@@ -139,7 +139,7 @@ const CartPage = () => {
                 <button
                     onClick={handleCheckout}
                     disabled={isCheckoutLoading}
-                    className="w-full py-3.5 rounded-xl bg-[#FF5C8A] text-white text-sm font-bold shadow-lg hover:bg-[#cc496e] active:scale-95 transition-all flex items-center justify-between px-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                    className="w-full py-3.5 rounded-xl bg-[#FD0053] text-white text-sm font-bold shadow-lg hover:bg-[#cc496e] active:scale-95 transition-all flex items-center justify-between px-6 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                     <div className="text-left">
                         <p className="text-[10px] opacity-80 uppercase tracking-wider font-medium text-white">Total Amount</p>

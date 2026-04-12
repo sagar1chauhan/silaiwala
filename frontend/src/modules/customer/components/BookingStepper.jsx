@@ -37,8 +37,8 @@ const BookingStepper = ({ currentStepId }) => {
                             <motion.div
                                 initial={false}
                                 animate={{
-                                    backgroundColor: isCompleted || isActive ? '#FF5C8A' : '#ffffff',
-                                    borderColor: isCompleted || isActive ? '#FF5C8A' : '#f3f4f6',
+                                    backgroundColor: isCompleted || isActive ? '#FD0053' : '#ffffff',
+                                    borderColor: isCompleted || isActive ? '#FD0053' : '#f3f4f6',
                                     scale: isActive ? 1.05 : 1,
                                 }}
                                 className={cn(

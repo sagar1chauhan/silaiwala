@@ -93,7 +93,7 @@ const CMSContentPage = () => {
                         <h3 className="text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] italic">Terms & Content</h3>
                     </div>
 
-                    <div 
+                    <div
                         className="prose prose-sm max-w-none text-gray-600 leading-relaxed font-medium cms-content-render"
                         dangerouslySetInnerHTML={{ __html: content.content }}
                     />
@@ -112,10 +112,11 @@ const CMSContentPage = () => {
             </div>
 
             <BottomNav />
-            
-            <style dangerouslySetInnerHTML={{ __html: `
+
+            <style dangerouslySetInnerHTML={{
+                __html: `
                 .cms-content-render h1, .cms-content-render h2, .cms-content-render h3 {
-                    color: #FF5C8A;
+                    color: #FD0053;
                     font-weight: 900;
                     margin-top: 1.5em;
                     margin-bottom: 0.5em;
@@ -141,7 +142,7 @@ const CMSContentPage = () => {
                     top: 0.6rem;
                     width: 0.5rem;
                     height: 1px;
-                    background: #FF5C8A;
+                    background: #FD0053;
                 }
             `}} />
         </div>

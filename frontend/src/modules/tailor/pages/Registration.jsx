@@ -131,21 +131,21 @@ const TailorRegistration = () => {
 
     if (isSubmitted) {
         return (
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="w-full flex flex-col items-center justify-center py-6 text-center"
             >
-                <div className="h-20 w-20 bg-pink-50 text-[#FF5C8A] rounded-full flex items-center justify-center mb-5 shadow-xl shadow-pink-900/10">
+                <div className="h-20 w-20 bg-pink-50 text-[#FD0053] rounded-full flex items-center justify-center mb-5 shadow-xl shadow-pink-900/10">
                     <CheckCircle2 size={40} strokeWidth={2.5} />
                 </div>
                 <h2 className="text-xl font-black text-slate-800 tracking-tight">Application Sent!</h2>
                 <p className="text-xs text-gray-500 mt-2 font-medium px-4">
                     Your details are under review. We will notify you once approved.
                 </p>
-                <button 
+                <button
                     onClick={() => navigate('/partner/under-review')}
-                    className="mt-6 text-xs font-black bg-[#FF5C8A] text-white px-8 py-3 rounded-full hover:bg-[#E04D79] transition-colors shadow-lg shadow-pink-200"
+                    className="mt-6 text-xs font-black bg-[#FD0053] text-white px-8 py-3 rounded-full hover:bg-[#E04D79] transition-colors shadow-lg shadow-pink-200"
                 >
                     View Status
                 </button>
@@ -154,7 +154,7 @@ const TailorRegistration = () => {
     }
 
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -163,7 +163,7 @@ const TailorRegistration = () => {
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                     {step > 1 && (
-                        <button type="button" onClick={prevStep} className="p-1 -ml-1 text-gray-400 hover:text-[#FF5C8A] transition-colors">
+                        <button type="button" onClick={prevStep} className="p-1 -ml-1 text-gray-400 hover:text-[#FD0053] transition-colors">
                             <ChevronLeft size={20} />
                         </button>
                     )}
@@ -171,7 +171,7 @@ const TailorRegistration = () => {
                         <h2 className="text-base sm:text-lg font-black text-slate-800 tracking-tight leading-tight">
                             {stepTitles[step - 1]}
                         </h2>
-                        <p className="text-[9px] font-black text-[#FF5C8A] uppercase tracking-[0.2em] mt-0.5">
+                        <p className="text-[9px] font-black text-[#FD0053] uppercase tracking-[0.2em] mt-0.5">
                             Step {step} of 4
                         </p>
                     </div>
@@ -179,7 +179,7 @@ const TailorRegistration = () => {
 
                 <div className="flex gap-1">
                     {[1, 2, 3, 4].map(i => (
-                        <div key={i} className={`h-1.5 w-6 rounded-full transition-colors duration-500 ${i <= step ? 'bg-[#FF5C8A]' : 'bg-pink-50'}`} />
+                        <div key={i} className={`h-1.5 w-6 rounded-full transition-colors duration-500 ${i <= step ? 'bg-[#FD0053]' : 'bg-pink-50'}`} />
                     ))}
                 </div>
             </div>
@@ -203,7 +203,7 @@ const TailorRegistration = () => {
                         <button
                             type="button"
                             onClick={handleNext}
-                            className="w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg bg-[#FF5C8A] hover:bg-[#E04D79] text-white shadow-[#FF5C8A]/20"
+                            className="w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg bg-[#FD0053] hover:bg-[#E04D79] text-white shadow-[#FD0053]/20"
                         >
                             <span className="flex items-center justify-center gap-2">
                                 NEXT <span className="text-lg">›</span>
@@ -213,7 +213,7 @@ const TailorRegistration = () => {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className={`w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg ${isLoading ? 'bg-gray-300 text-gray-600' : 'bg-[#FF5C8A] hover:bg-[#E04D79] text-white shadow-[#FF5C8A]/20'}`}
+                            className={`w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg ${isLoading ? 'bg-gray-300 text-gray-600' : 'bg-[#FD0053] hover:bg-[#E04D79] text-white shadow-[#FD0053]/20'}`}
                         >
                             {isLoading ? 'Submitting...' : 'SUBMIT APPLICATION'}
                         </button>
@@ -226,7 +226,7 @@ const TailorRegistration = () => {
                         onClick={() => navigate('/partner/login')}
                         className="text-[10px] sm:text-xs text-gray-500 font-medium"
                     >
-                        Already have an account? <span className="font-bold text-[#FF5C8A] hover:underline">Log in</span>
+                        Already have an account? <span className="font-bold text-[#FD0053] hover:underline">Log in</span>
                     </button>
                 </div>
             </form>

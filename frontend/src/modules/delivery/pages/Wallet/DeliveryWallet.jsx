@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-    Wallet, 
-    ArrowLeft, 
-    ArrowUpRight, 
-    ArrowDownRight, 
-    CreditCard, 
-    History, 
-    Loader2, 
-    CheckCircle2, 
-    X, 
+import {
+    Wallet,
+    ArrowLeft,
+    ArrowUpRight,
+    ArrowDownRight,
+    CreditCard,
+    History,
+    Loader2,
+    CheckCircle2,
+    X,
     AlertCircle,
     Info,
     ChevronRight,
@@ -62,7 +62,7 @@ const DeliveryWallet = () => {
 
     const handleWithdrawRequest = async (e) => {
         e.preventDefault();
-        
+
         const amount = parseFloat(withdrawAmount);
         if (!amount || amount <= 0) {
             return toast.error('Please enter a valid amount');
@@ -101,13 +101,13 @@ const DeliveryWallet = () => {
     return (
         <div className="min-h-screen bg-slate-50 pb-20 animate-in fade-in duration-500">
             {/* Header */}
-            <div className="bg-[#FF5C8A] text-white p-6 pb-20 rounded-b-[2.5rem] relative overflow-hidden">
+            <div className="bg-[#FD0053] text-white p-6 pb-20 rounded-b-[2.5rem] relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
                     <Wallet size={120} />
                 </div>
-                
+
                 <div className="flex items-center gap-4 mb-8">
-                    <button 
+                    <button
                         onClick={() => navigate(-1)}
                         className="p-3 bg-white/10 rounded-2xl hover:bg-white/20 transition-colors border border-white/10 backdrop-blur-md"
                     >
@@ -120,7 +120,7 @@ const DeliveryWallet = () => {
                     <p className="text-pink-100/60 text-[10px] font-black uppercase tracking-[0.3em] italic">Available Liquidity</p>
                     <h2 className="text-6xl font-black tracking-tighter drop-shadow-2xl italic">₹{walletData.balance.toLocaleString()}</h2>
                     <div className="flex items-center justify-center gap-2 pt-2">
-                        <div className="px-3 py-1 bg-[#FF5C8A]/20 rounded-full border border-[#FF5C8A]/30">
+                        <div className="px-3 py-1 bg-[#FD0053]/20 rounded-full border border-[#FD0053]/30">
                             <span className="text-[10px] font-black tracking-widest text-pink-300 uppercase">Settled Earnings</span>
                         </div>
                     </div>
@@ -135,9 +135,9 @@ const DeliveryWallet = () => {
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1.5">Lifetime Withdrawn</p>
                         <p className="text-xl font-black text-slate-900 tracking-tight">₹{walletData.totalWithdrawn.toLocaleString()}</p>
                     </div>
-                    <button 
+                    <button
                         onClick={() => setShowWithdrawModal(true)}
-                        className="relative z-10 bg-[#FF5C8A] text-white px-8 py-4 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] hover:scale-105 active:scale-95 transition-all shadow-xl shadow-pink-900/10"
+                        className="relative z-10 bg-[#FD0053] text-white px-8 py-4 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] hover:scale-105 active:scale-95 transition-all shadow-xl shadow-pink-900/10"
                     >
                         Withdraw Now
                     </button>
@@ -154,13 +154,13 @@ const DeliveryWallet = () => {
                 {/* Tabs */}
                 <div className="pt-4">
                     <div className="flex gap-4 border-b border-slate-200 mb-6">
-                        <button 
+                        <button
                             onClick={() => setActiveTab('history')}
                             className={`pb-2 text-xs font-black uppercase tracking-widest transition-all relative ${activeTab === 'history' ? 'text-slate-900 border-b-2 border-slate-900' : 'text-slate-400'}`}
                         >
                             History
                         </button>
-                        <button 
+                        <button
                             onClick={() => setActiveTab('status')}
                             className={`pb-2 text-xs font-black uppercase tracking-widest transition-all relative ${activeTab === 'status' ? 'text-slate-900 border-b-2 border-slate-900' : 'text-slate-400'}`}
                         >
@@ -180,21 +180,21 @@ const DeliveryWallet = () => {
                                     transactions
                                         .filter(t => t.status === 'completed' || t.category === 'order_earnings')
                                         .map((txn, idx) => (
-                                        <div key={txn._id} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
-                                            <div className="flex items-center gap-4">
-                                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${txn.type === 'credit' ? 'bg-pink-50 text-[#FF5C8A]' : 'bg-rose-50 text-rose-600'}`}>
-                                                    {txn.type === 'credit' ? <ArrowDownRight size={20} /> : <ArrowUpRight size={20} />}
+                                            <div key={txn._id} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                                                <div className="flex items-center gap-4">
+                                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${txn.type === 'credit' ? 'bg-pink-50 text-[#FD0053]' : 'bg-rose-50 text-rose-600'}`}>
+                                                        {txn.type === 'credit' ? <ArrowDownRight size={20} /> : <ArrowUpRight size={20} />}
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[13px] font-black text-slate-900">{txn.description || (txn.category === 'order_earnings' ? 'Order Earning' : 'Withdrawal')}</p>
+                                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{new Date(txn.createdAt).toLocaleDateString()} • {txn.category.replace('_', ' ')}</p>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <p className="text-[13px] font-black text-slate-900">{txn.description || (txn.category === 'order_earnings' ? 'Order Earning' : 'Withdrawal')}</p>
-                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{new Date(txn.createdAt).toLocaleDateString()} • {txn.category.replace('_', ' ')}</p>
-                                                </div>
+                                                <p className={`text-[15px] font-black ${txn.type === 'credit' ? 'text-[#FD0053]' : 'text-rose-600'}`}>
+                                                    {txn.type === 'credit' ? '+' : '-'}₹{txn.amount}
+                                                </p>
                                             </div>
-                                            <p className={`text-[15px] font-black ${txn.type === 'credit' ? 'text-[#FF5C8A]' : 'text-rose-600'}`}>
-                                                {txn.type === 'credit' ? '+' : '-'}₹{txn.amount}
-                                            </p>
-                                        </div>
-                                    ))
+                                        ))
                                 ) : (
                                     <div className="py-12 bg-white rounded-3xl border-2 border-dashed border-slate-100 text-center">
                                         <History size={32} className="mx-auto text-slate-200 mb-2" />
@@ -206,22 +206,22 @@ const DeliveryWallet = () => {
                                     transactions
                                         .filter(t => t.category === 'withdrawal' && t.status === 'pending')
                                         .map((txn, idx) => (
-                                        <div key={txn._id} className="bg-white p-4 rounded-2xl border border-amber-100 shadow-sm flex items-center justify-between bg-amber-50/20">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center animate-pulse">
-                                                    <Clock size={20} />
+                                            <div key={txn._id} className="bg-white p-4 rounded-2xl border border-amber-100 shadow-sm flex items-center justify-between bg-amber-50/20">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-10 h-10 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center animate-pulse">
+                                                        <Clock size={20} />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[13px] font-black text-slate-900">Withdrawal Request</p>
+                                                        <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest">{txn.status}</p>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <p className="text-[13px] font-black text-slate-900">Withdrawal Request</p>
-                                                    <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest">{txn.status}</p>
+                                                <div className="text-right">
+                                                    <p className="text-[15px] font-black text-slate-900">-₹{txn.amount}</p>
+                                                    <p className="text-[9px] font-medium text-slate-400">{new Date(txn.createdAt).toLocaleDateString()}</p>
                                                 </div>
                                             </div>
-                                            <div className="text-right">
-                                                <p className="text-[15px] font-black text-slate-900">-₹{txn.amount}</p>
-                                                <p className="text-[9px] font-medium text-slate-400">{new Date(txn.createdAt).toLocaleDateString()}</p>
-                                            </div>
-                                        </div>
-                                    ))
+                                        ))
                                 ) : (
                                     <div className="py-12 bg-white rounded-3xl border-2 border-dashed border-slate-100 text-center">
                                         <AlertCircle size={32} className="mx-auto text-slate-200 mb-2" />
@@ -237,14 +237,14 @@ const DeliveryWallet = () => {
             {/* Withdrawal Modal */}
             <AnimatePresence>
                 {showWithdrawModal && (
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         className="fixed inset-0 z-[100] flex items-end justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
                         onClick={() => !isSubmitting && setShowWithdrawModal(false)}
                     >
-                        <motion.div 
+                        <motion.div
                             initial={{ y: "100%" }}
                             animate={{ y: 0 }}
                             exit={{ y: "100%" }}
@@ -252,7 +252,7 @@ const DeliveryWallet = () => {
                             onClick={(e) => e.stopPropagation()}
                             className="bg-white rounded-t-[2.5rem] w-full max-w-md p-8 relative shadow-2xl"
                         >
-                            <button 
+                            <button
                                 onClick={() => setShowWithdrawModal(false)}
                                 disabled={isSubmitting}
                                 className="absolute top-6 right-6 p-2 bg-slate-50 text-slate-400 rounded-full hover:bg-slate-100 transition-colors"
@@ -261,7 +261,7 @@ const DeliveryWallet = () => {
                             </button>
 
                             <div className="mb-8 flex items-center gap-4">
-                                <div className="w-14 h-14 bg-pink-50 text-[#FF5C8A] rounded-2xl flex items-center justify-center">
+                                <div className="w-14 h-14 bg-pink-50 text-[#FD0053] rounded-2xl flex items-center justify-center">
                                     <Send size={28} />
                                 </div>
                                 <div>
@@ -273,21 +273,21 @@ const DeliveryWallet = () => {
                             <form onSubmit={handleWithdrawRequest} className="space-y-6">
                                 <div>
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Amount (₹)</label>
-                                    <input 
-                                        type="number" 
+                                    <input
+                                        type="number"
                                         value={withdrawAmount}
                                         onChange={(e) => setWithdrawAmount(e.target.value)}
                                         placeholder="0.00"
-                                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 text-2xl font-black text-slate-900 focus:outline-none focus:border-[#FF5C8A] focus:bg-white transition-all"
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 text-2xl font-black text-slate-900 focus:outline-none focus:border-[#FD0053] focus:bg-white transition-all"
                                         required
                                         max={walletData.balance}
                                     />
                                     <div className="flex justify-between mt-2">
                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Available: ₹{walletData.balance}</p>
-                                        <button 
+                                        <button
                                             type="button"
                                             onClick={() => setWithdrawAmount(walletData.balance)}
-                                            className="text-[10px] font-black text-[#FF5C8A] uppercase tracking-widest"
+                                            className="text-[10px] font-black text-[#FD0053] uppercase tracking-widest"
                                         >
                                             Max
                                         </button>
@@ -296,20 +296,20 @@ const DeliveryWallet = () => {
 
                                 <div>
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">UPI ID</label>
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         value={upiId}
                                         onChange={(e) => setUpiId(e.target.value)}
                                         placeholder="yourname@upi"
-                                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 text-base font-bold text-slate-900 focus:outline-none focus:border-[#FF5C8A] focus:bg-white transition-all uppercase placeholder:normal-case"
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 text-base font-bold text-slate-900 focus:outline-none focus:border-[#FD0053] focus:bg-white transition-all uppercase placeholder:normal-case"
                                         required
                                     />
                                 </div>
 
-                                <button 
+                                <button
                                     type="submit"
                                     disabled={isSubmitting || !withdrawAmount || !upiId}
-                                    className="w-full bg-[#FF5C8A] text-white py-5 rounded-[1.5rem] font-black tracking-[0.2em] uppercase text-xs hover:bg-primary-dark active:scale-95 transition-all shadow-xl shadow-pink-900/10 disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center gap-3"
+                                    className="w-full bg-[#FD0053] text-white py-5 rounded-[1.5rem] font-black tracking-[0.2em] uppercase text-xs hover:bg-primary-dark active:scale-95 transition-all shadow-xl shadow-pink-900/10 disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center gap-3"
                                 >
                                     {isSubmitting ? (
                                         <>

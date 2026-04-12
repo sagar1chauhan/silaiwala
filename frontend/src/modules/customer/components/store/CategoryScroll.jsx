@@ -34,7 +34,7 @@ const CategoryScroll = ({ onSelectCategory, activeCategory }) => {
             const res = await api.get('/products/categories', {
                 params: { parent: category._id }
             });
-            
+
             if (res.data.success && res.data.data.length > 0) {
                 setHistory(prev => [...prev, { id: category._id, name: category.name, data: categories }]);
                 setCategories(res.data.data);
@@ -60,7 +60,7 @@ const CategoryScroll = ({ onSelectCategory, activeCategory }) => {
         if (last) {
             setCategories(last.data);
             setHistory(newHistory);
-            
+
             // If we popped to the root, we send "All" conceptually. Or we send the parent's info.
             if (newHistory.length === 0) {
                 if (onSelectCategory) onSelectCategory("All", null);
@@ -84,7 +84,7 @@ const CategoryScroll = ({ onSelectCategory, activeCategory }) => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
                 {history.length > 0 && (
                     <div className="mb-2 flex items-center gap-2">
-                        <button 
+                        <button
                             onClick={handleBack}
                             className="p-1 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
                         >
@@ -107,10 +107,10 @@ const CategoryScroll = ({ onSelectCategory, activeCategory }) => {
                             }}
                             className={`flex flex-col items-center gap-2 min-w-[80px] snap-center transition-all duration-300 ${activeCategory === "All" ? 'scale-105' : 'opacity-80 hover:opacity-100'}`}
                         >
-                            <div className={`w-16 h-16 rounded-full overflow-hidden border-2 flex items-center justify-center bg-gray-50 ${activeCategory === "All" ? 'border-[#FF5C8A] shadow-lg' : 'border-gray-100'}`}>
-                                <span className="text-[10px] font-black uppercase text-[#FF5C8A]">All</span>
+                            <div className={`w-16 h-16 rounded-full overflow-hidden border-2 flex items-center justify-center bg-gray-50 ${activeCategory === "All" ? 'border-[#FD0053] shadow-lg' : 'border-gray-100'}`}>
+                                <span className="text-[10px] font-black uppercase text-[#FD0053]">All</span>
                             </div>
-                            <span className={`text-xs font-medium text-center ${activeCategory === "All" ? 'text-[#FF5C8A] font-bold' : 'text-gray-600'}`}>
+                            <span className={`text-xs font-medium text-center ${activeCategory === "All" ? 'text-[#FD0053] font-bold' : 'text-gray-600'}`}>
                                 All Fabrics
                             </span>
                         </button>
@@ -130,7 +130,7 @@ const CategoryScroll = ({ onSelectCategory, activeCategory }) => {
                                 onClick={() => handleCategoryClick(category)}
                                 className={`flex flex-col items-center gap-2 min-w-[80px] snap-center transition-all duration-300 ${activeCategory === category.name ? 'scale-105' : 'opacity-80 hover:opacity-100'}`}
                             >
-                                <div className={`w-16 h-16 rounded-full overflow-hidden border-2 flex items-center justify-center bg-gray-50 ${activeCategory === category.name ? 'border-[#FF5C8A] shadow-lg' : 'border-gray-100'}`}>
+                                <div className={`w-16 h-16 rounded-full overflow-hidden border-2 flex items-center justify-center bg-gray-50 ${activeCategory === category.name ? 'border-[#FD0053] shadow-lg' : 'border-gray-100'}`}>
                                     <img
                                         src={getImageUrl(category.image) || `https://placehold.co/150x150?text=${category.name}`}
                                         alt={category.name}
@@ -138,7 +138,7 @@ const CategoryScroll = ({ onSelectCategory, activeCategory }) => {
                                         onError={(e) => { e.target.src = `https://placehold.co/150x150?text=${category.name}`; }}
                                     />
                                 </div>
-                                <span className={`text-xs font-medium text-center whitespace-nowrap ${activeCategory === category.name ? 'text-[#FF5C8A] font-bold' : 'text-gray-600'}`}>
+                                <span className={`text-xs font-medium text-center whitespace-nowrap ${activeCategory === category.name ? 'text-[#FD0053] font-bold' : 'text-gray-600'}`}>
                                     {category.name}
                                 </span>
                             </button>

@@ -15,7 +15,7 @@ const measurementSchema = new mongoose.Schema(
     garmentType: {
       type: String,
       required: [true, "Please specify the garment type (e.g., Shirt, Pant)"],
-      enum: ["Shirt", "Pant", "Suit", "Kurta", "Blouse", "Skirt", "Other"],
+      enum: ["Shirt", "Pant", "Suit", "Kurta", "Kurti", "Blouse", "Skirt", "Lehenga", "Other"],
     },
     measurements: {
       type: Map,

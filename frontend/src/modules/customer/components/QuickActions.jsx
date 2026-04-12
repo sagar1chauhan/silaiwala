@@ -99,9 +99,9 @@ const QuickActions = () => {
                     <p className="text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">Order fast, track easy</p>
                 </div>
                 {actions.length > 4 && (
-                    <button 
+                    <button
                         onClick={() => setIsExpanded(!isExpanded)}
-                        className="text-[10px] font-black text-[#FF5C8A] bg-pink-50 px-3 py-1.5 rounded-full border border-[#FF5C8A]/10 hover:shadow-sm transition-all uppercase tracking-widest sm:hidden"
+                        className="text-[10px] font-black text-[#FD0053] bg-pink-50 px-3 py-1.5 rounded-full border border-[#FD0053]/10 hover:shadow-sm transition-all uppercase tracking-widest sm:hidden"
                     >
                         {isExpanded ? 'Hide' : 'View All'}
                     </button>
@@ -115,7 +115,7 @@ const QuickActions = () => {
                         // Responsive visibility: items > 3 are hidden on mobile unless expanded, 
                         // but always visible on small screens (sm) and above (laptops/tablets)
                         const isHiddenOnMobile = !isExpanded && index > 3;
-                        
+
                         return (
                             <motion.div
                                 key={index}
@@ -127,7 +127,7 @@ const QuickActions = () => {
                                 whileTap={{ scale: 0.92 }}
                                 onClick={() => handleActionClick(action)}
                             >
-                                <div className={`w-[70%] sm:w-full aspect-square rounded-full shadow-lg bg-zinc-950 flex items-center justify-center border-2 border-[#FF5C8A]/30 backdrop-blur-md transition-all duration-300 group-hover:border-[#FF5C8A] group-hover:shadow-[#FF5C8A]/20 group-hover:-translate-y-1 mx-auto`}>
+                                <div className={`w-[70%] sm:w-full aspect-square rounded-full shadow-lg bg-zinc-950 flex items-center justify-center border-2 border-[#FD0053]/30 backdrop-blur-md transition-all duration-300 group-hover:border-[#FD0053] group-hover:shadow-[#FD0053]/20 group-hover:-translate-y-1 mx-auto`}>
                                     <div className="p-1.5 sm:p-3 transition-colors">
                                         {action.icon}
                                     </div>
@@ -146,30 +146,30 @@ const QuickActions = () => {
             <AnimatePresence>
                 {isBridalModalOpen && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
-                        <motion.div 
-                            initial={{ opacity: 0 }} 
-                            animate={{ opacity: 1 }} 
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
                             onClick={() => setIsBridalModalOpen(false)}
                         />
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             className="relative w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl"
                         >
-                            <button 
+                            <button
                                 onClick={() => setIsBridalModalOpen(false)}
                                 className="absolute right-4 top-4 p-2 bg-gray-50 hover:bg-gray-100 rounded-full text-gray-400 transition-colors"
                             >
                                 <X size={16} />
                             </button>
-                            
+
                             <div className="w-12 h-12 rounded-2xl bg-pink-50 text-pink-500 flex items-center justify-center mb-4">
                                 <Heart size={24} />
                             </div>
-                            
+
                             <h3 className="text-xl font-black text-gray-900 mb-1">Bridal Consultation</h3>
                             <p className="text-xs text-gray-500 mb-6 leading-relaxed">
                                 Book a specialized tailor for custom bridal fitting and stitching services. An expert will be assigned to your request manually.
@@ -180,46 +180,46 @@ const QuickActions = () => {
                                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 block">Preferred Date</label>
                                     <div className="relative">
                                         <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                                        <input 
+                                        <input
                                             type="date"
                                             required
                                             min={new Date().toISOString().split('T')[0]}
-                                            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:bg-white focus:border-[#FF5C8A] focus:ring-1 focus:ring-[#FF5C8A]/20 transition-all outline-none"
+                                            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:bg-white focus:border-[#FD0053] focus:ring-1 focus:ring-[#FD0053]/20 transition-all outline-none"
                                             value={bookingData.date}
-                                            onChange={(e) => setBookingData({...bookingData, date: e.target.value})}
+                                            onChange={(e) => setBookingData({ ...bookingData, date: e.target.value })}
                                         />
                                     </div>
                                 </div>
-                                
+
                                 <div>
                                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 block">Preferred Time</label>
                                     <div className="relative">
                                         <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                                        <input 
+                                        <input
                                             type="time"
                                             required
-                                            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:bg-white focus:border-[#FF5C8A] focus:ring-1 focus:ring-[#FF5C8A]/20 transition-all outline-none"
+                                            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:bg-white focus:border-[#FD0053] focus:ring-1 focus:ring-[#FD0053]/20 transition-all outline-none"
                                             value={bookingData.time}
-                                            onChange={(e) => setBookingData({...bookingData, time: e.target.value})}
+                                            onChange={(e) => setBookingData({ ...bookingData, time: e.target.value })}
                                         />
                                     </div>
                                 </div>
 
                                 <div>
                                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 block">Requirements Note</label>
-                                    <textarea 
+                                    <textarea
                                         placeholder="Specific requests, dress type, etc."
                                         rows="2"
-                                        className="w-full p-3 bg-gray-50 border border-gray-100 rounded-xl text-xs focus:bg-white focus:border-[#FF5C8A] focus:ring-1 focus:ring-[#FF5C8A]/20 transition-all outline-none resize-none"
+                                        className="w-full p-3 bg-gray-50 border border-gray-100 rounded-xl text-xs focus:bg-white focus:border-[#FD0053] focus:ring-1 focus:ring-[#FD0053]/20 transition-all outline-none resize-none"
                                         value={bookingData.notes}
-                                        onChange={(e) => setBookingData({...bookingData, notes: e.target.value})}
+                                        onChange={(e) => setBookingData({ ...bookingData, notes: e.target.value })}
                                     ></textarea>
                                 </div>
 
-                                <button 
-                                    type="submit" 
+                                <button
+                                    type="submit"
                                     disabled={isSubmitting}
-                                    className="w-full py-4 rounded-xl bg-[#FF5C8A] text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-[#FF5C8A]/20 hover:bg-[#cc496e] active:scale-[0.98] transition-all disabled:opacity-70 mt-2"
+                                    className="w-full py-4 rounded-xl bg-[#FD0053] text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-[#FD0053]/20 hover:bg-[#cc496e] active:scale-[0.98] transition-all disabled:opacity-70 mt-2"
                                 >
                                     {isSubmitting ? 'Requesting...' : 'Request Booking'}
                                 </button>

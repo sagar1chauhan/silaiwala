@@ -45,18 +45,18 @@ const CheckoutAddress = () => {
                 {!isAddingNew && (
                     <button
                         onClick={() => setIsAddingNew(true)}
-                        className="w-full flex items-center justify-between p-4 bg-white rounded-xl border border-dashed border-gray-300 hover:border-[#FF5C8A] group transition-all shadow-sm hover:shadow-md active:scale-[0.99]"
+                        className="w-full flex items-center justify-between p-4 bg-white rounded-xl border border-dashed border-gray-300 hover:border-[#FD0053] group transition-all shadow-sm hover:shadow-md active:scale-[0.99]"
                     >
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-pink-50 text-[#FF5C8A] flex items-center justify-center group-hover:bg-[#FF5C8A] group-hover:text-white transition-colors">
+                            <div className="w-10 h-10 rounded-full bg-pink-50 text-[#FD0053] flex items-center justify-center group-hover:bg-[#FD0053] group-hover:text-white transition-colors">
                                 <Plus size={20} />
                             </div>
                             <div className="text-left">
                                 <h3 className="text-sm font-bold text-gray-900">Add New Address</h3>
-                                <p className="text-[10px] text-gray-500 group-hover:text-[#FF5C8A]">For Pickup & Delivery</p>
+                                <p className="text-[10px] text-gray-500 group-hover:text-[#FD0053]">For Pickup & Delivery</p>
                             </div>
                         </div>
-                        <ChevronRight size={16} className="text-gray-400 group-hover:text-[#FF5C8A]" />
+                        <ChevronRight size={16} className="text-gray-400 group-hover:text-[#FD0053]" />
                     </button>
                 )}
 
@@ -82,14 +82,14 @@ const CheckoutAddress = () => {
                             <>
                                 <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1 mb-2">Saved Addresses</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {addresses.map((addr) => (
-                                    <AddressCard
-                                        key={addr._id}
-                                        address={addr}
-                                        isSelected={selectedAddressId === addr._id}
-                                        onSelect={() => handleSelect(addr._id)}
-                                    />
-                                ))}
+                                    {addresses.map((addr) => (
+                                        <AddressCard
+                                            key={addr._id}
+                                            address={addr}
+                                            isSelected={selectedAddressId === addr._id}
+                                            onSelect={() => handleSelect(addr._id)}
+                                        />
+                                    ))}
                                 </div>
                             </>
                         )}
@@ -106,7 +106,7 @@ const CheckoutAddress = () => {
                         className={cn(
                             "w-full py-3.5 rounded-full text-sm font-bold shadow-lg transition-all flex items-center justify-center gap-2",
                             selectedAddressId
-                                ? "bg-[#FF5C8A] text-white hover:bg-[#cc496e] active:scale-95 shadow-[#FF5C8A]/20"
+                                ? "bg-[#FD0053] text-white hover:bg-[#cc496e] active:scale-95 shadow-[#FD0053]/20"
                                 : "bg-gray-100 text-gray-400 cursor-not-allowed shadow-none"
                         )}
                     >

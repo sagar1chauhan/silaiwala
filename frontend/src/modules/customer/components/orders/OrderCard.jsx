@@ -6,7 +6,7 @@ const OrderCard = ({ order }) => {
     const deliveryType = order.items?.[0]?.deliveryType || "Standard";
     const displayId = order.orderId || "ORD-0000";
     const status = order.status?.replace(/-/g, ' ').toUpperCase();
-    
+
     // Status color logic
     const getStatusColor = (status) => {
         const s = status?.toLowerCase();
@@ -47,12 +47,12 @@ const OrderCard = ({ order }) => {
                                     {displayId}
                                 </span>
                             </div>
-                            <h3 className="text-sm font-black text-gray-900 line-clamp-1 group-hover:text-[#FF5C8A] transition-colors uppercase tracking-tight">
+                            <h3 className="text-sm font-black text-gray-900 line-clamp-1 group-hover:text-[#FD0053] transition-colors uppercase tracking-tight">
                                 {serviceTitle}
                             </h3>
                         </div>
                         <div className="text-right">
-                            <span className="text-sm font-black text-[#FF5C8A]">₹{order.totalAmount}</span>
+                            <span className="text-sm font-black text-[#FD0053]">₹{order.totalAmount}</span>
                             <p className="text-[9px] text-gray-400 font-bold uppercase mt-0.5">{order.paymentStatus}</p>
                         </div>
                     </div>
@@ -70,7 +70,7 @@ const OrderCard = ({ order }) => {
                 </div>
 
                 {/* 3. Arrow */}
-                <div className="self-center text-gray-300 group-hover:text-[#FF5C8A] transition-colors">
+                <div className="self-center text-gray-300 group-hover:text-[#FD0053] transition-colors">
                     <ChevronRight size={20} />
                 </div>
             </div>

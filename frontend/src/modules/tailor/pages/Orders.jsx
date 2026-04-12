@@ -211,38 +211,93 @@ const Orders = () => {
                             </div>
                         </div>
 
-                        <div className="space-y-4 pt-4 border-t border-gray-50">
-                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Configuration</p>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-gray-50 p-3 rounded-2xl flex items-center gap-3">
-                                    {(order.items[0]?.fabricSource?.toLowerCase() === 'platform') && order.items[0]?.selectedFabric ? (
-                                        <>
-                                            <div className="w-10 h-10 rounded-lg overflow-hidden border border-gray-100 shrink-0 bg-white">
-                                                <img 
-                                                    src={order.items[0].selectedFabric.image || (order.items[0].selectedFabric.images && order.items[0].selectedFabric.images[0])} 
-                                                    alt="Fabric" 
-                                                    className="w-full h-full object-cover"
-                                                />
+                        <div className="space-y-6 pt-4 border-t border-gray-50">
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-2">Order Items ({order.items.length})</p>
+                            
+                            {order.items.map((item, idx) => (
+                                <div key={idx} className="bg-gray-50/50 rounded-3xl p-5 border border-gray-100 space-y-4">
+                                    {/* Item Header */}
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-primary shadow-sm border border-pink-50">
+                                            <Scissors size={18} />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-sm font-black text-gray-900">{item.service?.title || 'Custom Service'}</h4>
+                                            <p className="text-[10px] text-gray-400 font-bold uppercase">Item #{idx + 1}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Fabric & Delivery */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="bg-white p-3 rounded-2xl border border-gray-50">
+                                            <p className="text-[8px] text-gray-400 font-bold uppercase mb-1">Fabric</p>
+                                            <div className="flex items-center gap-2">
+                                                {item.fabricSource === 'platform' && item.selectedFabric ? (
+                                                    <>
+                                                        <div className="w-6 h-6 rounded-md overflow-hidden bg-gray-50">
+                                                            <img src={item.selectedFabric.image || item.selectedFabric.images?.[0]} className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <span className="text-[10px] font-bold truncate text-primary">{item.selectedFabric.title}</span>
+                                                    </>
+                                                ) : (
+                                                    <span className="text-[10px] font-bold uppercase text-primary">Customer Provided</span>
+                                                )}
                                             </div>
-                                            <div className="flex-1 min-w-0 text-left">
-                                                <p className="text-[8px] text-gray-400 font-bold uppercase mb-0.5">Platform Fabric</p>
-                                                <p className="text-[10px] font-black text-primary truncate">{order.items[0].selectedFabric.title}</p>
+                                        </div>
+                                        <div className="bg-white p-3 rounded-2xl border border-gray-50">
+                                            <p className="text-[8px] text-gray-400 font-bold uppercase mb-1">Delivery</p>
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full bg-green-500" />
+                                                <span className="text-[10px] font-bold uppercase text-primary">{item.deliveryType}</span>
                                             </div>
-                                        </>
-                                    ) : (
-                                        <div className="flex-1 text-left">
-                                            <p className="text-[8px] text-gray-400 font-bold uppercase mb-0.5">Fabric</p>
-                                            <p className="text-[10px] font-black text-primary uppercase">
-                                                {order.items[0]?.fabricSource?.toLowerCase() === 'customer' ? 'Customer Provides' : order.items[0]?.fabricSource}
-                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Item Measurements */}
+                                    {item.measurements && (
+                                        <div className="bg-white p-4 rounded-2xl border border-gray-50 space-y-3">
+                                            <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest">Measurements</p>
+                                            
+                                            {item.measurements.type === 'slip' ? (
+                                                <div className="relative aspect-video rounded-xl overflow-hidden border border-gray-50 bg-gray-50 group">
+                                                    <img 
+                                                        src={item.measurements.image} 
+                                                        alt="Slip" 
+                                                        className="w-full h-full object-contain"
+                                                    />
+                                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                        <button 
+                                                            onClick={() => window.open(item.measurements.image, '_blank')}
+                                                            className="px-3 py-1.5 bg-white text-primary text-[8px] font-black uppercase rounded-lg"
+                                                        >
+                                                            Zoom
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="grid grid-cols-3 gap-2">
+                                                    {Object.entries(item.measurements.data || item.measurements).map(([mKey, mVal]) => (
+                                                        !['type', 'notes', '_id', 'image', 'measurements', 'profileName', 'garmentType', 'user', 'isDefault', '__v', 'createdAt', 'updatedAt', 'saveProfile'].includes(mKey) && 
+                                                        (typeof mVal === 'string' || typeof mVal === 'number') && (
+                                                            <div key={mKey} className="bg-gray-50/50 p-2 rounded-xl text-center">
+                                                                <p className="text-[8px] text-gray-400 font-bold uppercase truncate">{mKey.replace(/([A-Z])/g, ' $1')}</p>
+                                                                <p className="text-[10px] font-black text-gray-900">{mVal}"</p>
+                                                            </div>
+                                                        )
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            {item.measurements.notes && (
+                                                <div className="p-3 bg-amber-50/50 rounded-xl border border-amber-100/50">
+                                                    <p className="text-[9px] text-amber-600 font-black uppercase mb-1 italic">Note</p>
+                                                    <p className="text-[10px] text-gray-700 leading-relaxed font-medium">"{item.measurements.notes}"</p>
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                 </div>
-                                <div className="bg-gray-50 p-3 rounded-2xl">
-                                    <p className="text-[9px] text-gray-400 font-bold uppercase">Delivery</p>
-                                    <p className="text-xs font-black text-primary">{order.items[0]?.deliveryType}</p>
-                                </div>
-                            </div>
+                            ))}
                         </div>
 
                         {order.deliveryPartner && (
@@ -276,54 +331,6 @@ const Orders = () => {
                                         .filter(val => val && val.trim() !== '')
                                         .join(', ')}
                                 </p>
-                            </div>
-                        )}
-
-                        {order.items[0]?.measurements && (
-                            <div className="pt-4 border-t border-gray-50">
-                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-3">Customer Measurements</p>
-                                
-                                {order.items[0].measurements.type === 'slip' ? (
-                                    <div className="space-y-3">
-                                        <div className="relative aspect-video rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 group">
-                                            <img 
-                                                src={order.items[0].measurements.image} 
-                                                alt="Measurement Slip" 
-                                                className="w-full h-full object-contain"
-                                            />
-                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                <button 
-                                                    onClick={() => window.open(order.items[0].measurements.image, '_blank')}
-                                                    className="px-4 py-2 bg-white text-primary text-[10px] font-black uppercase rounded-xl"
-                                                >
-                                                    View Full Image
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <p className="text-[10px] text-gray-500 font-medium text-center italic mt-1">Uploaded Measurement Slip Image</p>
-                                    </div>
-                                ) : (
-                                    <div className="grid grid-cols-3 gap-2">
-                                        {Object.entries(order.items[0].measurements).map(([key, val]) => (
-                                            !['type', 'notes', '_id', 'image'].includes(key) && val && (
-                                                <div key={key} className="bg-white border border-gray-100 p-2 rounded-xl text-center">
-                                                    <p className="text-[8px] text-gray-400 font-bold uppercase truncate">{key.replace(/([A-Z])/g, ' $1')}</p>
-                                                    <p className="text-xs font-black text-gray-900">{val}"</p>
-                                                </div>
-                                            )
-                                        ))}
-                                    </div>
-                                )}
-
-                                {order.items[0].measurements.notes && (
-                                    <div className="mt-4 p-4 bg-amber-50 rounded-2xl border border-amber-100/50">
-                                        <div className="flex items-center gap-2 mb-1.5">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                                            <p className="text-[9px] text-amber-600 font-black uppercase tracking-widest">Master Note</p>
-                                        </div>
-                                        <p className="text-[11px] text-gray-800 leading-relaxed font-medium">"{order.items[0].measurements.notes}"</p>
-                                    </div>
-                                )}
                             </div>
                         )}
                     </div>

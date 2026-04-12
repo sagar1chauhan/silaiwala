@@ -21,7 +21,7 @@ const ProductCard = ({ product, onAddClick }) => {
         >
             {/* Discount Badge */}
             {product.discount && (
-                <div className="absolute top-2 left-2 z-20 bg-[#FFBC00] text-[#FF5C8A] text-xs font-bold px-2 py-0.5 rounded-full shadow-md">
+                <div className="absolute top-2 left-2 z-20 bg-[#FFBC00] text-[#FD0053] text-xs font-bold px-2 py-0.5 rounded-full shadow-md">
                     -{product.discount}%
                 </div>
             )}
@@ -60,22 +60,22 @@ const ProductCard = ({ product, onAddClick }) => {
                     <span className="text-[10px] text-gray-500 uppercase tracking-widest font-black">
                         {typeof product.category === 'object' ? product.category?.name : product.category || 'FABRICS'}
                     </span>
-                    <div className="flex items-center gap-1 bg-pink-50 px-1.5 py-0.5 rounded-md text-[10px] font-black text-[#FF5C8A]">
+                    <div className="flex items-center gap-1 bg-pink-50 px-1.5 py-0.5 rounded-md text-[10px] font-black text-[#FD0053]">
                         {product.rating || product.ratings || 0} <Star className="h-2 w-2 fill-current" />
                     </div>
                 </div>
 
                 {/* Name & Subtitle */}
-                <h3 className="text-[13px] font-black text-gray-900 line-clamp-1 mb-0.5 tracking-tight group-hover:text-[#FF5C8A] transition-colors">
+                <h3 className="text-[13px] font-black text-gray-900 line-clamp-1 mb-0.5 tracking-tight group-hover:text-[#FD0053] transition-colors">
                     {product.name}
                 </h3>
                 <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2.5 flex items-center gap-1">
-                    Available at: <span className="text-[#FF5C8A] truncate">{product.tailor?.shopName || product.tailor?.name || "Silaiwala Central Store"}</span>
+                    Available at: <span className="text-[#FD0053] truncate">{product.tailor?.shopName || product.tailor?.name || "Silaiwala Central Store"}</span>
                 </p>
 
                 {/* Price - simple and clean */}
                 <div className="flex items-baseline gap-2">
-                    <span className="text-[15px] font-black text-[#FF5C8A]">₹{product.price}</span>
+                    <span className="text-[15px] font-black text-[#FD0053]">₹{product.price}</span>
                     <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">/ meter</span>
                     {product.originalPrice && (
                         <span className="text-[11px] text-gray-400 font-bold line-through ml-1">₹{product.originalPrice}</span>

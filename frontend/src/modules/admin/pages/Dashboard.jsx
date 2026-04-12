@@ -38,13 +38,13 @@ const AdminDashboard = () => {
                 const response = await api.get('/admin/dashboard');
                 const { stats, recentOrders: apiRecentOrders, topTailors: apiTopTailors, revenueChart } = response.data;
                 const { totalRevenue, activeOrdersCount, totalTailors, pendingTailorsCount, pendingPayouts } = stats;
-                
+
                 setStatsData({
                     totalRevenue: `₹${totalRevenue.toLocaleString()}`,
                     activeOrders: activeOrdersCount,
                     totalTailors: totalTailors,
                     pendingTailorsCount: pendingTailorsCount || 0,
-                    pendingPayouts: `₹${(pendingPayouts || 0).toLocaleString()}`, 
+                    pendingPayouts: `₹${(pendingPayouts || 0).toLocaleString()}`,
                 });
 
                 if (apiRecentOrders && apiRecentOrders.length > 0) {
@@ -77,7 +77,7 @@ const AdminDashboard = () => {
 
         // Socket setup for real-time updates
         const socket = io(SOCKET_URL);
-        
+
         socket.on('new_order', () => {
             fetchDashboardData();
         });
@@ -87,7 +87,7 @@ const AdminDashboard = () => {
         });
 
         socket.on('task_claimed', () => {
-             fetchDashboardData();
+            fetchDashboardData();
         });
 
         return () => {
@@ -119,9 +119,9 @@ const AdminDashboard = () => {
         <div className="space-y-6 lg:space-y-10">
             {/* Header section is in layout, just need page content here */}
             {isLoading && (
-                 <div className="w-full h-1 bg-gray-100 overflow-hidden rounded-full absolute top-0 left-0 z-50">
-                     <div className="h-full bg-primary animate-pulse w-1/3 rounded-full"></div>
-                 </div>
+                <div className="w-full h-1 bg-gray-100 overflow-hidden rounded-full absolute top-0 left-0 z-50">
+                    <div className="h-full bg-primary animate-pulse w-1/3 rounded-full"></div>
+                </div>
             )}
 
             {/* Stats Grid */}
@@ -193,7 +193,7 @@ const AdminDashboard = () => {
                                 <div key={idx} className="flex flex-col items-center flex-1 z-10 group">
                                     <div className="relative w-full max-w-[40px] flex justify-center flex-1 items-end">
                                         <div
-                                            className="w-full bg-pink-100/50 rounded-t-lg group-hover:bg-[#FF5C8A] transition-all duration-300 relative"
+                                            className="w-full bg-pink-100/50 rounded-t-lg group-hover:bg-[#FD0053] transition-all duration-300 relative"
                                             style={{ height: `${(data.revenue / (maxRevenue || 1)) * 100}%` }}
                                         >
                                             <div className="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] font-black px-3 py-1.5 rounded-lg shadow-xl pointer-events-none whitespace-nowrap transition-all z-20">
@@ -242,41 +242,41 @@ const AdminDashboard = () => {
                                 <tbody>
                                     {liveOrders.map((order) => (
                                         <tr key={order.id} className="hover:bg-gray-50/50 transition-colors group">
-                                             <td className="px-5 lg:px-8 py-4 lg:py-5">
-                                                 <div className="flex flex-col">
-                                                     <span className="text-[10px] lg:text-xs font-black text-primary uppercase">{order.id}</span>
-                                                     <span className="text-xs lg:text-sm font-bold text-gray-900 mt-0.5">{order.service}</span>
-                                                     <span className="text-[9px] lg:text-[10px] text-gray-400 font-medium">Customer: {order.customer}</span>
-                                                 </div>
-                                             </td>
-                                             <td className="px-5 lg:px-8 py-4 lg:py-5">
-                                                 <div className="flex items-center gap-2">
-                                                     <div className="h-6 w-6 lg:h-7 lg:w-7 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-500">
-                                                         {order.tailor.charAt(0)}
-                                                     </div>
-                                                     <span className="text-[10px] lg:text-xs font-bold text-gray-700">{order.tailor}</span>
-                                                 </div>
-                                             </td>
-                                             <td className="px-5 lg:px-8 py-4 lg:py-5 text-xs lg:text-sm font-black text-gray-900">{order.amount}</td>
-                                             <td className="px-5 lg:px-8 py-4 lg:py-5">
-                                                 <span className={`px-2 py-1 lg:px-3 lg:py-1.5 rounded-lg text-[9px] lg:text-[10px] font-black border uppercase tracking-wider ${getStatusStyle(order.status)}`}>
-                                                     {order.status.replace(/-/g, ' ')}
-                                                 </span>
-                                             </td>
-                                             <td className="px-5 lg:px-8 py-4 lg:py-5 text-right">
-                                                 <button className="text-gray-300 hover:text-primary transition-colors p-1.5 lg:p-2 hover:bg-gray-50 rounded-lg">
-                                                     <MoreHorizontal size={18} className="lg:w-[20px] lg:h-[20px]" />
-                                                 </button>
-                                             </td>
-                                         </tr>
-                                     ))}
-                                     {liveOrders.length === 0 && !isLoading && (
-                                         <tr>
-                                             <td colSpan="5" className="px-8 py-10 text-center text-gray-400 text-xs font-bold uppercase tracking-widest">
-                                                 No recent orders found
-                                             </td>
-                                         </tr>
-                                     )}
+                                            <td className="px-5 lg:px-8 py-4 lg:py-5">
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] lg:text-xs font-black text-primary uppercase">{order.id}</span>
+                                                    <span className="text-xs lg:text-sm font-bold text-gray-900 mt-0.5">{order.service}</span>
+                                                    <span className="text-[9px] lg:text-[10px] text-gray-400 font-medium">Customer: {order.customer}</span>
+                                                </div>
+                                            </td>
+                                            <td className="px-5 lg:px-8 py-4 lg:py-5">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="h-6 w-6 lg:h-7 lg:w-7 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-500">
+                                                        {order.tailor.charAt(0)}
+                                                    </div>
+                                                    <span className="text-[10px] lg:text-xs font-bold text-gray-700">{order.tailor}</span>
+                                                </div>
+                                            </td>
+                                            <td className="px-5 lg:px-8 py-4 lg:py-5 text-xs lg:text-sm font-black text-gray-900">{order.amount}</td>
+                                            <td className="px-5 lg:px-8 py-4 lg:py-5">
+                                                <span className={`px-2 py-1 lg:px-3 lg:py-1.5 rounded-lg text-[9px] lg:text-[10px] font-black border uppercase tracking-wider ${getStatusStyle(order.status)}`}>
+                                                    {order.status.replace(/-/g, ' ')}
+                                                </span>
+                                            </td>
+                                            <td className="px-5 lg:px-8 py-4 lg:py-5 text-right">
+                                                <button className="text-gray-300 hover:text-primary transition-colors p-1.5 lg:p-2 hover:bg-gray-50 rounded-lg">
+                                                    <MoreHorizontal size={18} className="lg:w-[20px] lg:h-[20px]" />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    {liveOrders.length === 0 && !isLoading && (
+                                        <tr>
+                                            <td colSpan="5" className="px-8 py-10 text-center text-gray-400 text-xs font-bold uppercase tracking-widest">
+                                                No recent orders found
+                                            </td>
+                                        </tr>
+                                    )}
                                 </tbody>
                             </table>
                         </div>
@@ -295,7 +295,7 @@ const AdminDashboard = () => {
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="bg-[#FF5C8A] p-6 lg:p-8 rounded-[2rem] shadow-xl text-white relative overflow-hidden group border border-pink-400/20"
+                        className="bg-[#FD0053] p-6 lg:p-8 rounded-[2rem] shadow-xl text-white relative overflow-hidden group border border-pink-400/20"
                     >
                         <div className="absolute -top-4 -right-4 p-4 opacity-10 group-hover:opacity-20 transition-all duration-500 transform group-hover:rotate-12 group-hover:scale-110">
                             <Scissors size={120} />
@@ -307,7 +307,7 @@ const AdminDashboard = () => {
                                 You have <span className="text-white font-black underline decoration-white/30 underline-offset-4">{statsData.pendingTailorsCount || 0} applications</span> waiting for document KYC verification.
                             </p>
                         </div>
-                        <Link to="/admin/tailors" className="mt-8 w-full py-4 bg-white text-[#FF5C8A] font-black rounded-2xl text-[11px] uppercase tracking-widest hover:bg-pink-50 hover:shadow-xl transition-all active:scale-95 relative z-10 flex items-center justify-center shadow-lg shadow-pink-900/10">
+                        <Link to="/admin/tailors" className="mt-8 w-full py-4 bg-white text-[#FD0053] font-black rounded-2xl text-[11px] uppercase tracking-widest hover:bg-pink-50 hover:shadow-xl transition-all active:scale-95 relative z-10 flex items-center justify-center shadow-lg shadow-pink-900/10">
                             Review Applications
                         </Link>
                     </motion.div>

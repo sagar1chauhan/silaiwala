@@ -36,9 +36,9 @@ const StoreProductDetail = () => {
     if (!productData) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-                <div className="w-8 h-8 rounded-full border-2 border-[#FF5C8A] border-r-transparent animate-spin"></div>
+                <div className="w-8 h-8 rounded-full border-2 border-[#FD0053] border-r-transparent animate-spin"></div>
                 <p className="text-gray-500 font-bold">Loading Product...</p>
-                <Link to="/store" className="text-[#FF5C8A] underline text-sm font-bold">Return to Store</Link>
+                <Link to="/store" className="text-[#FD0053] underline text-sm font-bold">Return to Store</Link>
             </div>
         );
     }
@@ -90,14 +90,14 @@ const StoreProductDetail = () => {
         <div className="min-h-screen bg-white pb-32 font-sans relative">
             {/* Toast Notification */}
             {toast && (
-                <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-4 py-2 rounded-full shadow-lg text-[10px] font-black uppercase tracking-widest animate-in slide-in-from-top-2 fade-in duration-300 ${toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-[#FF5C8A] text-white'
+                <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-4 py-2 rounded-full shadow-lg text-[10px] font-black uppercase tracking-widest animate-in slide-in-from-top-2 fade-in duration-300 ${toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-[#FD0053] text-white'
                     }`}>
                     {toast.message}
                 </div>
             )}
 
             {/* 1. Header */}
-            <div className="sticky top-0 z-50 bg-[#FF5C8A] shadow-md px-4 py-3 flex items-center justify-between pt-safe">
+            <div className="sticky top-0 z-50 bg-[#FD0053] shadow-md px-4 py-3 flex items-center justify-between pt-safe">
                 <button
                     onClick={() => navigate(-1)}
                     className="p-2 -ml-2 rounded-full hover:bg-white/10 text-white transition-colors"
@@ -127,7 +127,7 @@ const StoreProductDetail = () => {
                     </button>
                     <Link to="/cart" className="p-2 relative text-white hover:bg-white/10 rounded-full transition-colors">
                         <ShoppingCart size={20} />
-                        <span className="absolute top-1 right-0 w-2 h-2 bg-red-500 rounded-full border border-[#FF5C8A]" />
+                        <span className="absolute top-1 right-0 w-2 h-2 bg-red-500 rounded-full border border-[#FD0053]" />
                     </Link>
                 </div>
             </div>

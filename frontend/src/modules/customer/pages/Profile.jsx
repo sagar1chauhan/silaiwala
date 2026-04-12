@@ -31,7 +31,7 @@ const LegalLinks = () => {
     return (
         <div className="mt-8 space-y-4">
             <div className="flex items-center gap-2 mb-2 px-1">
-                <div className="p-1 px-1.5 bg-[#FF5C8A] rounded text-white italic">
+                <div className="p-1 px-1.5 bg-[#FD0053] rounded text-white italic">
                     <FileText size={10} strokeWidth={3} />
                 </div>
                 <h3 className="text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] italic">Legal & Policies</h3>

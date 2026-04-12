@@ -20,7 +20,7 @@ export const API_URL = import.meta.env.VITE_API_URL || (SOCKET_URL ? `${SOCKET_U
 export const APP_NAME = 'Silaiwala';
 
 export const THEME = {
-    primary: '#FF5C8A', // Emerald Green (Starbucks-like)
+    primary: '#FD0053', // Emerald Green (Starbucks-like)
     secondary: '#d4e9e2', // Light Green
     accent: '#00754a', // Bright Green
 };

@@ -24,12 +24,12 @@ const Home = () => {
     }, [fetchOrders]);
 
     // Find the latest active order (not delivered or cancelled)
-    const activeOrder = orders.find(o => 
+    const activeOrder = orders.find(o =>
         !['delivered', 'cancelled'].includes(o.status?.toLowerCase())
     );
 
     return (
-        <div className="min-h-screen bg-[#fcf8f9] pb-24 font-sans selection:bg-[#FF5C8A] selection:text-white">
+        <div className="min-h-screen bg-[#fcf8f9] pb-24 font-sans selection:bg-[#FD0053] selection:text-white">
             <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-pink-50/50 via-white to-white -z-10" />
 
             {/* 1. Header & Location */}

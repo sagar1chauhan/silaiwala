@@ -54,29 +54,29 @@ const StorePage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-24 font-sans text-[#FF5C8A]">
+        <div className="min-h-screen bg-gray-50 pb-24 font-sans text-[#FD0053]">
             {/* 1. Sticky Header */}
             <StoreHeader searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
             {/* 2. Dynamic Store Banner */}
             {storeBanners.length > 0 && (
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="relative h-32 overflow-hidden rounded-[2.5rem] shadow-xl group cursor-pointer border border-pink-100/50"
                     >
                         {/* Background Image */}
-                        <motion.img 
+                        <motion.img
                             whileHover={{ scale: 1.05 }}
                             transition={{ duration: 0.8 }}
-                            src={getImageUrl(storeBanners[0].image)} 
-                            alt="Promo" 
-                            className="absolute inset-0 w-full h-full object-cover" 
+                            src={getImageUrl(storeBanners[0].image)}
+                            alt="Promo"
+                            className="absolute inset-0 w-full h-full object-cover"
                         />
                         {/* Overlay */}
                         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/30 to-transparent" />
-                        
+
                         {/* Content */}
                         <div className="relative z-10 h-full flex flex-col justify-center px-6 gap-1">
                             {storeBanners[0].badge && (

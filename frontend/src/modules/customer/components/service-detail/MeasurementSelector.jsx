@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Ruler, Upload, User, ChevronDown, ChevronUp, CheckCircle2, Home } from 'lucide-react';
+import { Ruler, Upload, User, ChevronDown, ChevronUp, CheckCircle2, Home, Shirt } from 'lucide-react';
 import { cn } from '../../../../utils/cn';
 import SelfMeasureForm from './measurement-forms/SelfMeasureForm';
 import UploadSlip from './measurement-forms/UploadSlip';
@@ -170,6 +170,37 @@ const MeasurementSelector = ({ selectedType, onSelectType, onMeasurementComplete
                         </p>
                     </div>
                     {selectedType === 'home' && (
+                        <div className="absolute top-0 right-0 p-1 bg-primary text-white rounded-bl-lg">
+                            <CheckCircle2 size={10} />
+                        </div>
+                    )}
+                </div>
+
+                {/* 5. Provide Sample Garment */}
+                <div
+                    onClick={() => {
+                        onSelectType('sample');
+                    }}
+                    className={cn(
+                        "group p-3 rounded-xl border cursor-pointer transition-all flex items-center gap-3 relative overflow-hidden",
+                        selectedType === 'sample' ? "border-primary bg-purple-50 ring-1 ring-primary shadow-sm" : "border-gray-100 bg-white hover:border-gray-200"
+                    )}
+                >
+                    <div className={cn(
+                        "w-8 h-8 rounded-lg flex items-center justify-center transition-all",
+                        selectedType === 'sample' ? "bg-primary text-white" : "bg-purple-50 text-purple-600"
+                    )}>
+                        <Shirt size={16} />
+                    </div>
+                    <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                            <h4 className="text-sm font-bold text-gray-900">Provide Sample Garment</h4>
+                        </div>
+                        <p className="text-[10px] text-gray-400 font-medium leading-none mt-1">
+                            Partner will collect your best fitting clothes
+                        </p>
+                    </div>
+                    {selectedType === 'sample' && (
                         <div className="absolute top-0 right-0 p-1 bg-primary text-white rounded-bl-lg">
                             <CheckCircle2 size={10} />
                         </div>

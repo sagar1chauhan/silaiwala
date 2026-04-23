@@ -47,6 +47,10 @@ const TrackingMap = ({
         options={{
           disableDefaultUI: true,
           zoomControl: true,
+          zoomControlOptions: {
+            position: window.google ? window.google.maps.ControlPosition.LEFT_CENTER : 4,
+          },
+          padding: { top: 20, bottom: 280, left: 10, right: 10 },
           styles: [
             { featureType: 'poi', stylers: [{ visibility: 'off' }] },
             { featureType: 'transit', stylers: [{ visibility: 'off' }] },

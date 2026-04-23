@@ -222,8 +222,8 @@ const DeliveryDashboard = () => {
 
     return (
         <div className="animate-in fade-in duration-700 relative w-full h-full">
-            {/* Operational Map - Full Viewport Background */}
-            <div className="fixed inset-0 z-0 bg-slate-100 pointer-events-auto">
+            {/* Operational Map - Full Viewport Background (Starts below header) */}
+            <div className="fixed inset-x-0 bottom-0 top-[80px] z-0 bg-slate-100 pointer-events-auto">
                 <DashboardMap 
                     currentLocation={currentLocation} 
                     activeOrder={currentTask}
@@ -435,9 +435,9 @@ const DeliveryDashboard = () => {
                     <div className="flex items-center justify-between px-1">
                         <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-pink-500 animate-pulse"></div>
-                            <h2 className="text-lg font-black text-slate-900 tracking-tight capitalize">Live <span className="text-primary">Available</span> Tasks</h2>
+                            <h2 className="text-lg font-black text-white tracking-tight capitalize">Live <span className="text-white">Available</span> Tasks</h2>
                         </div>
-                        <button onClick={() => navigate('/delivery/tasks')} className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline">See All</button>
+                        <button onClick={() => navigate('/delivery/tasks')} className="text-[10px] font-black text-white uppercase tracking-widest hover:underline">See All</button>
                     </div>
                     <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide px-1 -mx-1">
                         {availableOrders.slice(0, 5).map((order) => (

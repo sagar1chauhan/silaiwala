@@ -62,12 +62,8 @@ const DeliveryHistory = () => {
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-2">
             {/* Header */}
             <div>
-                <div className="flex items-center gap-3 text-slate-600 mb-1">
-                    <div className="h-px w-8 bg-slate-200"></div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em]">Historical Logs</span>
-                </div>
-                <h1 className="text-3xl font-black text-slate-900 tracking-tighter uppercase">
-                    Transit <span className="text-slate-400">Archives</span>
+                <h1 className="text-3xl font-black text-slate-900 tracking-tighter capitalize mb-4">
+                    Transaction <span className="text-slate-400">History</span>
                 </h1>
             </div>
 

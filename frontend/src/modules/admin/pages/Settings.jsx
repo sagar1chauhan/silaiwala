@@ -153,6 +153,16 @@ const AdminSettings = () => {
                                     />
                                 </div>
                                 <div>
+                                    <label className="block text-xs font-bold text-gray-700 mb-1.5">Emergency SOS Phone</label>
+                                    <input 
+                                        type="tel" 
+                                        value={settings.general.emergencyPhone || ''} 
+                                        onChange={(e) => updateNestedSetting('general', 'emergencyPhone', e.target.value)}
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:border-red-500 transition-colors shadow-sm" 
+                                        placeholder="+91 100"
+                                    />
+                                </div>
+                                <div>
                                     <label className="block text-xs font-bold text-gray-700 mb-1.5">Currency Default</label>
                                     <select 
                                         value={settings.general.currencyDefault}

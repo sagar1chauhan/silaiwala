@@ -329,6 +329,10 @@ const ServiceDetail = () => {
                                 setIsTailorAtHome(true);
                                 setMeasurementType('home');
                                 setMeasurements({ type: 'home', notes: 'Tailor will visit home' });
+                            } else if (type === 'sample') {
+                                setIsTailorAtHome(false);
+                                setMeasurementType('sample');
+                                setMeasurements({ type: 'sample', notes: 'Partner will pickup sample garment with fabric' });
                             } else {
                                 setIsTailorAtHome(false);
                                 setMeasurementType(type);

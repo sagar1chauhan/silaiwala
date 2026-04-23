@@ -10,7 +10,10 @@ import {
     Power,
     MapPin,
     Navigation2,
-    Wallet
+    Wallet,
+    ShieldAlert,
+    Phone,
+    X
 } from 'lucide-react';
 import { useJsApiLoader } from '@react-google-maps/api';
 import NewTaskAlert from '../components/NewTaskAlert';
@@ -22,11 +25,15 @@ import { io } from 'socket.io-client';
 import { SOCKET_URL } from '../../../config/constants';
 import useAuthStore from '../../../store/authStore';
 
+import api from '../../../utils/api';
+
 const silaiwalaLogo = '/logo.png';
 
 const DeliveryLayout = () => {
     const [isOnline, setIsOnline] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
+    const [showSOS, setShowSOS] = useState(false);
+    const [platformSettings, setPlatformSettings] = useState(null);
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -41,7 +48,19 @@ const DeliveryLayout = () => {
                 console.error('Failed to fetch profile status:', error);
             }
         };
+        const fetchPlatformSettings = async () => {
+            try {
+                // Public endpoint to get basic settings
+                const res = await api.get('/content/settings');
+                if (res.data?.success) {
+                    setPlatformSettings(res.data.data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch platform settings:', error);
+            }
+        };
         fetchProfileStatus();
+        fetchPlatformSettings();
     }, []);
 
     const toggleAvailability = async () => {
@@ -210,6 +229,96 @@ const DeliveryLayout = () => {
                 )}
             </AnimatePresence>
 
+            {/* SOS Emergency Modal */}
+            <AnimatePresence>
+                {showSOS && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowSOS(false)}
+                            className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[80]"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm bg-white rounded-[2rem] z-[90] shadow-2xl overflow-hidden flex flex-col"
+                        >
+                            <div className="bg-red-500 p-6 flex flex-col items-center justify-center text-white relative">
+                                <button
+                                    onClick={() => setShowSOS(false)}
+                                    className="absolute top-4 right-4 w-8 h-8 bg-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all"
+                                >
+                                    <X size={16} />
+                                </button>
+                                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-red-500 mb-3 shadow-lg animate-pulse">
+                                    <ShieldAlert size={32} />
+                                </div>
+                                <h2 className="text-xl font-black tracking-tight uppercase">Emergency SOS</h2>
+                                <p className="text-xs font-bold opacity-80 mt-1 text-center">Tap any number below to call immediately</p>
+                            </div>
+
+                            <div className="p-6 space-y-4 bg-slate-50">
+                                {/* Personal Emergency Contact */}
+                                {user?.emergencyContact && (
+                                    <a href={`tel:${user.emergencyContact}`} className="flex items-center justify-between p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-red-200 hover:shadow-md transition-all group">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center">
+                                                <User size={18} />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Personal Contact</p>
+                                                <p className="text-lg font-black text-slate-900 group-hover:text-red-500 transition-colors">{user.emergencyContact}</p>
+                                            </div>
+                                        </div>
+                                        <div className="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center group-hover:bg-red-500 group-hover:text-white transition-all">
+                                            <Phone size={14} />
+                                        </div>
+                                    </a>
+                                )}
+
+                                {/* Admin Support SOS */}
+                                {platformSettings?.general?.emergencyPhone && (
+                                    <a href={`tel:${platformSettings.general.emergencyPhone}`} className="flex items-center justify-between p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-red-200 hover:shadow-md transition-all group">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center">
+                                                <ShieldAlert size={18} />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Platform Support</p>
+                                                <p className="text-lg font-black text-slate-900 group-hover:text-red-500 transition-colors">{platformSettings.general.emergencyPhone}</p>
+                                            </div>
+                                        </div>
+                                        <div className="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center group-hover:bg-red-500 group-hover:text-white transition-all">
+                                            <Phone size={14} />
+                                        </div>
+                                    </a>
+                                )}
+
+                                {/* National Emergency */}
+                                <a href="tel:112" className="flex items-center justify-between p-4 bg-red-50 rounded-2xl shadow-sm border border-red-100 hover:border-red-300 hover:shadow-md transition-all group">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-red-500 text-white flex items-center justify-center shadow-md">
+                                            <ShieldAlert size={18} />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-bold text-red-400 uppercase tracking-widest">National Emergency</p>
+                                            <p className="text-lg font-black text-red-600 group-hover:text-red-700 transition-colors">112 / 100</p>
+                                        </div>
+                                    </div>
+                                    <div className="w-8 h-8 rounded-full bg-red-200 text-red-600 flex items-center justify-center group-hover:bg-red-600 group-hover:text-white transition-all">
+                                        <Phone size={14} />
+                                    </div>
+                                </a>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+
             {/* Top Fixed Header - Elegant Mobile Profile Bar */}
             <header className="fixed top-0 left-0 right-0 h-20 bg-white/90 backdrop-blur-xl border-b border-slate-100 flex items-center justify-between px-6 z-50">
                 <div className="flex items-center gap-3">
@@ -226,6 +335,14 @@ const DeliveryLayout = () => {
                 </div>
 
                 <div className="flex items-center gap-3">
+                    {/* SOS Emergency Button */}
+                    <button
+                        onClick={() => setShowSOS(true)}
+                        className="w-11 h-11 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-all shadow-sm border border-red-100"
+                    >
+                        <ShieldAlert size={20} className={showSOS ? 'animate-pulse' : ''} />
+                    </button>
+
                     {/* Status Pill Toggle */}
                     <button
                         onClick={toggleAvailability}

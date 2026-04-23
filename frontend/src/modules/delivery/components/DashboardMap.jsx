@@ -145,7 +145,7 @@ const DashboardMap = ({ currentLocation, activeOrder, isOnline, isLoaded, height
               <motion.div 
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="absolute left-4 top-28 z-10 pointer-events-none"
+                className="absolute left-4 top-4 z-10 pointer-events-none"
               >
                 <div className="bg-white/90 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-slate-200 shadow-xl flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center border-2 border-white shadow-sm overflow-hidden">

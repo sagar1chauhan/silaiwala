@@ -271,12 +271,8 @@ const Tasks = () => {
             {/* Page Header */}
             <div className="flex items-end justify-between">
                 <div>
-                    <div className="flex items-center gap-3 text-primary-dark mb-1">
-                        <div className="h-px w-8 bg-slate-200"></div>
-                        <span className="text-[11px] opacity-80 font-black uppercase tracking-[0.2em]">Operations Center</span>
-                    </div>
                     <h1 className="text-3xl font-black text-slate-900 tracking-tight capitalize">
-                        {activeTask ? 'Active Dispatch' : 'Logistics Hub'}
+                        {activeTask ? 'Active Dispatch' : 'My Orders'}
                     </h1>
                 </div>
                 {!activeTask && (

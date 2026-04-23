@@ -6,6 +6,7 @@ const settingsSchema = new mongoose.Schema(
       platformName: { type: String, default: "Silaiwala" },
       supportEmail: { type: String, default: "support@silaiwala.com" },
       supportPhone: { type: String, default: "+91 1800 123 4567" },
+      emergencyPhone: { type: String, default: "+91 9999999999" },
       currencyDefault: { type: String, default: "INR" },
     },
     maintenanceMode: {

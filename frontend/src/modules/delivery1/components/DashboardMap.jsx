@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Navigation, Zap, RefreshCw, Share2, CheckCircle2, Activity, AlertCircle } from 'lucide-react';
+import { FiMapPin, FiNavigation, FiZap, FiRefreshCw, FiShare2, FiCheckCircle, FiActivity } from 'react-icons/fi';
 import TrackingMap from '../../../shared/components/TrackingMap';
 import toast from 'react-hot-toast';
 import { useDeliveryAuthStore } from '../store/deliveryStore';
@@ -63,7 +63,7 @@ const DashboardMap = ({ currentLocation, activeOrder, isOnline, isLoaded, height
         <div className="p-5 border-b border-slate-50 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
-              <Navigation size={20} />
+              <FiNavigation size={20} />
             </div>
             <div>
               <h3 className="text-sm font-black text-slate-800 tracking-tight">Live Operations Map</h3>
@@ -89,7 +89,7 @@ const DashboardMap = ({ currentLocation, activeOrder, isOnline, isLoaded, height
               className="p-2 rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200 transition-all active:scale-95 border border-slate-200"
               title="Debug Coords"
             >
-              <Activity size={18} />
+              <FiActivity size={18} />
             </button>
 
             <button 
@@ -103,11 +103,11 @@ const DashboardMap = ({ currentLocation, activeOrder, isOnline, isLoaded, height
             >
               {isSharing ? (
                 <>
-                  <CheckCircle2 className="animate-bounce" size={14} /> Shared
+                  <FiCheckCircle className="animate-bounce" /> Shared
                 </>
               ) : (
                 <>
-                  <Share2 size={14} /> Share Location
+                  <FiShare2 /> Share Location
                 </>
               )}
             </button>
@@ -125,8 +125,6 @@ const DashboardMap = ({ currentLocation, activeOrder, isOnline, isLoaded, height
             vendorAddress={activeOrder?.vendorAddress}
             status={activeOrder?.status}
             isLoaded={isLoaded}
-            rounded={!hideHeader}
-            height={height}
           />
         ) : (
           <div className="h-full w-full bg-slate-50 flex flex-col items-center justify-center gap-4">
@@ -141,86 +139,57 @@ const DashboardMap = ({ currentLocation, activeOrder, isOnline, isLoaded, height
         {/* Custom Mini Info Overlay */}
         <AnimatePresence>
           {(isOnline || showDebug) && currentLocation && (
-            <>
-              <motion.div 
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="absolute left-4 top-28 z-10 pointer-events-none"
-              >
-                <div className="bg-white/90 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-slate-200 shadow-xl flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center border-2 border-white shadow-sm overflow-hidden">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sagar" className="w-full h-full object-cover" alt="avatar" />
-                  </div>
-                  <div>
-                    <h4 className="text-[12px] font-black text-slate-900 leading-none mb-0.5">Hi, Partner</h4>
-                    <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest">System Online</p>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="absolute left-1/2 -translate-x-1/2 bottom-28 z-10 w-[80%] max-w-[300px] pointer-events-none"
-              >
-                <div className="bg-[#0F172A]/90 backdrop-blur-md px-6 py-3 rounded-full border border-white/10 shadow-2xl flex items-center justify-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-[10px] font-black text-white uppercase tracking-[0.2em] whitespace-nowrap">Scanning for deliveries...</span>
-                </div>
-              </motion.div>
-
-              <motion.div 
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="absolute left-4 bottom-28 z-10 space-y-2 pointer-events-none"
-              >
-                {showDebug && (
-                  <div className="bg-slate-900 shadow-2xl rounded-2xl p-4 border border-white/10 min-w-[200px]">
-                    <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-3 border-b border-white/5 pb-2">Mission Telemetry</h4>
-                    
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between gap-4">
-                        <span className="text-[9px] font-bold text-slate-500 uppercase">Rider</span>
-                        <span className="text-[10px] font-mono text-emerald-400">{currentLocation?.lat?.toFixed(4) ?? '--'}, {currentLocation?.lng?.toFixed(4) ?? '--'}</span>
-                      </div>
-
-                      <div className="flex items-center justify-between gap-4">
-                        <span className="text-[9px] font-bold text-slate-500 uppercase">Vendor</span>
-                        <span className={`text-[10px] font-mono ${vendorCoords ? 'text-indigo-400' : 'text-rose-500'}`}>
-                          {vendorCoords ? `${vendorCoords.lat.toFixed(4)}, ${vendorCoords.lng.toFixed(4)}` : 'MISSING DATA'}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center justify-between gap-4">
-                        <span className="text-[9px] font-bold text-slate-500 uppercase">Customer</span>
-                        <span className={`text-[10px] font-mono ${customerCoords ? 'text-indigo-400' : 'text-rose-500'}`}>
-                          {customerCoords ? `${customerCoords.lat.toFixed(4)}, ${customerCoords.lng.toFixed(4)}` : 'MISSING DATA'}
-                        </span>
-                      </div>
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="absolute left-4 bottom-4 z-10 space-y-2 pointer-events-none"
+            >
+              {showDebug && (
+                <div className="bg-slate-900 shadow-2xl rounded-2xl p-4 border border-white/10 min-w-[200px]">
+                  <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-3 border-b border-white/5 pb-2">Mission Telemetry</h4>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-[9px] font-bold text-slate-500 uppercase">Rider</span>
+                      <span className="text-[10px] font-mono text-emerald-400">{currentLocation.lat.toFixed(4)}, {currentLocation.lng.toFixed(4)}</span>
                     </div>
 
-                    {(!vendorCoords || !customerCoords) && (
-                      <div className="mt-4 pt-3 border-t border-white/5 flex items-start gap-2 text-rose-400">
-                        <AlertCircle size={12} className="shrink-0 mt-0.5" />
-                        <p className="text-[8px] font-bold leading-tight">Markers cannot be placed if mission coordinates are missing from the order object.</p>
-                      </div>
-                    )}
-                  </div>
-                )}
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-[9px] font-bold text-slate-500 uppercase">Vendor</span>
+                      <span className={`text-[10px] font-mono ${vendorCoords ? 'text-indigo-400' : 'text-rose-500'}`}>
+                        {vendorCoords ? `${vendorCoords.lat.toFixed(4)}, ${vendorCoords.lng.toFixed(4)}` : 'MISSING DATA'}
+                      </span>
+                    </div>
 
-                <div className="bg-[#0F172A]/90 backdrop-blur-md px-3 py-2 rounded-2xl border border-white/10 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-                    <Zap size={14} />
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-[9px] font-bold text-slate-500 uppercase">Customer</span>
+                      <span className={`text-[10px] font-mono ${customerCoords ? 'text-indigo-400' : 'text-rose-500'}`}>
+                        {customerCoords ? `${customerCoords.lat.toFixed(4)}, ${customerCoords.lng.toFixed(4)}` : 'MISSING DATA'}
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter leading-none">Your Coords</p>
-                    <p className="text-[11px] text-white font-mono mt-0.5">
-                      {currentLocation?.lat?.toFixed(4) ?? '--'}, {currentLocation?.lng?.toFixed(4) ?? '--'}
-                    </p>
-                  </div>
+
+                  {(!vendorCoords || !customerCoords) && (
+                    <div className="mt-4 pt-3 border-t border-white/5 flex items-start gap-2 text-rose-400">
+                      <FiAlertCircle size={12} className="shrink-0 mt-0.5" />
+                      <p className="text-[8px] font-bold leading-tight">Markers cannot be placed if mission coordinates are missing from the order object.</p>
+                    </div>
+                  )}
                 </div>
-              </motion.div>
-            </>
+              )}
+
+              <div className="bg-[#0F172A]/90 backdrop-blur-md px-3 py-2 rounded-2xl border border-white/10 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                  <FiZap size={14} />
+                </div>
+                <div>
+                  <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter leading-none">Your Coords</p>
+                  <p className="text-[11px] text-white font-mono mt-0.5">
+                    {currentLocation.lat.toFixed(4)}, {currentLocation.lng.toFixed(4)}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
           )}
         </AnimatePresence>
       </div>

@@ -7,9 +7,9 @@ import { useDeliveryNotificationStore } from "../../store/deliveryNotificationSt
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import DeliveryBottomNav from "./DeliveryBottomNav";
-import { useDeliveryTracking } from "../../../../shared/hooks/useDeliveryTracking";
+import { useDeliveryTracking } from "@shared/hooks/useDeliveryTracking";
 import { formatPrice } from "../../../../shared/utils/helpers";
-import socketService from "../../../../shared/utils/socket";
+import socketService from "@shared/utils/socket";
 import NewOrderModal from "../NewOrderModal";
 import { useJsApiLoader } from "@react-google-maps/api";
 const GOOGLE_MAPS_LIBRARIES = ['places', 'geometry', 'drawing'];

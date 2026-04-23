@@ -12,7 +12,10 @@ import {
     Navigation2,
     Wallet
 } from 'lucide-react';
+import { useJsApiLoader } from '@react-google-maps/api';
 import NewTaskAlert from '../components/NewTaskAlert';
+
+const GOOGLE_MAPS_LIBRARIES = ['places', 'geometry', 'drawing'];
 import deliveryService from '../services/deliveryService';
 import { toast } from 'react-hot-toast';
 import { io } from 'socket.io-client';
@@ -89,6 +92,12 @@ const DeliveryLayout = () => {
             console.error('Failed to mark read:', error);
         }
     };
+
+    const { isLoaded } = useJsApiLoader({
+        id: 'google-map-script',
+        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
+        libraries: GOOGLE_MAPS_LIBRARIES
+    });
 
     React.useEffect(() => {
         fetchNotifications();
@@ -255,7 +264,7 @@ const DeliveryLayout = () => {
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3, ease: "easeOut" }}
                     >
-                        <Outlet context={{ isOnline, setIsOnline }} />
+                        <Outlet context={{ isOnline, setIsOnline, isLoaded }} />
                     </motion.div>
                 </AnimatePresence>
             </main>

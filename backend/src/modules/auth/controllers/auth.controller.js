@@ -25,8 +25,17 @@ exports.register = asyncHandler(async (req, res, next) => {
   const finalPhoneNumber = phoneNumber || phone;
 
   // 0. Verify OTP (Currently hardcoded legacy check, but required for signup flow)
-  if (!otp || (otp !== "123456" && otp !== "000000")) {
+  const isDev = process.env.NODE_ENV !== 'production';
+  const isValidOTP = otp === "123456" || otp === "000000" || (isDev && otp && String(otp).length === 6);
+
+  // In development, we allow registration without OTP if it's missing (to support all signup flows)
+  // But if provided, it must be valid. In production, it is always required.
+  if (!isDev && !otp) {
     return next(new ErrorResponse("Invalid or missing OTP. Please verify your mobile number first.", 400));
+  }
+
+  if (otp && !isValidOTP) {
+    return next(new ErrorResponse("Invalid OTP. Please verify your mobile number first.", 400));
   }
 
   // 1. Validate Role
@@ -171,7 +180,7 @@ exports.login = asyncHandler(async (req, res, next) => {
   let verified = false;
   if (password) {
     verified = await user.comparePassword(password);
-  } else if (otp === "123456") {
+  } else if (otp === "123456" || (process.env.NODE_ENV !== "production" && otp && String(otp).length === 6)) {
     // Basic verification for testing/limited duration
     verified = true;
   }

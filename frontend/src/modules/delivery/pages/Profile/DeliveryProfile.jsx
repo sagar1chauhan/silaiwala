@@ -184,6 +184,41 @@ const DeliveryProfile = () => {
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-2">
+            {/* Profile Hero Card */}
+            <div className="bg-white rounded-[2.5rem] p-6 border border-slate-100 shadow-2xl shadow-slate-200/50 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-pink-50 to-transparent rounded-bl-full -z-0 opacity-60"></div>
+                <div className="relative z-10 flex items-center gap-4">
+                    <div className="relative">
+                        <div className="w-20 h-20 rounded-full border-[3px] border-white shadow-xl overflow-hidden bg-pink-50">
+                            <img
+                                src={user?.profileImage || "https://api.dicebear.com/7.x/avataaars/svg?seed=Chirag"}
+                                alt="Profile"
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
+                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-2 border-white rounded-full flex items-center justify-center shadow-sm">
+                            <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                        </div>
+                    </div>
+                    <div className="flex-1">
+                        <h2 className="text-2xl font-black text-slate-900 tracking-tight leading-none mb-2">{user?.name || 'Partner'}</h2>
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <div className="flex items-center gap-1 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
+                                <span className="text-amber-500 font-black text-xs">★</span>
+                                <span className="text-amber-700 font-bold text-xs">{deliveryProfile?.rating || '4.8'}</span>
+                            </div>
+                            <span className="text-slate-200">•</span>
+                            <span className="text-slate-400 font-bold text-[10px] uppercase tracking-wider">ID: {user?._id?.slice(-6).toUpperCase() || '882190'}</span>
+                        </div>
+                        <div className="flex items-center gap-3 mt-2">
+                            <div className="flex items-center gap-1.5 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-100">
+                                <span className="text-emerald-600 font-black text-[10px] uppercase tracking-wider">{deliveryProfile?.totalDeliveries || 0} Deliveries</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* Duty Status */}
             <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] flex items-center justify-between relative z-20 group">
                 <div>

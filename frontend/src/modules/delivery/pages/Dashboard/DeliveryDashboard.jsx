@@ -27,12 +27,14 @@ import { SOCKET_URL } from '../../../../config/constants';
 import useAuthStore from '../../../../store/authStore';
 import deliveryService from '../../services/deliveryService';
 import { io } from 'socket.io-client';
-import { Power } from 'lucide-react';
+import { Power, MapPin as MapPinIcon } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { useDeliveryTracking } from "../../../../shared/hooks/useDeliveryTracking";
+import DashboardMap from '../../components/DashboardMap';
 
 const DeliveryDashboard = () => {
     const navigate = useNavigate();
-    const { isOnline } = useOutletContext() || { isOnline: true };
+    const { isOnline, isLoaded } = useOutletContext() || { isOnline: true, isLoaded: false };
     const { user } = useAuthStore();
     const [showMapModal, setShowMapModal] = useState(false);
     const [selectedAvailableTask, setSelectedAvailableTask] = useState(null);
@@ -48,6 +50,11 @@ const DeliveryDashboard = () => {
             totalPickups: 0
         }
     });
+
+    // --- Real-time Delivery Tracking ---
+    const activeTasksList = dashboardData.activeOrders || [];
+    const primaryOrder = activeTasksList[0];
+    const currentLocation = useDeliveryTracking(user?._id, activeTasksList);
 
     const fetchDashboardData = async () => {
         try {
@@ -214,39 +221,23 @@ const DeliveryDashboard = () => {
     const upcomingTasks = activeOrders.slice(1);
 
     return (
-        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-700 pb-20 -mt-6">
-            {/* Top Profile Bar - Compact */}
-            <div className="flex items-center justify-between px-1 mb-1">
-                <div className="flex items-center gap-3">
-                    <div className="relative">
-                        <div className="w-14 h-14 rounded-full border-2 border-white shadow-md overflow-hidden bg-pink-50">
-                            <img
-                                src={user?.profileImage || "https://api.dicebear.com/7.x/avataaars/svg?seed=Chirag"}
-                                alt="Profile"
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
-                        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-white rounded-full flex items-center justify-center">
-                            <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-                        </div>
-                    </div>
-                    <div>
-                        <h2 className="text-xl font-black text-slate-900 tracking-tight leading-none mb-1.5">{user?.name || 'Partner'}</h2>
-                        <div className="flex items-center gap-2">
-                            <div className="flex items-center gap-1 bg-amber-50 px-1.5 py-0.5 rounded-md border border-amber-100">
-                                <span className="text-amber-500 font-black text-[10px]">★</span>
-                                <span className="text-amber-700 font-bold text-[10px]">{profile?.rating || '4.8'}</span>
-                            </div>
-                            <span className="text-slate-300 text-[10px]">•</span>
-                            <span className="text-slate-400 font-bold text-[10px] uppercase tracking-wider">ID: {user?._id?.slice(-6).toUpperCase() || '882190'}</span>
-                        </div>
-                    </div>
-                </div>
+        <div className="animate-in fade-in duration-700 relative w-full h-full">
+            {/* Operational Map - Full Viewport Background */}
+            <div className="fixed inset-0 z-0 bg-slate-100 pointer-events-auto">
+                <DashboardMap 
+                    currentLocation={currentLocation} 
+                    activeOrder={currentTask}
+                    isOnline={isOnline} 
+                    isLoaded={isLoaded}
+                    height="100%"
+                    hideHeader={true}
+                />
             </div>
 
-
-            {/* Today's Stats Hero Card */}
-            <div className="bg-white rounded-[2.5rem] p-7 shadow-2xl shadow-slate-200/50 border border-slate-50 relative overflow-hidden group">
+            <div className="relative z-10 w-full pt-[calc(100vh-250px)] pb-10 pointer-events-none">
+                <div className="space-y-4 pointer-events-auto px-4">
+                    {/* Today's Stats Hero Card */}
+                    <div className="bg-white rounded-[2.5rem] p-7 shadow-2xl shadow-slate-200/50 border border-slate-50 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-full -z-0 opacity-50"></div>
 
                 <div className="relative z-10">
@@ -298,20 +289,6 @@ const DeliveryDashboard = () => {
                             <p className="text-sm font-black text-slate-900">{profile?.totalDeliveries || 0}</p>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            {/* Operational Map Background Indicator */}
-            <div
-                onClick={() => currentTask ? handleOpenMap(currentTask) : toast.error("No active task to navigate")}
-                className="bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 h-60 relative overflow-hidden flex items-center justify-center group cursor-pointer hover:border-pink-200 transition-all"
-            >
-                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#FD0053 0.5px, transparent 0.5px)', backgroundSize: '24px 24px' }}></div>
-                <div className="relative z-10 flex flex-col items-center gap-3">
-                    <div className="w-16 h-16 bg-white rounded-[2rem] shadow-xl flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-500">
-                        <MapPin size={32} />
-                    </div>
-                    <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em]">Operational Map</p>
                 </div>
             </div>
 
@@ -491,6 +468,8 @@ const DeliveryDashboard = () => {
                     </div>
                 </div>
             )}
+            </div>
+
             {/* Available Task Detail Modal */}
             <AnimatePresence>
                 {selectedAvailableTask && (
@@ -683,6 +662,7 @@ const DeliveryDashboard = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
+            </div>
         </div>
     );
 };

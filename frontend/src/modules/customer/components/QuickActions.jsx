@@ -7,44 +7,37 @@ import api from '../../../utils/api';
 const actions = [
     {
         label: 'Tailors',
-        icon: <img src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" alt="Tailors" className="w-8 h-8 sm:w-10 sm:h-10 object-contain drop-shadow-xl" />,
-        color: 'bg-gradient-to-br from-[#F5F7FA] to-[#E4E9F2]', // Sleek metallic silver/blue
+        icon: <img src="/quick-tailor-removebg-preview.png" alt="Tailors" className="w-full h-full object-contain" />,
         path: '/tailors'
     },
     {
         label: 'Store',
-        icon: <img src="https://cdn-icons-png.flaticon.com/512/3081/3081840.png" alt="Store" className="w-8 h-8 sm:w-10 sm:h-10 object-contain drop-shadow-xl" />,
-        color: 'bg-gradient-to-br from-[#FFF5F5] to-[#FFE3E3]', // Soft Rose Gold
+        icon: <img src="/quick-store-removebg-preview.png" alt="Store" className="w-full h-full object-contain" />,
         path: '/store'
     },
     {
         label: 'My Orders',
-        icon: <ClipboardList size={28} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]" />,
-        color: 'bg-gradient-to-br from-[#F0F7FF] to-[#DCEBFE]', // Premium Ice Blue
+        icon: <img src="/quick-orders-removebg-preview.png" alt="My Orders" className="w-full h-full object-contain" />,
         path: '/orders'
     },
     {
         label: 'Stitching',
-        icon: <img src="https://cdn-icons-png.flaticon.com/512/3132/3132640.png" alt="Stitching" className="w-8 h-8 sm:w-10 sm:h-10 object-contain drop-shadow-xl" />,
-        color: 'bg-gradient-to-br from-[#FFFAF0] to-[#FFEACB]', // Luxury Gold/Cream
+        icon: <img src="/quick-stitching-removebg-preview.png" alt="Stitching" className="w-full h-full object-contain" />,
         path: '/services'
     },
     {
         label: 'Style Add-ons',
-        icon: <Sparkles size={28} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]" />,
-        color: 'bg-gradient-to-br from-[#FDF4FF] to-[#F5D0FE]', // Royal Purple
+        icon: <img src="/quick-addons-removebg-preview.png" alt="Style Add-ons" className="w-full h-full object-contain scale-110" />,
         path: '/embellishments'
     },
     {
         label: 'Bridal',
-        icon: <img src="https://cdn-icons-png.flaticon.com/512/4333/4333609.png" alt="Bridal" className="w-8 h-8 sm:w-10 sm:h-10 object-contain drop-shadow-xl" />,
-        color: 'bg-gradient-to-br from-[#FFF0F5] to-[#FDD4E4]', // Elegant Blush Pink
+        icon: <img src="/quick-bridal-removebg-preview.png" alt="Bridal" className="w-full h-full object-contain" />,
         action: 'modal_bridal'
     },
     {
         label: 'Bulk Order',
-        icon: <Scissors size={28} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]" />, // Using Scissors as a proxy for bulk tailoring
-        color: 'bg-gradient-to-br from-[#E0F7FA] to-[#80DEEA]', // Refreshing Teal/Cyan
+        icon: <img src="/quick-bulk-removebg-preview.png" alt="Bulk Order" className="w-full h-full object-contain" />,
         path: '/bulk-order'
     }
 ];
@@ -127,8 +120,8 @@ const QuickActions = () => {
                                 whileTap={{ scale: 0.92 }}
                                 onClick={() => handleActionClick(action)}
                             >
-                                <div className={`w-[70%] sm:w-full aspect-square rounded-full shadow-lg bg-zinc-950 flex items-center justify-center border-2 border-[#FD0053]/30 backdrop-blur-md transition-all duration-300 group-hover:border-[#FD0053] group-hover:shadow-[#FD0053]/20 group-hover:-translate-y-1 mx-auto`}>
-                                    <div className="p-1.5 sm:p-3 transition-colors">
+                                <div className={`w-[85%] sm:w-[90%] aspect-square flex items-center justify-center transition-all duration-300 group-hover:-translate-y-2 mx-auto drop-shadow-2xl`}>
+                                    <div className="w-full h-full transition-transform duration-300 group-hover:scale-110">
                                         {action.icon}
                                     </div>
                                 </div>

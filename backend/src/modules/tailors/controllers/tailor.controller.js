@@ -323,10 +323,10 @@ exports.getOrders = asyncHandler(async (req, res, next) => {
   if (status) {
     const statusLower = status.toLowerCase();
     if (statusLower === 'new') {
-      query.status = { $in: ['pending', 'fabric-ready-for-pickup', 'fabric-picked-up', 'fabric-delivered'] };
+      query.status = 'pending';
     }
     else if (statusLower === 'active') {
-      query.status = { $in: ['accepted', 'in-progress', 'cutting', 'stitching', 'completed', 'ready-for-pickup', 'out-for-delivery'] };
+      query.status = { $in: ['accepted', 'fabric-ready-for-pickup', 'fabric-picked-up', 'fabric-delivered', 'in-progress', 'cutting', 'stitching', 'completed', 'ready-for-pickup', 'out-for-delivery'] };
     }
     else if (statusLower === 'history') {
       query.status = { $in: ['delivered', 'cancelled'] };
@@ -461,102 +461,105 @@ exports.updateOrderStatus = asyncHandler(async (req, res, next) => {
 
   await order.save();
 
-  // Notify Customer about status update
-  await sendNotification({
-    recipient: order.customer,
-    type: "ORDER_STATUS_UPDATED",
-    title: "Order Update",
-    message: `Your order ${order.orderId} status has been updated to ${finalStatus.replace(/-/g, ' ')}.`,
-    data: { orderId: order._id, targetUrl: `/orders/${order._id}/track` }
-  });
-  
-  // Real-time notification for Delivery Partners if a task is now ready
-  if (finalStatus === "fabric-ready-for-pickup" || finalStatus === "ready-for-pickup" || finalStatus === "out-for-delivery") {
-    const Delivery = require("../../../models/Delivery");
-    const tailorProfile = await Tailor.findOne({ user: req.user.id });
+  // --- All post-save notifications (non-critical, should not block response) ---
+  try {
+    // Notify Customer about status update
+    await sendNotification({
+      recipient: order.customer,
+      type: "ORDER_STATUS_UPDATED",
+      title: "Order Update",
+      message: `Your order ${order.orderId} status has been updated to ${finalStatus.replace(/-/g, ' ')}.`,
+      data: { orderId: order._id, targetUrl: `/orders/${order._id}/track` }
+    });
     
-    let nearbyRiders = [];
-    if (tailorProfile?.location?.coordinates) {
-       nearbyRiders = await Delivery.find({
-          isAvailable: true,
-          currentLocation: {
-             $near: {
-                $geometry: tailorProfile.location,
-                $maxDistance: 10000 // 10km radius
-             }
-          }
-       }).populate("user");
-    }
+    // Real-time notification for Delivery Partners if a task is now ready
+    if (finalStatus === "fabric-ready-for-pickup" || finalStatus === "ready-for-pickup" || finalStatus === "out-for-delivery") {
+      const Delivery = require("../../../models/Delivery");
+      const tailorProfile = await Tailor.findOne({ user: req.user.id });
+      
+      let nearbyRiders = [];
+      if (tailorProfile?.location?.coordinates) {
+         try {
+             nearbyRiders = await Delivery.find({
+                isAvailable: true,
+                currentLocation: {
+                   $near: {
+                      $geometry: tailorProfile.location,
+                      $maxDistance: 10000
+                   }
+                }
+             }).populate("user");
+         } catch (geoError) {
+             console.error("⚠️ Geospatial search failed. Using availability query fallback:", geoError.message);
+             nearbyRiders = await Delivery.find({ isAvailable: true }).populate("user");
+         }
+      }
 
-    if (nearbyRiders.length > 0) {
-       // Target specific nearby riders
-       for (const rider of nearbyRiders) {
-          const isFabric = finalStatus === "fabric-ready-for-pickup";
-          const pickupFrom = isFabric ? "Customer" : (tailorProfile.shopName || "Artisan Workshop");
-          
-          await sendNotification({
-            recipient: rider.user._id,
-            type: "NEW_DELIVERY_TASK",
-            title: `New ${isFabric ? 'Fabric' : 'Delivery'} Task! 📍`,
-            message: `Order ${order.orderId} is ready for ${isFabric ? 'fabric pickup from Customer' : 'final delivery from Tailor'}.`,
-            data: { 
+      if (nearbyRiders.length > 0) {
+         for (const rider of nearbyRiders) {
+            if (!rider?.user?._id) continue;
+            const isFabric = finalStatus === "fabric-ready-for-pickup";
+            
+            await sendNotification({
+              recipient: rider.user._id,
+              type: "NEW_DELIVERY_TASK",
+              title: `New ${isFabric ? 'Fabric' : 'Delivery'} Task! 📍`,
+              message: `Order ${order.orderId} is ready for ${isFabric ? 'fabric pickup from Customer' : 'final delivery from Tailor'}.`,
+              data: { 
+                orderId: order._id, 
+                type: finalStatus, 
+                taskType: isFabric ? 'fabric-pickup' : 'order-delivery',
+                targetUrl: "/delivery/tasks" 
+              }
+            });
+         }
+      } else {
+         const isFabric = finalStatus === "fabric-ready-for-pickup";
+         await sendNotification({
+           recipient: "delivery_partners",
+           type: "NEW_DELIVERY_TASK",
+           title: `New Dispatch Available! 🚚`,
+           message: `A new ${isFabric ? 'fabric pickup' : 'final delivery'} task for order ${order.orderId} is available in your area.`,
+           data: { 
               orderId: order._id, 
               type: finalStatus, 
               taskType: isFabric ? 'fabric-pickup' : 'order-delivery',
               targetUrl: "/delivery/tasks" 
-            }
-          });
-       }
-    } else {
-       // Fallback: Notify all delivery partners
-       const isFabric = finalStatus === "fabric-ready-for-pickup";
-       await sendNotification({
-         recipient: "delivery_partners",
-         type: "NEW_DELIVERY_TASK",
-         title: `New Dispatch Available! 🚚`,
-         message: `A new ${isFabric ? 'fabric pickup' : 'final delivery'} task for order ${order.orderId} is available in your area.`,
-         data: { 
-            orderId: order._id, 
-            type: finalStatus, 
-            taskType: isFabric ? 'fabric-pickup' : 'order-delivery',
-            targetUrl: "/delivery/tasks" 
-         }
-       });
+           }
+         });
+      }
     }
-  }
 
-  // Notify Customer about status change
-  let notificationType = "ORDER_STATUS_UPDATED";
-  let title = "Order Status Updated";
-  
-  if (status === "accepted") {
-    notificationType = "ORDER_ACCEPTED";
-    title = "Order Accepted!";
-  } else if (status === "cancelled") {
-    notificationType = "ORDER_REJECTED";
-    title = "Order Cancelled";
-  }
+    // Notify Customer about status change
+    let notificationType = "ORDER_STATUS_UPDATED";
+    let title = "Order Status Updated";
+    
+    if (status === "accepted") {
+      notificationType = "ORDER_ACCEPTED";
+      title = "Order Accepted!";
+    } else if (status === "cancelled") {
+      notificationType = "ORDER_REJECTED";
+      title = "Order Cancelled";
+    }
 
-  await sendNotification({
-    recipient: order.customer,
-    type: notificationType,
-    title,
-    message: message || `Your order ${order.orderId} status is now: ${status}`,
-    data: { orderId: order._id, targetUrl: "/orders" }
-  });
+    await sendNotification({
+      recipient: order.customer,
+      type: notificationType,
+      title,
+      message: message || `Your order ${order.orderId} status is now: ${status}`,
+      data: { orderId: order._id, targetUrl: "/orders" }
+    });
 
-  // --- Socket Emission for Customer & Delivery ---
-  try {
+    // --- Socket Emission for Customer & Delivery ---
+    const { getIO } = require("../../../config/socket");
     const io = getIO();
     if (io) {
-        // 1. Notify Customer
         io.to(`user_${order.customer}`).emit('order_status_updated', {
             orderId: order.orderId,
             _id: order._id,
             status: finalStatus
         });
 
-        // 2. Notify Delivery Partners if a new task is available
         if (finalStatus === 'ready-for-pickup' || finalStatus === 'fabric-ready-for-pickup') {
             io.to('delivery_partners').emit('receive_new_order', {
                 orderId: order.orderId,
@@ -567,8 +570,8 @@ exports.updateOrderStatus = asyncHandler(async (req, res, next) => {
             console.log(`📡 Socket: Broadcasted task ${order.orderId} to Delivery Room`);
         }
     }
-  } catch (err) {
-    console.error("Socket emission failed in updateOrderStatus:", err.message);
+  } catch (notifError) {
+    console.error("⚠️ Post-save notification/socket error (non-critical):", notifError.message);
   }
   // ----------------------------------------------
 

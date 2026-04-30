@@ -10,7 +10,7 @@ import {
     UserCircle,
     Wallet
 } from 'lucide-react';
-const silaiwalaLogo = '/logo.png';
+const silaiwalaLogo = '/sewzella_logo.jpeg';
 import AppContainer from '../components/Common/AppContainer';
 import { useTailorAuth } from '../modules/tailor/context/AuthContext';
 
@@ -20,84 +20,78 @@ const TailorLayout = () => {
     const isOverview = location.pathname === '/partner';
 
     const menuItems = [
-        { icon: <LayoutDashboard size={18} />, label: 'Overview', path: '/partner' },
-        { icon: <ClipboardList size={18} />, label: 'Requests', path: '/partner/orders' },
-        { icon: <Wallet size={18} />, label: 'Wallet', path: '/partner/wallet' },
-        { icon: <ShoppingBag size={18} />, label: 'Products', path: '/partner/products' },
-        { icon: <Truck size={18} />, label: 'Delivery', path: '/partner/delivery' },
-        { icon: <FileCheck size={18} />, label: 'Verification', path: '/partner/verification' },
-        { icon: <CreditCard size={18} />, label: 'Subscription', path: '/partner/subscription' },
-        { icon: <UserCircle size={18} />, label: 'Settings', path: '/partner/settings' },
+        { icon: <LayoutDashboard size={20} />, label: 'Home', path: '/partner' },
+        { icon: <ClipboardList size={20} />, label: 'Orders', path: '/partner/orders' },
+        { icon: <Wallet size={20} />, label: 'Wallet', path: '/partner/wallet' },
+        { icon: <ShoppingBag size={20} />, label: 'Products', path: '/partner/products' },
+        { icon: <UserCircle size={20} />, label: 'Profile', path: '/partner/settings' },
     ];
 
     return (
         <AppContainer>
-            {/* Top Navbar - Hide on Overview and Settings so they can have custom headers */}
+            {/* Top Header — light theme */}
             {(!isOverview && location.pathname !== '/partner/settings' && location.pathname !== '/partner/wallet' && location.pathname !== '/partner/earnings') && (
-                <div className="relative sticky top-0 z-10 w-full mb-4">
-                    <header className="bg-primary pt-6 pb-4 px-6 flex items-center justify-between text-white transition-all shadow-[0_4px_20px_rgb(0,0,0,0.1)]">
+                <div className="sticky top-0 z-10 w-full">
+                    <header className="bg-white border-b border-gray-100 pt-5 pb-4 px-5 flex items-center justify-between shadow-sm">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center p-1.5 shadow-xl border border-white/10 overflow-hidden shrink-0 transform -rotate-3">
-                                <img src={silaiwalaLogo} alt="Silaiwala" className="w-full h-full object-contain" />
+                            <div className="w-10 h-10 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-center overflow-hidden shrink-0">
+                                <img src={silaiwalaLogo} alt="Silaiwala" className="w-full h-full object-cover" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-black tracking-tight drop-shadow-sm leading-none">
-                                    {menuItems.find(i => i.path === location.pathname)?.label || 'Silaiwala'}
+                                <h2 className="text-[17px] font-black text-gray-900 tracking-tight leading-none">
+                                    {menuItems.find(i => i.path === location.pathname)?.label || 'SewZella'}
                                 </h2>
                                 <div className="flex items-center gap-1.5 mt-1">
-                                    <span className={`h-1.5 w-1.5 rounded-full ${status === 'APPROVED' ? 'bg-green-400' : 'bg-orange-400'}`}></span>
-                                    <span className="text-[10px] font-bold uppercase text-green-100/70 tracking-widest leading-none">{status}</span>
+                                    <span className={`h-1.5 w-1.5 rounded-full ${status === 'APPROVED' ? 'bg-[#FD0053]' : 'bg-orange-400'}`}></span>
+                                    <span className="text-[9px] font-bold uppercase text-gray-400 tracking-widest leading-none">{status}</span>
                                 </div>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-[1rem] bg-white/10 flex items-center justify-center text-white font-black backdrop-blur-md border border-white/10 shadow-inner">
-                                {user?.name?.charAt(0) || 'R'}
-                            </div>
+                        {/* Avatar */}
+                        <div className="h-9 w-9 rounded-2xl bg-[#FD0053] flex items-center justify-center text-white font-black text-sm shadow-md shadow-[#FD0053]/25">
+                            {user?.name?.charAt(0)?.toUpperCase() || 'T'}
                         </div>
                     </header>
-                    {/* SVG Wave Curve matching the aesthetic */}
-                    <svg className="w-full h-8 text-primary fill-current absolute top-full left-0 z-10" viewBox="0 0 100 20" preserveAspectRatio="none">
-                        <path d="M0,0 C30,20 70,20 100,0 L100,0 L0,0 Z" />
-                    </svg>
                 </div>
             )}
 
-            {/* Main Content Area */}
-            <main className={`flex-1 overflow-y-auto bg-gray-50 custom-scrollbar pb-24 ${(isOverview || location.pathname === '/partner/settings') ? '' : 'p-6'}`}>
+            {/* Main Content — light bg */}
+            <main className={`flex-1 overflow-y-auto bg-[#F5F5F5] custom-scrollbar pb-24 ${(isOverview || location.pathname === '/partner/settings') ? '' : 'px-4 pt-4'}`}>
                 <Outlet />
             </main>
 
-            {/* Bottom Navigation for App-View */}
-            <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[450px] bg-black border-t border-white/5 px-4 py-3 flex items-center justify-between z-20 shadow-[0_-8px_30px_rgba(0,0,0,0.5)] rounded-t-[1.75rem] pb-safe">
-                {menuItems.slice(0, 5).map((item) => {
+            {/* ── BOTTOM NAVIGATION (UNCHANGED) ── */}
+            <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[450px] bg-[#0A0A0A] border-t border-[#1C1C1C] px-2 py-2 flex items-center justify-around z-20 shadow-[0_-4px_30px_rgba(0,0,0,0.6)]">
+                {menuItems.map((item) => {
                     const isActive = location.pathname === item.path;
                     return (
                         <Link
                             key={item.path}
                             to={item.path}
-                            className={`flex flex-col items-center gap-1 group transition-all ${isActive ? 'text-primary' : 'text-gray-400'}`}
+                            className="flex flex-col items-center gap-1 relative min-w-[52px]"
                         >
-                            <div className={`p-3 rounded-[1.25rem] transition-all flex items-center justify-center ${isActive ? 'bg-primary/10 shadow-inner' : 'group-hover:bg-white/5'}`}>
-                                {React.cloneElement(item.icon, { 
-                                    size: 22,
-                                    strokeWidth: isActive ? 2.5 : 2
+                            {isActive && (
+                                <span className="absolute -top-2 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-[#FD0053] rounded-full" />
+                            )}
+                            <div className={`p-2.5 rounded-2xl transition-all duration-200 flex items-center justify-center ${
+                                isActive
+                                    ? 'bg-[#FD0053] text-white shadow-lg shadow-[#FD0053]/30'
+                                    : 'text-[#555555] hover:text-[#888888]'
+                            }`}>
+                                {React.cloneElement(item.icon, {
+                                    size: 20,
+                                    strokeWidth: isActive ? 2.5 : 1.8
                                 })}
                             </div>
+                            <span className={`text-[9px] font-bold uppercase tracking-wider transition-all ${
+                                isActive ? 'text-[#FD0053]' : 'text-[#444444]'
+                            }`}>
+                                {item.label}
+                            </span>
                         </Link>
-                    )
+                    );
                 })}
-                {/* Profile Link as the last item */}
-                <Link
-                    to="/partner/settings"
-                    className={`flex flex-col items-center gap-1 group transition-all ${location.pathname === '/partner/settings' ? 'text-primary' : 'text-gray-400'}`}
-                >
-                    <div className={`p-3 rounded-[1.25rem] transition-all flex items-center justify-center ${location.pathname === '/partner/settings' ? 'bg-primary/10 shadow-inner' : 'group-hover:bg-white/5'}`}>
-                        <UserCircle size={22} strokeWidth={location.pathname === '/partner/settings' ? 2.5 : 2} />
-                    </div>
-                </Link>
             </nav>
-
         </AppContainer>
     );
 };

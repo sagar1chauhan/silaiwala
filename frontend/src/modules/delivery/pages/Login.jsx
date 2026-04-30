@@ -1,161 +1,112 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '../../../components/ui/Button';
+import { useNavigate, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { FiPhone, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import useAuthStore from '../../../store/authStore';
 
 const DeliveryLogin = () => {
     const navigate = useNavigate();
-    const { otpLogin, sendOTP, isLoading } = useAuthStore();
+    const { login, isLoading } = useAuthStore();
 
     const [mobileNumber, setMobileNumber] = useState('');
-    const [otp, setOtp] = useState('');
-    const [otpSent, setOtpSent] = useState(false);
+    const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
-    const [sendingOtp, setSendingOtp] = useState(false);
-
-    const handleSendOtp = async () => {
-        setError('');
-        if (!mobileNumber || mobileNumber.length < 10) {
-            setError('Please enter a valid mobile number');
-            return;
-        }
-
-        setSendingOtp(true);
-        try {
-            await sendOTP(mobileNumber);
-            setOtpSent(true);
-        } catch (err) {
-            setError(err.message || 'Failed to send OTP');
-        } finally {
-            setSendingOtp(false);
-        }
-    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
-        if (!mobileNumber || !otp) {
-            setError('Please fill in all fields');
+        if (!mobileNumber || !password) {
+            setError('Please enter both mobile number and password');
             return;
         }
 
         try {
-            await otpLogin(mobileNumber, otp);
+            await login(mobileNumber, password);
             navigate('/delivery');
         } catch (err) {
-            setError(err.message || 'Invalid OTP');
+            setError(err.message || 'Invalid credentials');
         }
     };
 
     return (
         <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="w-full"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-sm mx-auto"
         >
-            <div className="text-center mb-4 sm:mb-5">
-                <h2 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">Welcome Back!</h2>
-                <p className="text-[9px] sm:text-[10px] font-bold text-gray-600 uppercase tracking-[0.2em] mt-1">
-                    {otpSent ? 'Enter code sent to mobile' : 'OTP will be sent for verification'}
-                </p>
+            <div className="text-left mb-8">
+                <h2 className="text-2xl font-black text-[#1A202C] tracking-tight">Welcome Partner!</h2>
+                <p className="text-gray-500 font-medium mt-1">Login to start delivering with Alterly</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-                {error && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="p-3.5 text-[11px] font-bold uppercase tracking-wider text-pink-600 bg-pink-50 rounded-2xl border border-pink-100 flex items-center justify-center gap-2"
-                    >
-                        <span className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-pulse" />
-                        {error}
-                    </motion.div>
-                )}
+            {error && (
+                <div className="mb-6 p-3 bg-red-50 border border-red-100 rounded-xl text-red-600 text-xs font-bold text-center">
+                    {error}
+                </div>
+            )}
 
-                <div className="space-y-3">
-                    <div className="bg-[#F8FAFC] rounded-[1.2rem] sm:rounded-[1.5rem] p-1 border border-slate-50 shadow-inner group transition-all duration-300 focus-within:ring-2 focus-within:ring-pink-100 focus-within:border-pink-200">
-                        <div className="flex items-center px-3 sm:px-4 py-1.5 sm:py-2 gap-2 sm:gap-3">
-                            <span className="text-gray-800 font-bold text-sm">+91</span>
-                            <div className="w-px h-6 bg-slate-200" />
-                            <input
-                                type="tel"
-                                placeholder="Mobile Number"
-                                value={mobileNumber}
-                                onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ''))}
-                                maxLength={10}
-                                required
-                                disabled={otpSent || sendingOtp}
-                                className="flex-1 bg-transparent border-none focus:ring-0 text-black font-bold placeholder:text-gray-500 placeholder:font-medium tracking-wide outline-none"
-                            />
+            <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Mobile Number Input */}
+                <div className="space-y-1.5">
+                    <div className="relative group">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-green-500">
+                            <FiPhone size={18} />
                         </div>
+                        <input
+                            type="tel"
+                            placeholder="Mobile Number"
+                            value={mobileNumber}
+                            onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ''))}
+                            maxLength={10}
+                            className="w-full pl-12 pr-12 py-3.5 bg-white border border-gray-200 rounded-xl focus:border-[#4CAF50] focus:ring-1 focus:ring-[#4CAF50] outline-none transition-all font-medium text-gray-800 placeholder:text-gray-400 shadow-sm"
+                        />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">+91</span>
                     </div>
-
-                    {!otpSent && (
-                        <Button
-                            type="button"
-                            onClick={handleSendOtp}
-                            disabled={!mobileNumber || mobileNumber.length < 10 || sendingOtp}
-                            className={`w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-md ${!mobileNumber || mobileNumber.length < 10 || sendingOtp
-                                    ? 'bg-gray-200 text-gray-500'
-                                    : 'bg-[#FD0053] hover:bg-[#E04D79] text-white shadow-[#FD0053]/20 hover:shadow-lg'
-                                }`}
-                        >
-                            {sendingOtp ? 'Sending...' : (
-                                <span className="flex items-center justify-center gap-2">
-                                    CONTINUE <span className="text-lg">›</span>
-                                </span>
-                            )}
-                        </Button>
-                    )}
                 </div>
 
-                <AnimatePresence>
-                    {otpSent && (
-                        <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="space-y-4 overflow-hidden pt-2"
+                {/* Password Input */}
+                <div className="space-y-1.5">
+                    <div className="relative group">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-green-500">
+                            <FiLock size={18} />
+                        </div>
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full pl-12 pr-12 py-3.5 bg-white border border-gray-200 rounded-xl focus:border-[#4CAF50] focus:ring-1 focus:ring-[#4CAF50] outline-none transition-all font-medium text-gray-800 placeholder:text-gray-400 shadow-sm"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                         >
-                            <div className="bg-[#F8FAFC] rounded-[1.2rem] sm:rounded-[1.5rem] p-1 border border-slate-50 shadow-inner group transition-all duration-300 focus-within:ring-2 focus-within:ring-pink-100 focus-within:border-pink-200">
-                                <div className="flex items-center px-3 sm:px-4 py-1.5 sm:py-2 gap-2 sm:gap-3">
-                                    <input
-                                        type="text"
-                                        placeholder="Verification Code"
-                                        value={otp}
-                                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                                        maxLength={6}
-                                        required
-                                        className="flex-1 bg-transparent border-none focus:ring-0 text-black font-bold placeholder:text-gray-500 placeholder:font-medium tracking-[0.5em] text-center outline-none"
-                                    />
-                                </div>
-                            </div>
+                            {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                        </button>
+                    </div>
+                </div>
 
-                            <Button
-                                type="submit"
-                                className="w-full h-11 sm:h-12 rounded-full bg-[#FD0053] hover:bg-[#E04D79] text-white font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg shadow-[#FD0053]/20"
-                                disabled={isLoading}
-                            >
-                                {isLoading ? 'Verifying...' : (
-                                    <span className="flex items-center justify-center gap-2">
-                                        VERIFY & SIGN IN <span className="text-lg">›</span>
-                                    </span>
-                                )}
-                            </Button>
+                <div className="flex justify-end">
+                    <Link 
+                        to="/delivery/forgot-password" 
+                        className="text-[#4CAF50] text-sm font-bold hover:underline"
+                    >
+                        Forgot Password?
+                    </Link>
+                </div>
 
-                            <button
-                                type="button"
-                                onClick={() => setOtpSent(false)}
-                                className="w-full text-[10px] font-bold text-pink-400 hover:text-pink-500 uppercase tracking-widest transition-colors flex items-center justify-center gap-1 mt-2"
-                            >
-                                ← Change mobile number
-                            </button>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full py-4 bg-[#4CAF50] hover:bg-[#43A047] text-white font-black rounded-xl shadow-lg shadow-green-100 transition-all active:scale-[0.98] disabled:opacity-70 flex items-center justify-center gap-2"
+                >
+                    {isLoading ? (
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : 'Login'}
+                </button>
             </form>
         </motion.div>
     );

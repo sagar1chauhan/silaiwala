@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, ArrowLeft } from 'lucide-react';
 import api from '../../../../utils/api';
 import { getImageUrl } from '../../../../utils/imageUrl';
+import SafeImage from '../../../../components/Common/SafeImage';
 
 const CategoryScroll = ({ onSelectCategory, activeCategory }) => {
     const scrollRef = useRef(null);
@@ -131,11 +132,11 @@ const CategoryScroll = ({ onSelectCategory, activeCategory }) => {
                                 className={`flex flex-col items-center gap-2 min-w-[80px] snap-center transition-all duration-300 ${activeCategory === category.name ? 'scale-105' : 'opacity-80 hover:opacity-100'}`}
                             >
                                 <div className={`w-16 h-16 rounded-full overflow-hidden border-2 flex items-center justify-center bg-gray-50 ${activeCategory === category.name ? 'border-[#FD0053] shadow-lg' : 'border-gray-100'}`}>
-                                    <img
-                                        src={getImageUrl(category.image) || `https://placehold.co/150x150?text=${category.name}`}
+                                    <SafeImage
+                                        src={getImageUrl(category.image)}
                                         alt={category.name}
-                                        className="w-full h-full object-cover"
-                                        onError={(e) => { e.target.src = `https://placehold.co/150x150?text=${category.name}`; }}
+                                        className="w-full h-full"
+                                        fallback={`https://placehold.co/150x150/FFF0F4/FD0053?text=${category.name.charAt(0)}`}
                                     />
                                 </div>
                                 <span className={`text-xs font-medium text-center whitespace-nowrap ${activeCategory === category.name ? 'text-[#FD0053] font-bold' : 'text-gray-600'}`}>

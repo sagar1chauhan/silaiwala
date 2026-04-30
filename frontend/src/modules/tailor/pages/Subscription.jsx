@@ -1,35 +1,33 @@
 import React from 'react';
-import { CreditCard, Zap, Calendar, ArrowUpCircle } from 'lucide-react';
-import { Button } from '../components/UIElements';
+import { CreditCard, Zap, Calendar, ArrowUpCircle, AlertTriangle } from 'lucide-react';
 
 const Subscription = () => {
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
+        <div className="space-y-4 animate-in fade-in duration-500 bg-[#0A0A0A] min-h-screen p-4">
+
             {/* Current Plan Card */}
-            <div className="gradient-brand p-8 rounded-[3rem] shadow-2xl text-white relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+            <div className="bg-[#FD0053] p-7 rounded-3xl text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-6 opacity-10">
                     <Zap size={100} />
                 </div>
-
                 <div className="relative z-10">
-                    <div className="flex justify-between items-start mb-10">
+                    <div className="flex justify-between items-start mb-8">
                         <div>
-                            <span className="bg-white/10 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/20">Active Plan</span>
-                            <h3 className="text-3xl font-black mt-4 tracking-tighter">Premium Plus</h3>
+                            <span className="bg-white/10 border border-white/20 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest">Active Plan</span>
+                            <h3 className="text-[28px] font-black mt-3 tracking-tighter">Premium Plus</h3>
                         </div>
-                        <ArrowUpCircle size={40} className="text-pink-300" />
+                        <ArrowUpCircle size={36} className="text-white/50" />
                     </div>
-
-                    <div className="grid grid-cols-2 gap-4 mt-8 pt-8 border-t border-white/10">
+                    <div className="grid grid-cols-2 gap-4 pt-5 border-t border-white/10">
                         <div>
-                            <p className="text-white/50 text-[10px] font-bold uppercase tracking-widest mb-1 flex items-center gap-2">
-                                <Calendar size={12} /> Expiry Date
+                            <p className="text-white/40 text-[9px] font-bold uppercase tracking-widest mb-1 flex items-center gap-1">
+                                <Calendar size={11} /> Expiry Date
                             </p>
                             <p className="text-sm font-black">20 March 2024</p>
                         </div>
                         <div>
-                            <p className="text-white/50 text-[10px] font-bold uppercase tracking-widest mb-1 flex items-center gap-2">
-                                <CreditCard size={12} /> Next Payout
+                            <p className="text-white/40 text-[9px] font-bold uppercase tracking-widest mb-1 flex items-center gap-1">
+                                <CreditCard size={11} /> Next Payout
                             </p>
                             <p className="text-sm font-black">₹14,500</p>
                         </div>
@@ -37,52 +35,51 @@ const Subscription = () => {
                 </div>
             </div>
 
-            {/* Featured Upgrades */}
-            <div className="space-y-4">
-                <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Upgrade Options</h4>
-
-                <div className="p-6 bg-white border border-gray-100 rounded-3xl shadow-sm flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600">
-                            <Zap size={24} fill="currentColor" />
+            {/* Upgrade Options */}
+            <div className="space-y-3">
+                <h4 className="text-[11px] font-black text-white/25 uppercase tracking-widest px-1">Upgrade Options</h4>
+                <div className="bg-[#111111] border border-[#1E1E1E] p-4 rounded-3xl flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="h-11 w-11 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-400 border border-amber-500/10">
+                            <Zap size={20} fill="currentColor" />
                         </div>
                         <div>
-                            <p className="text-sm font-black text-gray-900 uppercase tracking-tight">Pro Elite Plan</p>
-                            <p className="text-[10px] text-gray-400 font-bold italic tracking-tighter">0% Platform Fee + Priority Support</p>
+                            <p className="text-sm font-black text-white uppercase tracking-tight">Pro Elite Plan</p>
+                            <p className="text-[10px] text-white/30 font-bold italic">0% Platform Fee + Priority Support</p>
                         </div>
                     </div>
-                    <button className="text-primary font-black text-xs uppercase tracking-widest hover:underline">
+                    <button className="text-[#FD0053] font-black text-[10px] uppercase tracking-widest bg-[#FD0053]/10 px-3 py-1.5 rounded-xl border border-[#FD0053]/20">
                         View
                     </button>
                 </div>
             </div>
 
-            <div className="space-y-4">
-                <Button className="py-5 text-sm uppercase">Renew Subscription</Button>
-                <Button variant="secondary" className="py-5 text-sm uppercase">Transaction History</Button>
+            {/* Action Buttons */}
+            <div className="space-y-2.5">
+                <button className="w-full bg-[#FD0053] text-white py-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-[#FD0053]/25 active:scale-95 transition-all">
+                    Renew Subscription
+                </button>
+                <button className="w-full bg-[#111111] border border-[#1E1E1E] text-white/50 py-4 rounded-2xl font-black uppercase tracking-widest text-xs active:scale-95 transition-all hover:border-[#2A2A2A]">
+                    Transaction History
+                </button>
             </div>
 
-            <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100 mt-2">
-                <div className="flex gap-4">
-                    <div className="h-10 w-10 flex items-center justify-center bg-white rounded-xl shadow-sm text-orange-500">
-                        <ShieldAlert size={20} />
+            {/* Warning */}
+            <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-3xl">
+                <div className="flex gap-3">
+                    <div className="h-9 w-9 flex items-center justify-center bg-amber-500/10 rounded-xl text-amber-400 shrink-0">
+                        <AlertTriangle size={18} />
                     </div>
-                    <div className="flex-1">
-                        <p className="text-xs font-black text-gray-900 uppercase">Warning</p>
-                        <p className="text-[10px] text-gray-500 font-bold mt-1 leading-relaxed">If subscription expires, your shop will be hidden from customers and active orders may be reassigned.</p>
+                    <div>
+                        <p className="text-xs font-black text-amber-400 uppercase">Warning</p>
+                        <p className="text-[10px] text-white/30 font-bold mt-1 leading-relaxed">
+                            If subscription expires, your shop will be hidden from customers and active orders may be reassigned.
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
     );
 };
-
-const ShieldAlert = ({ size }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-        <line x1="12" y1="8" x2="12" y2="12" />
-        <line x1="12" y1="16" x2="12.01" y2="16" />
-    </svg>
-);
 
 export default Subscription;

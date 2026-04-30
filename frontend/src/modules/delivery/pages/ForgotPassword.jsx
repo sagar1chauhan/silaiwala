@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiArrowLeft, FiCheck, FiMail, FiRefreshCw, FiTruck } from 'react-icons/fi';
+import { FiArrowLeft, FiCheck, FiMail, FiRefreshCw } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import PageTransition from '../../../shared/components/PageTransition';
 import { useDeliveryAuthStore } from '../store/deliveryStore';
 
 const OTP_LENGTH = 6;
@@ -107,109 +106,101 @@ const DeliveryForgotPassword = () => {
   };
 
   return (
-    <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-primary-900 flex items-center justify-center px-4 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md"
-        >
-          <div className="glass-card rounded-2xl p-6 shadow-xl">
-            <div className="text-center mb-8">
-              <div className="w-16 h-16 gradient-green rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-glow-green">
-                <FiTruck className="text-white text-2xl" />
-              </div>
-              <h1 className="text-2xl font-bold text-gray-800 mb-2">Forgot Password</h1>
-              <p className="text-gray-600 text-sm">
-                {step === 'request'
-                  ? 'Enter your delivery account email to receive OTP.'
-                  : `Enter the OTP sent to ${email}`}
-              </p>
-            </div>
-
-            {step === 'request' ? (
-              <form onSubmit={handleRequestOtp} className="space-y-5">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
-                  <div className="relative">
-                    <FiMail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="delivery@delivery.com"
-                      className="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary-500 focus:outline-none transition-colors text-base"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full gradient-green text-white py-4 rounded-xl font-semibold text-base hover:shadow-glow-green transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? 'Sending OTP...' : 'Send OTP'}
-                </button>
-              </form>
-            ) : (
-              <form onSubmit={handleVerifyOtp} className="space-y-5">
-                <div className="flex justify-center gap-2">
-                  {codes.map((code, index) => (
-                    <input
-                      key={index}
-                      ref={(el) => (inputRefs.current[index] = el)}
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      value={code}
-                      onChange={(e) => handleCodeChange(index, e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(index, e)}
-                      onPaste={index === 0 ? handlePaste : undefined}
-                      className="w-11 h-11 text-center text-lg font-bold bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-primary-500 text-gray-800"
-                    />
-                  ))}
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <button
-                    type="button"
-                    onClick={handleResendOtp}
-                    disabled={isLoading || resendTimer > 0}
-                    className="text-sm text-primary-600 hover:text-primary-700 font-medium disabled:text-gray-400 inline-flex items-center gap-2"
-                  >
-                    <FiRefreshCw className={resendTimer > 0 ? '' : 'animate-none'} />
-                    {resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Resend OTP'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setStep('request')}
-                    className="text-sm text-gray-600 hover:text-gray-800 font-medium"
-                  >
-                    Change Email
-                  </button>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isLoading || codes.some((c) => !c)}
-                  className="w-full gradient-green text-white py-4 rounded-xl font-semibold text-base hover:shadow-glow-green transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {isLoading ? 'Verifying...' : <><FiCheck /> Verify OTP</>}
-                </button>
-              </form>
-            )}
-
-            <div className="text-center pt-4">
-              <Link to="/delivery/login" className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 font-medium">
-                <FiArrowLeft />
-                Back to Login
-              </Link>
-            </div>
-          </div>
-        </motion.div>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="w-full max-w-sm mx-auto"
+    >
+      <div className="text-left mb-8">
+        <h2 className="text-2xl font-black text-[#1A202C] tracking-tight">Forgot Password</h2>
+        <p className="text-gray-500 font-medium mt-1">
+          {step === 'request'
+            ? 'Enter your delivery account email to receive OTP.'
+            : `Enter the OTP sent to ${email}`}
+        </p>
       </div>
-    </PageTransition>
+
+      {step === 'request' ? (
+        <form onSubmit={handleRequestOtp} className="space-y-5">
+          <div className="relative group">
+            <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-green-500" />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="delivery@email.com"
+              className="w-full pl-12 pr-4 py-3.5 bg-white border border-gray-200 rounded-xl focus:border-[#4CAF50] focus:ring-1 focus:ring-[#4CAF50] outline-none transition-all font-medium text-gray-800 placeholder:text-gray-400 shadow-sm"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full py-4 bg-[#4CAF50] hover:bg-[#43A047] text-white font-black rounded-xl shadow-lg shadow-green-100 transition-all active:scale-[0.98] disabled:opacity-70 flex items-center justify-center gap-2"
+          >
+            {isLoading ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : 'Send OTP'}
+          </button>
+        </form>
+      ) : (
+        <form onSubmit={handleVerifyOtp} className="space-y-6">
+          <div className="flex justify-center gap-2">
+            {codes.map((code, index) => (
+              <input
+                key={index}
+                ref={(el) => (inputRefs.current[index] = el)}
+                type="text"
+                inputMode="numeric"
+                maxLength={1}
+                value={code}
+                onChange={(e) => handleCodeChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                onPaste={index === 0 ? handlePaste : undefined}
+                className="w-11 h-11 text-center text-lg font-bold bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#4CAF50] text-gray-800 transition-all"
+              />
+            ))}
+          </div>
+
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={handleResendOtp}
+              disabled={isLoading || resendTimer > 0}
+              className="text-sm text-[#4CAF50] hover:underline font-bold disabled:text-gray-400 inline-flex items-center gap-2"
+            >
+              <FiRefreshCw className={resendTimer > 0 ? '' : 'animate-none'} />
+              {resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Resend OTP'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setStep('request')}
+              className="text-sm text-gray-500 hover:text-gray-800 font-medium"
+            >
+              Change Email
+            </button>
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading || codes.some((c) => !c)}
+            className="w-full py-4 bg-[#4CAF50] hover:bg-[#43A047] text-white font-black rounded-xl shadow-lg shadow-green-100 transition-all active:scale-[0.98] disabled:opacity-70 flex items-center justify-center gap-2"
+          >
+            {isLoading ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : <><FiCheck /> Verify OTP</>}
+          </button>
+        </form>
+      )}
+
+      <div className="text-center pt-6">
+        <Link to="/delivery/login" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#4CAF50] font-bold transition-colors">
+          <FiArrowLeft />
+          Back to Login
+        </Link>
+      </div>
+    </motion.div>
   );
 };
 

@@ -5,17 +5,51 @@ import {
     Clock,
     CheckCircle,
     TrendingUp,
-    MoreVertical,
-    ChevronRight
+    ChevronRight,
+    ArrowUpRight,
+    Bell,
+    Settings
 } from 'lucide-react';
+import { useTailorAuth } from '../context/AuthContext';
+const silaiwalaLogo = '/logo.png';
 
 const Dashboard = () => {
     const navigate = useNavigate();
+    const { user, status } = useTailorAuth();
+
     const stats = [
-        { label: 'Total Orders', value: '48', icon: <ShoppingBag className="text-primary" />, change: '+12% from last month' },
-        { label: 'Pending', value: '12', icon: <Clock className="text-orange-600" />, change: '4 overdue' },
-        { label: 'Completed', value: '32', icon: <CheckCircle className="text-primary" />, change: '+5 today' },
-        { label: 'Earnings', value: '₹14,500', icon: <TrendingUp className="text-primary-dark" />, change: 'Avg ₹450/order' },
+        {
+            label: 'Total Orders',
+            value: '48',
+            icon: <ShoppingBag size={20} />,
+            change: '+12%',
+            sub: 'from last month',
+            accent: '#FD0053',
+        },
+        {
+            label: 'Pending',
+            value: '12',
+            icon: <Clock size={20} />,
+            change: '4 overdue',
+            sub: 'needs attention',
+            accent: '#F59E0B',
+        },
+        {
+            label: 'Completed',
+            value: '32',
+            icon: <CheckCircle size={20} />,
+            change: '+5',
+            sub: 'today',
+            accent: '#10B981',
+        },
+        {
+            label: 'Earnings',
+            value: '₹14.5K',
+            icon: <TrendingUp size={20} />,
+            change: '₹450',
+            sub: 'avg / order',
+            accent: '#FD0053',
+        },
     ];
 
     const recentOrders = [
@@ -25,119 +59,173 @@ const Dashboard = () => {
         { id: 'ORD-7217', customer: 'Amit Gupta', service: 'Suit Fitting', date: '23 Feb 2024', status: 'Ironing', priority: 'Normal' },
     ];
 
-    const getStatusColor = (status) => {
+    const getStatusStyle = (status) => {
         switch (status.toLowerCase()) {
-            case 'measuring': return 'bg-pink-100 text-primary';
-            case 'cutting': return 'bg-orange-100 text-orange-700';
-            case 'stitching': return 'bg-pink-50 text-primary-dark';
-            case 'ironing': return 'bg-green-100 text-green-700';
-            default: return 'bg-gray-100 text-gray-700';
+            case 'measuring': return { bg: 'bg-[#FD0053]/10', text: 'text-[#FD0053]', dot: 'bg-[#FD0053]' };
+            case 'cutting': return { bg: 'bg-amber-500/10', text: 'text-amber-400', dot: 'bg-amber-400' };
+            case 'stitching': return { bg: 'bg-blue-500/10', text: 'text-blue-400', dot: 'bg-blue-400' };
+            case 'ironing': return { bg: 'bg-emerald-500/10', text: 'text-emerald-400', dot: 'bg-emerald-400' };
+            default: return { bg: 'bg-white/5', text: 'text-white/50', dot: 'bg-white/30' };
         }
     };
 
-    const getPriorityColor = (priority) => {
+    const getPriorityStyle = (priority) => {
         switch (priority.toLowerCase()) {
-            case 'urgent': return 'text-red-600 font-bold animate-pulse';
-            case 'high': return 'text-orange-600 font-medium';
-            default: return 'text-gray-500';
+            case 'urgent': return 'text-[#FD0053] font-black';
+            case 'high': return 'text-amber-400 font-bold';
+            default: return 'text-white/30 font-medium';
         }
     };
 
     return (
-        <div className="space-y-8">
-            {/* Welcome Section */}
-            <div className="flex justify-between items-end">
-                <div>
-                    <h2 className="text-3xl font-bold text-primary">Welcome back, Royal Stitches! 👋</h2>
-                    <p className="text-gray-500 mt-2 font-medium">You have 3 new orders waiting for acceptance today.</p>
-                </div>
-                <div className="flex gap-4">
-                    <button
-                        onClick={() => navigate('/partner/settings')}
-                        className="px-6 py-2.5 rounded-xl bg-primary text-white font-semibold hover:shadow-lg hover:translate-y-[-2px] active:translate-y-[0] transition-all"
-                    >
-                        Manage Availability
-                    </button>
-                </div>
-            </div>
+        <div className="min-h-screen bg-[#0A0A0A]">
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((stat, idx) => (
-                    <div key={idx} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                        <div className="flex justify-between items-start">
-                            <div className="p-3 bg-gray-50 rounded-xl">
-                                {stat.icon}
-                            </div>
-                            <button className="text-gray-400 hover:text-gray-600">
-                                <MoreVertical size={18} />
-                            </button>
+            {/* ── HEADER ─────────────────────── */}
+            <div className="px-5 pt-6 pb-4 bg-[#0A0A0A]">
+                <div className="flex items-center justify-between mb-6">
+                    {/* Logo + Name */}
+                    <div className="flex items-center gap-3">
+                        <div className="w-11 h-11 bg-[#161616] border border-[#2A2A2A] rounded-2xl flex items-center justify-center p-1.5 overflow-hidden">
+                            <img src={silaiwalaLogo} alt="Logo" className="w-full h-full object-contain" />
                         </div>
-                        <div className="mt-4">
-                            <h3 className="text-gray-500 font-medium text-sm">{stat.label}</h3>
-                            <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
-                            <p className="text-xs text-primary mt-2 font-medium flex items-center gap-1">
-                                {stat.change}
-                            </p>
+                        <div>
+                            <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest leading-none mb-0.5">Partner Panel</p>
+                            <h2 className="text-[17px] font-black text-white leading-none tracking-tight">
+                                {user?.name || 'Royal Stitches'}
+                            </h2>
                         </div>
                     </div>
-                ))}
+                    {/* Action icons */}
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => navigate('/partner/settings')}
+                            className="w-10 h-10 bg-[#161616] border border-[#2A2A2A] rounded-2xl flex items-center justify-center text-white/40 hover:text-white transition-colors"
+                        >
+                            <Settings size={17} />
+                        </button>
+                        <div className="w-10 h-10 bg-[#FD0053] rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-lg shadow-[#FD0053]/30">
+                            {user?.name?.charAt(0)?.toUpperCase() || 'T'}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Greeting Banner */}
+                <div className="bg-[#FD0053] rounded-3xl p-5 relative overflow-hidden mb-1">
+                    {/* Decorative circles */}
+                    <div className="absolute -right-6 -top-6 w-28 h-28 rounded-full bg-white/10 pointer-events-none" />
+                    <div className="absolute right-8 -bottom-8 w-20 h-20 rounded-full bg-white/5 pointer-events-none" />
+                    <div className="absolute -right-2 top-8 w-12 h-12 rounded-full bg-white/8 pointer-events-none" />
+
+                    <p className="text-[10px] text-white/60 font-bold uppercase tracking-widest mb-1">Welcome back 👋</p>
+                    <h3 className="text-[22px] font-black text-white leading-tight mb-3">
+                        {user?.name?.split(' ')[0] || 'Royal Stitches'}!
+                    </h3>
+                    <div className="flex items-center justify-between">
+                        <p className="text-[12px] text-white/70 font-medium">
+                            <span className="text-white font-black">3 new orders</span> waiting
+                        </p>
+                        <button
+                            onClick={() => navigate('/partner/orders')}
+                            className="bg-white text-[#FD0053] text-[10px] font-black uppercase px-4 py-2 rounded-xl tracking-wider flex items-center gap-1"
+                        >
+                            View All <ChevronRight size={13} />
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            {/* Recent Orders Section */}
-            <div className="bg-white border border-gray-100 rounded-3xl shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-                    <h3 className="text-xl font-bold text-gray-900">Active Work Orders</h3>
+            {/* ── STATS GRID ─────────────────── */}
+            <div className="px-5 mb-5">
+                <div className="grid grid-cols-2 gap-3">
+                    {stats.map((stat, idx) => (
+                        <div
+                            key={idx}
+                            className="bg-[#111111] border border-[#1E1E1E] rounded-3xl p-4 relative overflow-hidden"
+                        >
+                            {/* Accent dot */}
+                            <div
+                                className="absolute top-4 right-4 w-2 h-2 rounded-full opacity-60"
+                                style={{ backgroundColor: stat.accent }}
+                            />
+
+                            {/* Icon */}
+                            <div
+                                className="w-10 h-10 rounded-2xl flex items-center justify-center mb-3"
+                                style={{ backgroundColor: `${stat.accent}15`, color: stat.accent }}
+                            >
+                                {stat.icon}
+                            </div>
+
+                            {/* Value */}
+                            <p className="text-[26px] font-black text-white leading-none mb-1">{stat.value}</p>
+                            <p className="text-[11px] text-white/40 font-medium mb-2">{stat.label}</p>
+
+                            {/* Change */}
+                            <div className="flex items-center gap-1">
+                                <ArrowUpRight size={11} style={{ color: stat.accent }} />
+                                <span className="text-[10px] font-bold" style={{ color: stat.accent }}>
+                                    {stat.change}
+                                </span>
+                                <span className="text-[10px] text-white/25 font-medium">{stat.sub}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* ── ACTIVE WORK ORDERS ─────────── */}
+            <div className="px-5 pb-6">
+                {/* Section Header */}
+                <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-[15px] font-black text-white">Active Work Orders</h3>
                     <button
                         onClick={() => navigate('/partner/orders')}
-                        className="text-primary font-semibold text-sm flex items-center gap-1 hover:underline"
+                        className="flex items-center gap-1 text-[#FD0053] text-[11px] font-bold"
                     >
-                        See all orders <ChevronRight size={16} />
+                        See all <ChevronRight size={13} />
                     </button>
                 </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                        <thead>
-                            <tr className="bg-gray-50 text-gray-500 font-semibold text-xs uppercase tracking-wider">
-                                <th className="px-6 py-4">Order ID</th>
-                                <th className="px-6 py-4">Customer</th>
-                                <th className="px-6 py-4">Service</th>
-                                <th className="px-6 py-4">Status</th>
-                                <th className="px-6 py-4">Priority</th>
-                                <th className="px-6 py-4 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {recentOrders.map((order) => (
-                                <tr key={order.id} className="hover:bg-gray-50/50 transition-colors group">
-                                    <td className="px-6 py-4 font-bold text-primary text-sm uppercase">{order.id}</td>
-                                    <td className="px-6 py-4">
-                                        <div className="font-medium text-gray-900">{order.customer}</div>
-                                        <div className="text-xs text-gray-400">{order.date}</div>
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-600 font-medium">{order.service}</td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(order.status)}`}>
-                                            {order.status}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className={`text-xs ${getPriorityColor(order.priority)}`}>
-                                            {order.priority}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <button
-                                            onClick={() => navigate('/partner/orders', { state: { highlightOrderTitle: order.id } })}
-                                            className="bg-white border rounded-lg px-3 py-1.5 text-xs font-bold text-gray-700 hover:bg-primary hover:text-white hover:border-primary transition-all"
-                                        >
-                                            Update Status
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+
+                {/* Orders List */}
+                <div className="space-y-2.5">
+                    {recentOrders.map((order) => {
+                        const st = getStatusStyle(order.status);
+                        return (
+                            <div
+                                key={order.id}
+                                className="bg-[#111111] border border-[#1E1E1E] rounded-3xl p-4 flex items-center gap-3"
+                            >
+                                {/* Status Dot Avatar */}
+                                <div className={`w-10 h-10 rounded-2xl ${st.bg} flex items-center justify-center shrink-0`}>
+                                    <span className={`w-2.5 h-2.5 rounded-full ${st.dot}`} />
+                                </div>
+
+                                {/* Info */}
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-[13px] font-black text-white truncate leading-tight">{order.service}</p>
+                                    <p className="text-[10px] text-white/35 font-medium mt-0.5 truncate">{order.customer} · {order.date}</p>
+                                </div>
+
+                                {/* Right Side */}
+                                <div className="flex flex-col items-end gap-1.5 shrink-0">
+                                    <span className={`text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-wider ${st.bg} ${st.text}`}>
+                                        {order.status}
+                                    </span>
+                                    <span className={`text-[9px] uppercase font-bold ${getPriorityStyle(order.priority)}`}>
+                                        {order.priority}
+                                    </span>
+                                </div>
+
+                                {/* Update Button */}
+                                <button
+                                    onClick={() => navigate('/partner/orders', { state: { highlightOrderTitle: order.id } })}
+                                    className="shrink-0 w-8 h-8 bg-[#FD0053]/10 rounded-xl flex items-center justify-center text-[#FD0053] hover:bg-[#FD0053] hover:text-white transition-all"
+                                >
+                                    <ChevronRight size={14} />
+                                </button>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </div>

@@ -26,6 +26,9 @@ import ProfileSettings from './modules/tailor/pages/ProfileSettings';
 import TailorWithdraw from './modules/tailor/pages/Withdraw';
 import TailorNotifications from './modules/tailor/pages/Notifications';
 import WalletPage from './modules/common/pages/WalletPage';
+import TailorEarnings from './modules/tailor/pages/TailorEarnings';
+import MeasurementList from './modules/tailor/pages/MeasurementList';
+import MeasurementDetail from './modules/tailor/pages/MeasurementDetail';
 
 // Customer Pages
 import CustomerHome from './modules/customer/pages/Home';
@@ -46,6 +49,7 @@ import TailorProfile from './modules/customer/pages/TailorProfile'; // NEW
 import TailorListing from './modules/customer/pages/TailorListing'; // NEW
 import TailorSelection from './modules/customer/pages/TailorSelection'; // NEW
 import CustomerProtectedRoute from './modules/customer/components/CustomerProtectedRoute';
+import CustomerMainLayout from './modules/customer/layouts/CustomerMainLayout';
 import { NotificationProvider as CustomerNotificationProvider } from './modules/customer/context/NotificationContext';
 
 // Delivery Pages
@@ -55,7 +59,10 @@ import DeliveryHistory from './modules/delivery/pages/History/DeliveryHistory';
 import DeliveryProfile from './modules/delivery/pages/Profile/DeliveryProfile';
 import DeliveryLogin from './modules/delivery/pages/Login';
 import DeliverySignup from './modules/delivery/pages/Signup';
+import DeliveryForgotPassword from './modules/delivery/pages/ForgotPassword';
+import DeliveryResetPassword from './modules/delivery/pages/ResetPassword';
 import DeliveryLayout from './modules/delivery/layouts/DeliveryLayout';
+import DeliveryAuthLayout from './modules/delivery/layouts/DeliveryAuthLayout';
 import DeliveryProtectedRoute from './modules/delivery/components/DeliveryProtectedRoute';
 import DeliveryWallet from './modules/delivery/pages/Wallet/DeliveryWallet';
 
@@ -95,52 +102,58 @@ const AppRoutes = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
 
-                {/* Delivery Public Auth Routes */}
-                <Route path="/delivery/login" element={<DeliveryLogin />} />
-                <Route path="/delivery/signup" element={<DeliverySignup />} />
-
                 {/* Partner Public Auth Routes */}
                 <Route path="/partner/login" element={<TailorLogin />} />
                 <Route path="/partner/signup" element={<TailorRegistration />} />
                 <Route path="/partner/register" element={<Navigate to="/partner/signup" replace />} />
             </Route>
 
+            {/* Delivery Auth Routes - Using custom design */}
+            <Route element={<DeliveryAuthLayout />}>
+                <Route path="/delivery/login" element={<DeliveryLogin />} />
+                <Route path="/delivery/signup" element={<DeliverySignup />} />
+                <Route path="/delivery/forgot-password" element={<DeliveryForgotPassword />} />
+                <Route path="/delivery/reset-password" element={<DeliveryResetPassword />} />
+            </Route>
+
             {/* Customer Routes */}
             <Route element={<CustomerProtectedRoute />}>
                 <Route element={<CustomerNotificationProvider />}>
-                    <Route index element={<CustomerHome />} />
-                    <Route path="/services" element={<ServicesPage />} />
-                    <Route path="/services/:id" element={<ServiceDetailPage />} />
-                    <Route path="/embellishments" element={<Embellishments />} />
+                    <Route element={<CustomerMainLayout />}>
+                        <Route index element={<CustomerHome />} />
+                        <Route path="/services" element={<ServicesPage />} />
+                        <Route path="/services/:id" element={<ServiceDetailPage />} />
+                        <Route path="/embellishments" element={<Embellishments />} />
 
-                    {/* New Store & Nav Routes */}
-                    <Route path="/store" element={<StorePage />} />
-                    <Route path="/store/product/:id" element={<StoreProductDetail />} />
-                    <Route path="/fabric/:id" element={<FabricDetail />} />
-                    <Route path="/orders" element={<OrdersPage />} />
-                    <Route path="/profile" element={<ProfilePage />} />
-                    <Route path="/profile/edit" element={<EditProfile />} />
-                    <Route path="/profile/measurements" element={<Measurements />} />
-                    <Route path="/profile/addresses" element={<SavedAddresses />} />
-                    <Route path="/refer" element={<ReferEarn />} />
-                    {/* Fixed path from /tailor/:id to /shop/:id to avoid conflict or keep it customer centric */}
-                    <Route path="/tailor/:id" element={<TailorProfile />} />
-                    <Route path="/tailors" element={<TailorListing />} />
+                        {/* New Store & Nav Routes */}
+                        <Route path="/store" element={<StorePage />} />
+                        <Route path="/store/product/:id" element={<StoreProductDetail />} />
+                        <Route path="/fabric/:id" element={<FabricDetail />} />
+                        <Route path="/orders" element={<OrdersPage />} />
+                        <Route path="/profile" element={<ProfilePage />} />
+                        <Route path="/profile/edit" element={<EditProfile />} />
+                        <Route path="/profile/measurements" element={<Measurements />} />
+                        <Route path="/profile/addresses" element={<SavedAddresses />} />
+                        <Route path="/refer" element={<ReferEarn />} />
+                        {/* Fixed path from /tailor/:id to /shop/:id to avoid conflict or keep it customer centric */}
+                        <Route path="/tailor/:id" element={<TailorProfile />} />
+                        <Route path="/tailors" element={<TailorListing />} />
 
-                    {/* Checkout Flow */}
-                    <Route path="/checkout/tailor" element={<TailorSelection />} />
-                    <Route path="/checkout/address" element={<CheckoutAddress />} />
-                    <Route path="/checkout/summary" element={<CheckoutSummary />} />
-                    <Route path="/checkout/success" element={<OrderSuccess />} />
-                    <Route path="/orders/:id/track" element={<OrderTracking />} />
-                    <Route path="/support" element={<Support />} />
-                    <Route path="/legal/:slug" element={<CMSContent />} />
+                        {/* Checkout Flow */}
+                        <Route path="/checkout/tailor" element={<TailorSelection />} />
+                        <Route path="/checkout/address" element={<CheckoutAddress />} />
+                        <Route path="/checkout/summary" element={<CheckoutSummary />} />
+                        <Route path="/checkout/success" element={<OrderSuccess />} />
+                        <Route path="/orders/:id/track" element={<OrderTracking />} />
+                        <Route path="/support" element={<Support />} />
+                        <Route path="/legal/:slug" element={<CMSContent />} />
 
-                    <Route path="/cart" element={<CartPage />} />
-                    <Route path="/wishlist" element={<WishlistPage />} />
-                    <Route path="/reviews" element={<MyReviews />} />
-                    <Route path="/bulk-order" element={<BulkOrderRequest />} />
-                    <Route path="/bulk-orders" element={<MyBulkOrders />} />
+                        <Route path="/cart" element={<CartPage />} />
+                        <Route path="/wishlist" element={<WishlistPage />} />
+                        <Route path="/reviews" element={<MyReviews />} />
+                        <Route path="/bulk-order" element={<BulkOrderRequest />} />
+                        <Route path="/bulk-orders" element={<MyBulkOrders />} />
+                    </Route>
                 </Route>
             </Route>
 
@@ -154,13 +167,15 @@ const AppRoutes = () => {
                     <Route path="/partner" element={<TailorOverview />} />
                     <Route path="/partner/orders" element={<TailorOrders />} />
                     <Route path="/partner/portfolio" element={<TailorProducts />} />
-                    <Route path="/partner/earnings" element={<WalletPage />} />
-                    <Route path="/partner/wallet" element={<WalletPage />} />
+                    <Route path="/partner/earnings" element={<TailorEarnings />} />
+                    <Route path="/partner/wallet" element={<TailorEarnings />} />
                     <Route path="/partner/products" element={<TailorProducts />} />
                     <Route path="/partner/delivery" element={<DeliveryDetails />} />
                     <Route path="/partner/verification" element={<VerificationStatus />} />
                     <Route path="/partner/subscription" element={<SubscriptionSettings />} />
                     <Route path="/partner/settings" element={<ProfileSettings />} />
+                    <Route path="/partner/measurements" element={<MeasurementList />} />
+                    <Route path="/partner/measurements/:id" element={<MeasurementDetail />} />
                 </Route>
                 {/* Full screen tailor views separated from layout nav */}
                 <Route path="/partner/withdraw" element={<TailorWithdraw />} />

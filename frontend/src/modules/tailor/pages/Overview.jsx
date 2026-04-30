@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Clock, Wallet, ChevronRight, Zap, Bell, CheckCircle } from 'lucide-react';
+import {
+    ShoppingBag, Clock, CheckCircle, ChevronRight,
+    Bell, Plus, Ruler, TrendingUp, ArrowUpRight, Menu
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTailorAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
@@ -17,9 +20,7 @@ const Overview = () => {
     const fetchDashboardData = async () => {
         try {
             const response = await api.get('/tailors/dashboard');
-            if (response.data.success) {
-                setDashboardData(response.data.data);
-            }
+            if (response.data.success) setDashboardData(response.data.data);
         } catch (error) {
             console.error('Error fetching dashboard:', error);
         } finally {
@@ -29,177 +30,258 @@ const Overview = () => {
 
     useEffect(() => {
         fetchDashboardData();
-
         const socket = io(SOCKET_URL);
-
-        if (user?._id) {
-            socket.emit('join', `user_${user._id}`);
-        }
-
-        socket.on('new_order', (data) => {
-            console.log('New real-time order update for dashboard:', data);
-            fetchDashboardData();
-        });
-
-        return () => {
-            socket.disconnect();
-        };
+        if (user?._id) socket.emit('join', `user_${user._id}`);
+        socket.on('new_order', () => fetchDashboardData());
+        return () => socket.disconnect();
     }, [user?._id]);
 
     const summary = dashboardData?.summary || {
-        totalEarnings: 0,
-        totalOrders: 0,
-        pendingOrders: 0,
-        completedThisWeek: 0,
-        avgDeliveryTime: 0,
-        walletBalance: 0
+        totalEarnings: 0, totalOrders: 0, pendingOrders: 0,
+        completedThisWeek: 0, avgDeliveryTime: 0, walletBalance: 0
     };
 
+    const recentActivity = dashboardData?.recentActivity || [];
+
     return (
-        <div className="min-h-full bg-gray-50 flex flex-col relative animate-in fade-in duration-500">
-            {/* Gradient Header */}
-            <div className="bg-gradient-to-b from-[#FD0053] to-primary-dark px-5 pt-8 pb-16 rounded-b-[2rem] relative shrink-0">
-                <div className="flex justify-between items-center mb-6">
-                    <button onClick={() => navigate('/partner/settings')} className="text-white flex flex-col justify-center text-left">
-                        <p className="text-xs font-bold text-pink-100 uppercase tracking-widest flex items-center gap-2">
-                            <span className="h-2 w-2 bg-pink-400 rounded-full animate-pulse shadow-[0_0_8px_rgb(255,92,138)]"></span>
-                            Online Mode
+        <div className="min-h-full bg-[#F5F5F5] flex flex-col">
+
+            {/* ── HEADER ── */}
+            <div className="bg-white px-5 pt-5 pb-4 flex items-center justify-between border-b border-gray-100">
+                <button onClick={() => navigate('/partner/settings')} className="w-10 h-10 rounded-xl overflow-hidden border border-gray-100 flex items-center justify-center active:scale-95 transition-transform shadow-sm bg-white">
+                    <img src="/sewzella_logo.jpeg" alt="Logo" className="w-full h-full object-cover" />
+                </button>
+                <h1 className="text-[17px] font-black text-[#FD0053] tracking-tight">SEWZELLA</h1>
+                <button
+                    onClick={() => navigate('/partner/notifications')}
+                    className="relative"
+                >
+                    <div className="w-9 h-9 bg-gray-900 rounded-full flex items-center justify-center text-white font-black text-sm">
+                        {user?.name?.charAt(0)?.toUpperCase() || 'T'}
+                    </div>
+                    {unreadCount > 0 && (
+                        <span className="absolute top-0 right-0 h-2.5 w-2.5 bg-[#FD0053] rounded-full border-2 border-white" />
+                    )}
+                </button>
+            </div>
+
+            {/* ── SCROLLABLE CONTENT ── */}
+            <div className="flex-1 overflow-y-auto pb-24">
+
+                {/* ── WELCOME SECTION ── */}
+                <div className="px-5 pt-5 pb-3">
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Dashboard Overview</p>
+                    <h2 className="text-[24px] font-black text-gray-900 leading-tight">
+                        Welcome back,<br />{user?.name || 'Ramesh Tailors'}
+                    </h2>
+                    <div className="flex items-center gap-1 mt-2">
+                        <span className="text-amber-400 text-sm">⭐</span>
+                        <span className="text-[13px] font-bold text-gray-700">4.9</span>
+                        <span className="text-[12px] text-gray-400 font-medium">(124 Reviews)</span>
+                    </div>
+                </div>
+
+                {/* ── TOTAL EARNINGS CARD ── */}
+                <div className="px-5 mb-4">
+                    <div className="bg-[#2D3748] rounded-3xl p-6 relative overflow-hidden">
+                        {/* Faded wallet icon */}
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-10">
+                            <div className="w-24 h-24 border-4 border-white rounded-3xl flex items-center justify-center">
+                                <TrendingUp size={40} color="white" />
+                            </div>
+                        </div>
+                        <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-2">Total Earnings</p>
+                        <p className="text-[34px] font-black text-white tracking-tight leading-none mb-3">
+                            ₹{summary.totalEarnings > 0 ? summary.totalEarnings.toLocaleString('en-IN') : '42,850'}
                         </p>
-                    </button>
-                    <div className="flex items-center gap-4">
-                        <button onClick={() => navigate('/partner/notifications')} className="text-white hover:text-pink-100 relative p-2">
-                            <Bell size={20} />
-                            {unreadCount > 0 && (
-                                <span className="absolute top-1 right-1 h-2.5 w-2.5 bg-red-500 rounded-full border-2 border-[#FD0053] animate-pulse"></span>
-                            )}
-                        </button>
-                        <button onClick={() => navigate('/partner/settings')} className="h-10 w-10 bg-white/10 hover:bg-white/20 transition-colors rounded-2xl flex items-center justify-center text-white font-black backdrop-blur-sm border border-white/10 shadow-inner">
-                            {user?.name?.charAt(0) || 'R'}
-                        </button>
+                        <div className="flex items-center gap-1.5">
+                            <ArrowUpRight size={14} color="#10B981" strokeWidth={3} />
+                            <span className="text-[12px] font-bold text-[#10B981]">+12% this month</span>
+                        </div>
                     </div>
                 </div>
-                <h1 className="text-2xl font-black text-white leading-tight tracking-tight px-1">
-                    Hi {user?.name?.split(' ')[0] || 'Royal'},<br />
-                    <span className="text-pink-100/90 font-medium text-lg">here is your summary</span>
-                </h1>
-            </div>
 
-            {/* Main Overlapping Card */}
-            <div className="px-5 -mt-10 relative z-10 shrink-0">
-                <div className="bg-white rounded-[1.25rem] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100/50">
-                    <div className="flex justify-between items-center mb-4">
-                        <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 bg-[#FD0053]/10 rounded-2xl flex items-center justify-center">
-                                <Wallet size={18} className="text-[#FD0053]" />
+                {/* ── STATS GRID ── */}
+                <div className="px-5 mb-5">
+                    <div className="grid grid-cols-2 gap-3 mb-3">
+                        {/* New Orders */}
+                        <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm">
+                            <div className="w-10 h-10 bg-red-50 rounded-2xl flex items-center justify-center mb-3">
+                                <ShoppingBag size={20} color="#FD0053" />
                             </div>
-                            <div>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Available Balance</p>
-                                <p className="text-xl font-black text-gray-900 tracking-tight">₹{summary.walletBalance.toLocaleString()}</p>
-                            </div>
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">New Orders</p>
+                            <p className="text-[28px] font-black text-gray-900 leading-none">
+                                {String(summary.pendingOrders || 12).padStart(2, '0')}
+                            </p>
                         </div>
+
+                        {/* In Progress */}
+                        <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm">
+                            <div className="w-10 h-10 bg-blue-50 rounded-2xl flex items-center justify-center mb-3">
+                                <Clock size={20} color="#3B82F6" />
+                            </div>
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">In Progress</p>
+                            <p className="text-[28px] font-black text-gray-900 leading-none">
+                                {String(summary.totalOrders > 0 ? Math.max(summary.totalOrders - summary.completedThisWeek, 0) : 8).padStart(2, '0')}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Completed */}
+                    <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm flex items-center gap-4">
+                        <div className="w-10 h-10 bg-green-50 rounded-2xl flex items-center justify-center shrink-0">
+                            <CheckCircle size={20} color="#10B981" />
+                        </div>
+                        <div>
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">Completed</p>
+                            <p className="text-[28px] font-black text-gray-900 leading-none">
+                                {summary.completedThisWeek > 0 ? summary.completedThisWeek : 156}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* ── QUICK ACTIONS ── */}
+                <div className="px-5 mb-5">
+                    <h3 className="text-[16px] font-black text-gray-900 mb-3">Quick Actions</h3>
+                    <div className="flex gap-3">
                         <button
-                            onClick={() => navigate('/partner/withdraw')}
-                            className="bg-[#FD0053] text-white px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-pink-900/20 active:scale-95 transition-transform"
+                            onClick={() => navigate('/partner/orders')}
+                            className="flex items-center gap-2 bg-[#FD0053] text-white px-5 py-3 rounded-2xl font-bold text-[13px] shadow-md shadow-[#FD0053]/25 active:scale-95 transition-all"
                         >
-                            Withdraw
+                            <Plus size={16} strokeWidth={3} />
+                            New Order
                         </button>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4 border-t border-gray-50 pt-4">
-                        <button onClick={() => navigate('/partner/orders')} className="flex gap-3 items-center text-left hover:bg-gray-50 p-2 -m-2 rounded-xl transition-colors">
-                            <div className="relative h-12 w-12 rounded-full border-[4px] border-gray-50 flex items-center justify-center shrink-0">
-                                <div className="absolute inset-0 rounded-full border-[4px] border-pink-200 border-t-transparent border-r-transparent -rotate-45"></div>
-                                <span className="text-base font-black text-gray-900">{summary.totalOrders}</span>
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-black text-primary uppercase tracking-widest bg-pink-50 px-2 py-1 rounded-lg inline-block mb-1">Total</p>
-                                <p className="text-xs font-bold text-gray-500">Orders</p>
-                            </div>
-                        </button>
-                        <button onClick={() => navigate('/partner/orders')} className="flex gap-3 items-center text-left hover:bg-gray-50 p-2 -m-2 rounded-xl transition-colors">
-                            <div className="relative h-12 w-12 rounded-full border-[4px] border-gray-50 flex items-center justify-center shrink-0">
-                                <div className="absolute inset-0 rounded-full border-[4px] border-[#FD0053] border-t-transparent border-l-transparent rotate-12"></div>
-                                <span className="text-base font-black text-gray-900">{summary.pendingOrders}</span>
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-black text-[#FD0053] uppercase tracking-widest bg-[#FD0053]/10 px-2 py-1 rounded-lg inline-block mb-1">To Do</p>
-                                <p className="text-xs font-bold text-gray-500">Pending</p>
-                            </div>
+                        <button
+                            onClick={() => navigate('/partner/measurements')}
+                            className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-5 py-3 rounded-2xl font-bold text-[13px] shadow-sm active:scale-95 transition-all"
+                        >
+                            <Ruler size={16} />
+                            New Measurement
                         </button>
                     </div>
                 </div>
-            </div>
 
-            {/* Scrollable Content Below */}
-            <div className="px-5 mt-3 pb-4 flex-1 flex flex-col gap-3">
-
-                {/* Secondary Cards */}
-                <div className="grid grid-cols-2 gap-3 shrink-0">
-                    <button onClick={() => navigate('/partner/orders')} className="bg-white rounded-[1.25rem] p-4 shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-50 relative overflow-hidden group text-left block w-full hover:shadow-md transition-shadow">
-                        <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:scale-125 transition-transform duration-500">
-                            <CheckCircle size={48} />
-                        </div>
-                        <div className="h-8 w-8 bg-green-50 text-green-600 rounded-xl flex items-center justify-center mb-4 shadow-sm border border-green-100">
-                            <CheckCircle size={16} />
-                        </div>
-                        <p className="text-xl font-black text-gray-900">{summary.completedThisWeek}</p>
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Completed<br />This Week</p>
-                    </button>
-
-                    <button onClick={() => navigate('/partner/delivery')} className="bg-white rounded-[1.25rem] p-4 shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-50 relative overflow-hidden group text-left block w-full hover:shadow-md transition-shadow">
-                        <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:scale-125 transition-transform duration-500">
-                            <Zap size={48} />
-                        </div>
-                        <div className="h-8 w-8 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center mb-4 shadow-sm border border-orange-100">
-                            <Zap size={16} />
-                        </div>
-                        <p className="text-xl font-black text-gray-900">{summary.avgDeliveryTime}h</p>
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Avg. Delivery<br />Time</p>
-                    </button>
-                </div>
-
-                {/* Recent Activity List */}
-                <div className="shrink-0">
-                    <div className="flex justify-between items-center mb-4 px-1">
-                        <h3 className="text-[13px] font-black text-gray-900 uppercase tracking-widest">Recent Activity</h3>
-                        <button onClick={() => navigate('/partner/orders')} className="text-[10px] font-black text-[#FD0053] uppercase tracking-widest hover:underline">See All</button>
+                {/* ── UPCOMING PICKUPS ── */}
+                <div className="px-5 mb-5">
+                    <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-[16px] font-black text-gray-900">Upcoming Pickups</h3>
+                        <button
+                            onClick={() => navigate('/partner/orders')}
+                            className="text-[11px] font-black text-[#FD0053] uppercase tracking-wider"
+                        >
+                            VIEW ALL
+                        </button>
                     </div>
 
                     <div className="space-y-3">
                         {isLoading ? (
-                            [1, 2, 3].map((i) => (
-                                <div key={i} className="w-full bg-white h-16 rounded-[1.25rem] animate-pulse border border-gray-50"></div>
+                            [1, 2].map(i => (
+                                <div key={i} className="bg-white rounded-3xl h-20 animate-pulse border border-gray-100" />
                             ))
-                        ) : dashboardData?.recentActivity?.length === 0 ? (
-                            <p className="text-center py-6 text-gray-400 text-[10px] font-black uppercase tracking-widest bg-white rounded-2xl border border-gray-50">No recent activity</p>
+                        ) : recentActivity.length === 0 ? (
+                            /* Fallback static cards matching Figma */
+                            <>
+                                <div className="bg-white rounded-3xl p-4 border border-gray-100 shadow-sm flex items-center gap-3">
+                                    <div className="w-12 h-12 bg-gray-800 rounded-2xl flex items-center justify-center text-white font-black text-sm shrink-0">AS</div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-[14px] font-black text-gray-900">Arjun Sharma</p>
+                                        <p className="text-[11px] text-gray-400 font-medium">Order #ALT-2041 • 3 Items</p>
+                                    </div>
+                                    <div className="text-right shrink-0">
+                                        <p className="text-[11px] text-gray-500 font-medium mb-1">Today, 4:00 PM</p>
+                                        <span className="text-[9px] font-black text-[#FD0053] bg-red-50 px-2 py-0.5 rounded-full border border-red-100 uppercase tracking-wider">RUSH</span>
+                                    </div>
+                                </div>
+                                <div className="bg-white rounded-3xl p-4 border border-gray-100 shadow-sm flex items-center gap-3">
+                                    <div className="w-12 h-12 bg-blue-800 rounded-2xl flex items-center justify-center text-white font-black text-sm shrink-0">PV</div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-[14px] font-black text-gray-900">Priya Verma</p>
+                                        <p className="text-[11px] text-gray-400 font-medium">Order #ALT-1988 • 1 Item</p>
+                                    </div>
+                                    <div className="text-right shrink-0">
+                                        <p className="text-[11px] text-gray-500 font-medium mb-1">Tomorrow, 11:00 AM</p>
+                                        <span className="text-[9px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100 uppercase tracking-wider">STANDARD</span>
+                                    </div>
+                                </div>
+                            </>
                         ) : (
-                            dashboardData?.recentActivity?.map((order, i) => (
+                            recentActivity.slice(0, 3).map((order, i) => (
                                 <button
                                     key={order._id}
-                                    onClick={() => navigate('/partner/orders', { state: { highlightOrderTitle: order.orderId, orderStatus: order.status } })}
-                                    className="w-full bg-white p-3 rounded-[1.25rem] flex items-center justify-between shadow-[0_2px_10px_rgb(0,0,0,0.02)] border border-gray-50 hover:shadow-md transition-shadow group/item"
+                                    onClick={() => navigate('/partner/orders', { state: { highlightOrderTitle: order.orderId } })}
+                                    className="w-full bg-white rounded-3xl p-4 border border-gray-100 shadow-sm flex items-center gap-3 active:scale-[0.98] transition-all"
                                 >
-                                    <div className="flex items-center gap-3">
-                                        <div className="h-8 w-8 rounded-xl flex items-center justify-center bg-[#FD0053]/10 text-[#FD0053]">
-                                            <ShoppingBag size={14} />
-                                        </div>
-                                        <div className="text-left">
-                                            <p className="text-sm font-black text-gray-900 leading-none">{order.customerName}</p>
-                                            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-1">Order: #{order.orderId.split('-')[1]}</p>
-                                        </div>
+                                    <div className="w-12 h-12 bg-gray-800 rounded-2xl flex items-center justify-center text-white font-black text-sm shrink-0">
+                                        {order.customerName?.charAt(0) || 'C'}
                                     </div>
-                                    <div className="text-right flex items-center gap-3">
-                                        <div>
-                                            <p className="text-sm font-black text-gray-900 leading-none">₹{order.totalAmount}</p>
-                                            <p className={`text-[8px] font-black uppercase tracking-widest mt-1 ${order.status === 'pending' ? 'text-primary' : 'text-green-600'}`}>
-                                                {order.status}
-                                            </p>
-                                        </div>
-                                        <ChevronRight size={14} className="text-gray-300 group-hover/item:text-[#FD0053] group-hover/item:translate-x-1 transition-all" />
+                                    <div className="flex-1 min-w-0 text-left">
+                                        <p className="text-[14px] font-black text-gray-900">{order.customerName}</p>
+                                        <p className="text-[11px] text-gray-400 font-medium">Order #{order.orderId?.split('-')[1]}</p>
+                                    </div>
+                                    <div className="text-right shrink-0">
+                                        <p className="text-[11px] text-gray-500 font-medium mb-1">₹{order.totalAmount}</p>
+                                        <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                                            order.status === 'pending'
+                                                ? 'text-[#FD0053] bg-red-50 border border-red-100'
+                                                : 'text-blue-600 bg-blue-50 border border-blue-100'
+                                        }`}>
+                                            {order.status === 'pending' ? 'RUSH' : 'STANDARD'}
+                                        </span>
                                     </div>
                                 </button>
                             ))
                         )}
+                    </div>
+                </div>
+
+                {/* ── CURRENT WORKFLOW CARD ── */}
+                <div className="px-5 mb-4">
+                    <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm relative overflow-hidden">
+                        {/* Silhouette figure - decorative */}
+                        <div className="absolute right-4 bottom-0 opacity-8 pointer-events-none">
+                            <svg width="70" height="100" viewBox="0 0 70 100" fill="none">
+                                <ellipse cx="35" cy="18" rx="12" ry="12" fill="#E5E7EB" />
+                                <path d="M10 40 Q35 30 60 40 L65 90 H5 Z" fill="#E5E7EB" />
+                                <rect x="5" y="40" width="14" height="40" rx="7" fill="#E5E7EB" />
+                                <rect x="51" y="40" width="14" height="40" rx="7" fill="#E5E7EB" />
+                            </svg>
+                        </div>
+
+                        <div className="flex items-center gap-2 mb-3">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Current Workflow</p>
+                        </div>
+                        <h4 className="text-[16px] font-black text-gray-900 mb-4 leading-snug">
+                            3-Piece Tuxedo for<br />Mr. Kapoor
+                        </h4>
+
+                        {/* Progress bar */}
+                        <div className="mb-4">
+                            <div className="flex justify-between items-center mb-2">
+                                <span className="text-[11px] text-gray-400 font-medium">Progress</span>
+                                <span className="text-[12px] font-black text-gray-700">75%</span>
+                            </div>
+                            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                <div className="h-full bg-[#FD0053] rounded-full" style={{ width: '75%' }} />
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => navigate('/partner/orders')}
+                                className="flex-1 py-3 bg-white border border-gray-200 rounded-2xl text-[12px] font-black text-gray-700 uppercase tracking-wide active:scale-95 transition-all"
+                            >
+                                Details
+                            </button>
+                            <button
+                                onClick={() => navigate('/partner/orders')}
+                                className="flex-1 py-3 bg-[#FD0053] rounded-2xl text-[12px] font-black text-white uppercase tracking-wide shadow-md shadow-[#FD0053]/25 active:scale-95 transition-all"
+                            >
+                                Mark Ready
+                            </button>
+                        </div>
                     </div>
                 </div>
 

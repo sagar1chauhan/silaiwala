@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiArrowLeft, FiEye, FiEyeOff, FiLock, FiTruck } from 'react-icons/fi';
+import { FiArrowLeft, FiEye, FiEyeOff, FiLock } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import PageTransition from '../../../shared/components/PageTransition';
 import { useDeliveryAuthStore } from '../store/deliveryStore';
 
 const DeliveryResetPassword = () => {
@@ -46,82 +45,69 @@ const DeliveryResetPassword = () => {
   };
 
   return (
-    <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-primary-900 flex items-center justify-center px-4 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md"
-        >
-          <div className="glass-card rounded-2xl p-6 shadow-xl">
-            <div className="text-center mb-8">
-              <div className="w-16 h-16 gradient-green rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-glow-green">
-                <FiTruck className="text-white text-2xl" />
-              </div>
-              <h1 className="text-2xl font-bold text-gray-800 mb-2">Reset Password</h1>
-              <p className="text-gray-600 text-sm">
-                Set new password for <span className="font-semibold">{email || 'your account'}</span>
-              </p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">New Password</label>
-                <div className="relative">
-                  <FiLock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={formData.password}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, password: e.target.value }))}
-                    placeholder="Enter new password"
-                    required
-                    minLength={6}
-                    className="w-full pl-12 pr-12 py-3 rounded-xl border-2 border-gray-200 focus:border-primary-500 focus:outline-none transition-colors text-base"
-                  />
-                  <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                    {showPassword ? <FiEyeOff /> : <FiEye />}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Confirm Password</label>
-                <div className="relative">
-                  <FiLock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <input
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    value={formData.confirmPassword}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, confirmPassword: e.target.value }))}
-                    placeholder="Confirm new password"
-                    required
-                    minLength={6}
-                    className="w-full pl-12 pr-12 py-3 rounded-xl border-2 border-gray-200 focus:border-primary-500 focus:outline-none transition-colors text-base"
-                  />
-                  <button type="button" onClick={() => setShowConfirmPassword((v) => !v)} className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                    {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
-                  </button>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full gradient-green text-white py-4 rounded-xl font-semibold text-base hover:shadow-glow-green transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? 'Resetting...' : 'Reset Password'}
-              </button>
-            </form>
-
-            <div className="text-center pt-4">
-              <Link to="/delivery/login" className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 font-medium">
-                <FiArrowLeft />
-                Back to Login
-              </Link>
-            </div>
-          </div>
-        </motion.div>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="w-full max-w-sm mx-auto"
+    >
+      <div className="text-left mb-8">
+        <h2 className="text-2xl font-black text-[#1A202C] tracking-tight">Reset Password</h2>
+        <p className="text-gray-500 font-medium mt-1">
+          Set new password for <span className="font-bold text-[#4CAF50]">{email || 'your account'}</span>
+        </p>
       </div>
-    </PageTransition>
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="relative group">
+          <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-green-500" />
+          <input
+            type={showPassword ? 'text' : 'password'}
+            value={formData.password}
+            onChange={(e) => setFormData((prev) => ({ ...prev, password: e.target.value }))}
+            placeholder="New Password"
+            required
+            minLength={6}
+            className="w-full pl-12 pr-12 py-3.5 bg-white border border-gray-200 rounded-xl focus:border-[#4CAF50] focus:ring-1 focus:ring-[#4CAF50] outline-none transition-all font-medium text-gray-800 placeholder:text-gray-400 shadow-sm"
+          />
+          <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+          </button>
+        </div>
+
+        <div className="relative group">
+          <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-green-500" />
+          <input
+            type={showConfirmPassword ? 'text' : 'password'}
+            value={formData.confirmPassword}
+            onChange={(e) => setFormData((prev) => ({ ...prev, confirmPassword: e.target.value }))}
+            placeholder="Confirm Password"
+            required
+            minLength={6}
+            className="w-full pl-12 pr-12 py-3.5 bg-white border border-gray-200 rounded-xl focus:border-[#4CAF50] focus:ring-1 focus:ring-[#4CAF50] outline-none transition-all font-medium text-gray-800 placeholder:text-gray-400 shadow-sm"
+          />
+          <button type="button" onClick={() => setShowConfirmPassword((v) => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            {showConfirmPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+          </button>
+        </div>
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full py-4 bg-[#4CAF50] hover:bg-[#43A047] text-white font-black rounded-xl shadow-lg shadow-green-100 transition-all active:scale-[0.98] disabled:opacity-70 flex items-center justify-center gap-2"
+        >
+          {isLoading ? (
+            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          ) : 'Reset Password'}
+        </button>
+      </form>
+
+      <div className="text-center pt-6">
+        <Link to="/delivery/login" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#4CAF50] font-bold transition-colors">
+          <FiArrowLeft />
+          Back to Login
+        </Link>
+      </div>
+    </motion.div>
   );
 };
 

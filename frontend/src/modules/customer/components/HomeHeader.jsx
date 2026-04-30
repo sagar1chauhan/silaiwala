@@ -4,8 +4,7 @@ import { Link } from 'react-router-dom';
 import useCartStore from '../../../store/cartStore';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// import silaiwalaLogo from '../../../assets/silaiwala-logo.png';
-import silaiwalaLogo from '/logo.png';
+import silaiwalaLogo from '/sewzella_logo.jpeg';
 
 import { useNotifications } from '../context/NotificationContext';
 
@@ -16,16 +15,16 @@ const HomeHeader = ({ user }) => {
     const { notifications, unreadCount, markAsRead, markAllRead } = useNotifications();
 
     return (
-        <div className="sticky top-0 z-[100] bg-white/80 backdrop-blur-2xl border-b border-gray-100/50 pt-1 transition-all duration-300">
+        <div className="sticky top-0 z-[100] bg-white/80 backdrop-blur-2xl border-b border-gray-100/50 pt-1 transition-all duration-300 md:hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-5 pt-safe">
                 {/* Top Row: Brand & Icons */}
                 <div className="flex justify-between items-center mb-3 sm:mb-5">
                     <div className="flex items-center gap-2 sm:gap-3">
                         <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-lg sm:rounded-xl flex items-center justify-center shadow-md overflow-hidden border border-gray-50 rotate-3">
-                            <img src={silaiwalaLogo} alt="Silaiwala" className="w-full h-full object-contain p-1 sm:p-1.5" />
+                            <img src={silaiwalaLogo} alt="Silaiwala" className="w-full h-full object-cover" />
                         </div>
                         <div>
-                            <h1 className="text-lg sm:text-xl font-black text-gray-900 leading-none tracking-tight">Silai<span className="text-[#FD0053]">wala</span></h1>
+                            <h1 className="text-lg sm:text-xl font-black text-gray-900 leading-none tracking-tight">SewZ<span className="text-[#FD0053]">ella</span></h1>
                             <p className="text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase tracking-tighter mt-0.5 sm:mt-1">Modern Stitching</p>
                         </div>
                     </div>

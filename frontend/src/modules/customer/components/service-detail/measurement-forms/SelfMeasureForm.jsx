@@ -3,16 +3,60 @@ import { Info, HelpCircle, Save } from 'lucide-react';
 import MeasurementInput from './MeasurementInput';
 import { cn } from '../../../../../utils/cn';
 
+const categoryFields = {
+    'Kurta/Kurti': [
+        { key: 'chest', label: 'Chest / Bust', placeholder: '34' },
+        { key: 'waist', label: 'Waist', placeholder: '28' },
+        { key: 'hips', label: 'Hips', placeholder: '36' },
+        { key: 'shoulder', label: 'Shoulder', placeholder: '14' },
+        { key: 'length', label: 'Full Length', placeholder: '40' },
+        { key: 'sleeveLength', label: 'Sleeve Length', placeholder: '16' },
+        { key: 'neck', label: 'Neck Depth (Front)', placeholder: '6' }
+    ],
+    'Shirt': [
+        { key: 'chest', label: 'Chest / Bust', placeholder: '38' },
+        { key: 'waist', label: 'Waist', placeholder: '34' },
+        { key: 'shoulder', label: 'Shoulder', placeholder: '17' },
+        { key: 'length', label: 'Full Length', placeholder: '30' },
+        { key: 'sleeveLength', label: 'Sleeve Length', placeholder: '24' },
+        { key: 'neck', label: 'Collar Size', placeholder: '15' }
+    ],
+    'Blouse': [
+        { key: 'chest', label: 'Bust / Chest', placeholder: '34' },
+        { key: 'underbust', label: 'Underbust / Lower Bust', placeholder: '30' },
+        { key: 'shoulder', label: 'Shoulder', placeholder: '14' },
+        { key: 'length', label: 'Blouse Length', placeholder: '14' },
+        { key: 'frontNeck', label: 'Front Neck Depth', placeholder: '7' },
+        { key: 'backNeck', label: 'Back Neck Depth', placeholder: '8' },
+        { key: 'sleeveLength', label: 'Sleeve Length', placeholder: '10' }
+    ],
+    'Pant/Trouser': [
+        { key: 'waist', label: 'Waist', placeholder: '32' },
+        { key: 'hips', label: 'Hips', placeholder: '38' },
+        { key: 'length', label: 'Full Length / Inseam', placeholder: '40' },
+        { key: 'thigh', label: 'Thigh Width', placeholder: '22' },
+        { key: 'bottom', label: 'Bottom Opening', placeholder: '14' }
+    ],
+    'Skirt': [
+        { key: 'waist', label: 'Waist', placeholder: '28' },
+        { key: 'hips', label: 'Hips', placeholder: '36' },
+        { key: 'length', label: 'Full Length', placeholder: '38' }
+    ],
+    'Other': [
+        { key: 'chest', label: 'Chest / Bust', placeholder: '34' },
+        { key: 'waist', label: 'Waist', placeholder: '28' },
+        { key: 'hips', label: 'Hips', placeholder: '36' },
+        { key: 'shoulder', label: 'Shoulder', placeholder: '14' },
+        { key: 'length', label: 'Full Length', placeholder: '40' }
+    ]
+};
+
 const SelfMeasureForm = ({ initialData, onSave, onCancel }) => {
+    const [selectedCategory, setSelectedCategory] = useState('Kurta/Kurti');
     const [values, setValues] = useState({
-        chest: '',
-        waist: '',
-        hips: '',
-        shoulder: '',
-        length: '',
-        sleeveLength: '',
-        neck: '',
-        notes: ''
+        chest: '', waist: '', hips: '', shoulder: '', length: '',
+        sleeveLength: '', neck: '', underbust: '', frontNeck: '',
+        backNeck: '', thigh: '', bottom: '', notes: ''
     });
 
     const [errors, setErrors] = useState({});
@@ -26,10 +70,8 @@ const SelfMeasureForm = ({ initialData, onSave, onCancel }) => {
     }, [initialData]);
 
     const handleChange = (field, value) => {
-        // Allow only numbers and decimals
         if (value === '' || /^\d*\.?\d*$/.test(value)) {
             setValues(prev => ({ ...prev, [field]: value }));
-            // Clear error on change
             if (errors[field]) {
                 setErrors(prev => {
                     const newErrors = { ...prev };
@@ -42,15 +84,15 @@ const SelfMeasureForm = ({ initialData, onSave, onCancel }) => {
 
     const validate = () => {
         const newErrors = {};
-        const requiredFields = ['chest', 'waist', 'shoulder', 'length'];
-
-        requiredFields.forEach(field => {
-            if (!values[field]) {
-                newErrors[field] = 'Required';
+        const currentFields = categoryFields[selectedCategory] || categoryFields['Other'];
+        
+        currentFields.forEach(field => {
+            if (!values[field.key]) {
+                newErrors[field.key] = 'Required';
             } else {
-                const num = parseFloat(values[field]);
-                if (num < 10 || num > 100) {
-                    newErrors[field] = 'Invalid range';
+                const num = parseFloat(values[field.key]);
+                if (num < 5 || num > 100) {
+                    newErrors[field.key] = 'Invalid range';
                 }
             }
         });
@@ -65,10 +107,17 @@ const SelfMeasureForm = ({ initialData, onSave, onCancel }) => {
 
     const handleSave = () => {
         if (validate()) {
+            const currentFields = categoryFields[selectedCategory] || categoryFields['Other'];
+            const filteredValues = { notes: values.notes };
+            currentFields.forEach(f => {
+                filteredValues[f.key] = values[f.key];
+            });
+
             onSave({
                 type: 'self',
-                data: values,
-                saveProfile: saveProfile ? { name: profileName } : null
+                data: filteredValues,
+                saveProfile: saveProfile ? { name: profileName } : null,
+                garmentType: selectedCategory
             });
         }
     };
@@ -76,11 +125,30 @@ const SelfMeasureForm = ({ initialData, onSave, onCancel }) => {
     return (
         <div className="bg-gray-50 border border-t-0 border-gray-100 rounded-b-2xl p-4 animate-in slide-in-from-top-2 duration-300">
 
+            {/* Category Dropdown Selector */}
+            <div className="mb-4">
+                <label className="text-[10px] text-gray-400 font-bold uppercase tracking-widest ml-1 mb-1 block">
+                    Clothing Category
+                </label>
+                <select 
+                    value={selectedCategory} 
+                    onChange={(e) => {
+                        setSelectedCategory(e.target.value);
+                        setErrors({});
+                    }}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-3 text-xs font-bold text-gray-800 outline-none focus:border-primary focus:ring-1 focus:ring-[#e6f4f1] transition-all cursor-pointer shadow-sm"
+                >
+                    {Object.keys(categoryFields).map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                </select>
+            </div>
+
             {/* Helper Banner */}
             <div className="bg-pink-50 border border-pink-100 rounded-lg p-3 mb-4 flex gap-3">
                 <Info size={18} className="text-primary shrink-0 mt-0.5" />
                 <div>
-                    <h4 className="text-xs font-bold text-blue-800">Standard Size Guide</h4>
+                    <h4 className="text-xs font-bold text-gray-800">Standard Size Guide ({selectedCategory})</h4>
                     <p className="text-[10px] text-primary mt-0.5 leading-relaxed">
                         Measure comfortably. Don't pull the tape too tight. All units are in inches.
                     </p>
@@ -89,55 +157,16 @@ const SelfMeasureForm = ({ initialData, onSave, onCancel }) => {
 
             {/* Input Grid */}
             <div className="grid grid-cols-2 gap-4 mb-4">
-                <MeasurementInput
-                    label="Chest / Bust"
-                    placeholder="34"
-                    value={values.chest}
-                    onChange={(v) => handleChange('chest', v)}
-                    error={errors.chest}
-                />
-                <MeasurementInput
-                    label="Waist"
-                    placeholder="28"
-                    value={values.waist}
-                    onChange={(v) => handleChange('waist', v)}
-                    error={errors.waist}
-                />
-                <MeasurementInput
-                    label="Hips"
-                    placeholder="36"
-                    value={values.hips}
-                    onChange={(v) => handleChange('hips', v)}
-                    error={errors.hips}
-                />
-                <MeasurementInput
-                    label="Shoulder"
-                    placeholder="14"
-                    value={values.shoulder}
-                    onChange={(v) => handleChange('shoulder', v)}
-                    error={errors.shoulder}
-                />
-                <MeasurementInput
-                    label="Full Length"
-                    placeholder="40"
-                    value={values.length}
-                    onChange={(v) => handleChange('length', v)}
-                    error={errors.length}
-                />
-                <MeasurementInput
-                    label="Sleeve Length"
-                    placeholder="16"
-                    value={values.sleeveLength}
-                    onChange={(v) => handleChange('sleeveLength', v)}
-                    error={errors.sleeveLength}
-                />
-                <MeasurementInput
-                    label="Neck Depth (Front)"
-                    placeholder="6"
-                    value={values.neck}
-                    onChange={(v) => handleChange('neck', v)}
-                    error={errors.neck}
-                />
+                {(categoryFields[selectedCategory] || categoryFields['Other']).map(field => (
+                    <MeasurementInput
+                        key={field.key}
+                        label={field.label}
+                        placeholder={field.placeholder}
+                        value={values[field.key] || ''}
+                        onChange={(v) => handleChange(field.key, v)}
+                        error={errors[field.key]}
+                    />
+                ))}
             </div>
 
             {/* Notes Section */}

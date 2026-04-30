@@ -1,43 +1,43 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Scissors, ShoppingBag, ClipboardList, Users, Sparkles, Heart, X, Calendar, Clock } from 'lucide-react';
+import { Scissors, ShoppingBag, ClipboardList, Users, Sparkles, Heart, X, Calendar, Clock, Layers } from 'lucide-react';
 import api from '../../../utils/api';
 
 const actions = [
     {
         label: 'Tailors',
-        icon: <img src="/quick-tailor-removebg-preview.png" alt="Tailors" className="w-full h-full object-contain" />,
+        icon: <Users size={28} color="#FD0053" strokeWidth={2} />,
         path: '/tailors'
     },
     {
         label: 'Store',
-        icon: <img src="/quick-store-removebg-preview.png" alt="Store" className="w-full h-full object-contain" />,
+        icon: <ShoppingBag size={28} color="#FD0053" strokeWidth={2} />,
         path: '/store'
     },
     {
         label: 'My Orders',
-        icon: <img src="/quick-orders-removebg-preview.png" alt="My Orders" className="w-full h-full object-contain" />,
+        icon: <ClipboardList size={28} color="#FD0053" strokeWidth={2} />,
         path: '/orders'
     },
     {
         label: 'Stitching',
-        icon: <img src="/quick-stitching-removebg-preview.png" alt="Stitching" className="w-full h-full object-contain" />,
+        icon: <Scissors size={28} color="#FD0053" strokeWidth={2} />,
         path: '/services'
     },
     {
         label: 'Style Add-ons',
-        icon: <img src="/quick-addons-removebg-preview.png" alt="Style Add-ons" className="w-full h-full object-contain scale-110" />,
+        icon: <Sparkles size={28} color="#FD0053" strokeWidth={2} />,
         path: '/embellishments'
     },
     {
         label: 'Bridal',
-        icon: <img src="/quick-bridal-removebg-preview.png" alt="Bridal" className="w-full h-full object-contain" />,
+        icon: <Heart size={28} color="#FD0053" strokeWidth={2} />,
         action: 'modal_bridal'
     },
     {
         label: 'Bulk Order',
-        icon: <img src="/quick-bulk-removebg-preview.png" alt="Bulk Order" className="w-full h-full object-contain" />,
+        icon: <Layers size={28} color="#FD0053" strokeWidth={2} />,
         path: '/bulk-order'
     }
 ];
@@ -120,10 +120,8 @@ const QuickActions = () => {
                                 whileTap={{ scale: 0.92 }}
                                 onClick={() => handleActionClick(action)}
                             >
-                                <div className={`w-[85%] sm:w-[90%] aspect-square flex items-center justify-center transition-all duration-300 group-hover:-translate-y-2 mx-auto drop-shadow-2xl`}>
-                                    <div className="w-full h-full transition-transform duration-300 group-hover:scale-110">
-                                        {action.icon}
-                                    </div>
+                                <div className="w-16 h-16 bg-[#FFF0F4] border border-[#FD0053]/10 rounded-3xl flex items-center justify-center transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-md mx-auto">
+                                    {action.icon}
                                 </div>
                                 <span className="text-[9px] sm:text-[10px] font-black text-center text-gray-500 uppercase tracking-widest leading-none truncate w-full px-1">
                                     {action.label}

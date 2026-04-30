@@ -63,7 +63,7 @@ const AuthLayout = () => {
             "/A Comprehensive Guide to Digital Sewing Patterns.jpeg",
             "/Hacoupian brand identity Photoshooting.jpeg"
         ],
-        brand: "SILAIWALE",
+        brand: "SewZella",
         headings: ["STITCH PERFECT", "THREADS OF ART", "MADE FOR YOU", "SILAI MAGIC"],
         subheading: "Stitching Memories Together",
         loginLink: "/login",
@@ -150,7 +150,7 @@ const AuthLayout = () => {
                     {/* Brand */}
                     <div className="absolute top-5 left-5 sm:top-6 sm:left-6 z-20 flex items-center gap-2">
                         <div className="w-7 h-7 rounded-lg bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40">
-                            <img src="/logo.png" alt="" className="w-4 h-4 object-contain invert grayscale brightness-200" />
+                            <img src="/sewzella_logo.jpeg" alt="" className="w-4 h-4 object-contain invert grayscale brightness-200" />
                         </div>
                         <span className="text-white font-black text-lg tracking-tighter drop-shadow-lg">{config.brand}</span>
                     </div>
@@ -200,8 +200,8 @@ const AuthLayout = () => {
                 {/* ─── Logo Circle ─── */}
                 <div className="absolute top-[155px] sm:top-[180px] left-1/2 -translate-x-1/2 z-40">
                     <div className="p-1 bg-[#FFF0F4] rounded-full shadow-lg">
-                        <div className="w-[65px] h-[65px] sm:w-[75px] sm:h-[75px] bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-white shadow-inner">
-                            <img src="/logo.png" alt="Silaiwala" className="w-[45px] h-[45px] sm:w-[55px] sm:h-[55px] object-contain" />
+                        <div className="w-[65px] h-[65px] sm:w-[75px] sm:h-[75px] bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-white shadow-md">
+                            <img src="/sewzella_logo.jpeg" alt="SewZella" className="w-full h-full object-cover" />
                         </div>
                     </div>
                 </div>

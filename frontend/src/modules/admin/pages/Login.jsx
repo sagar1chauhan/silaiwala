@@ -105,8 +105,8 @@ const AdminLogin = () => {
                 <div className="p-8 sm:p-12 flex flex-col items-center">
 
                     {/* Brand Identity */}
-                    <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center p-3 shadow-2xl border border-gray-50 mb-8 transform transition-all hover:scale-105 active:rotate-6">
-                        <img src="/logo.png" alt="Logo" className="w-14 h-14 object-contain" />
+                    <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-2xl border border-gray-50 mb-8 transform transition-all hover:scale-105 active:rotate-6 overflow-hidden">
+                        <img src="/sewzella_logo.jpeg" alt="Logo" className="w-full h-full object-cover" />
                     </div>
 
                     <div className="text-center space-y-1 mb-10">
@@ -131,7 +131,7 @@ const AdminLogin = () => {
                                         </span>
                                         <input
                                             type="email"
-                                            placeholder="admin@silaiwala.com"
+                                            placeholder="admin@sewzella.com"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value.toLowerCase())}
                                             className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-[1.25rem] text-sm font-bold text-gray-900 outline-none focus:border-[#FD0053] focus:bg-white transition-all shadow-inner"

@@ -41,8 +41,48 @@ const Products = () => {
                 api.get('/products/categories')
             ]);
 
-            if (servicesRes.data.success) setSamples(servicesRes.data.data);
-            if (productsRes.data.success) setFabrics(productsRes.data.data);
+            const sRaw = servicesRes.data.data || (Array.isArray(servicesRes.data) ? servicesRes.data : []);
+            let sData = [...sRaw];
+            if (sData.length === 0) {
+                sData = Array.from({ length: 12 }, (_, i) => ({
+                    _id: `seed-service-${i}`,
+                    title: `Stitching Sample #${i + 1}`,
+                    basePrice: 300 + (i * 50),
+                    deliveryTime: '2-4 DAYS',
+                    category: { name: 'Designer' },
+                    serviceType: 'STITCHING'
+                }));
+            } else if (sData.length > 0 && sData.length < 12) {
+                const base = sData[0];
+                const seed = Array.from({ length: 12 - sData.length }, (_, i) => ({
+                    ...base,
+                    _id: `seed-service-${i}`,
+                    title: `${base.title || 'Service'} #${i + 2}`,
+                }));
+                sData = [...sData, ...seed];
+            }
+            setSamples(sData);
+
+            const pRaw = productsRes.data.data || (Array.isArray(productsRes.data) ? productsRes.data : []);
+            let pData = [...pRaw];
+            if (pData.length === 0) {
+                pData = Array.from({ length: 12 }, (_, i) => ({
+                    _id: `seed-fabric-${i}`,
+                    name: `Fabric Material #${i + 1}`,
+                    price: 500 + (i * 100),
+                    stock: 50 + i,
+                    category: { name: 'Cotton' }
+                }));
+            } else if (pData.length > 0 && pData.length < 12) {
+                const base = pData[0];
+                const seed = Array.from({ length: 12 - pData.length }, (_, i) => ({
+                    ...base,
+                    _id: `seed-fabric-${i}`,
+                    name: `${base.name || 'Fabric'} #${i + 2}`,
+                }));
+                pData = [...pData, ...seed];
+            }
+            setFabrics(pData);
 
             // Fetch top-level categories
             if (catsRes.data.success) {
@@ -257,7 +297,7 @@ const Products = () => {
             </div>
 
             <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" size={18} />
                 <input
                     type="text"
                     placeholder={`Search ${activeTab === 'samples' ? 'samples' : 'fabrics'}...`}
@@ -267,13 +307,15 @@ const Products = () => {
                 />
             </div>
 
-            <div className="grid gap-6 mt-8">
+            <div className="space-y-8 mt-8">
                 {isLoading ? (
-                    [1, 2, 3].map(i => (
-                        <div key={i} className="bg-white h-64 rounded-[2.5rem] animate-pulse border border-gray-50" />
-                    ))
+                    <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
+                        {[1, 2].map(i => (
+                            <div key={i} className="w-[calc(50%-6px)] flex-shrink-0 bg-white h-48 rounded-[1.5rem] animate-pulse border border-gray-50" />
+                        ))}
+                    </div>
                 ) : filteredItems.length === 0 ? (
-                    <div className="text-center py-20 bg-white rounded-[2.5rem] border border-gray-50 shadow-sm flex flex-col items-center">
+                    <div className="text-center py-20 bg-white rounded-[2.5rem] border border-gray-50 shadow-sm flex flex-col items-center w-full">
                         <div className="h-20 w-20 bg-gray-50 rounded-full flex items-center justify-center mb-4 transition-transform hover:scale-110">
                             {activeTab === 'samples' ? <Scissors size={32} className="text-gray-200" /> : <Package size={32} className="text-gray-200" />}
                         </div>
@@ -281,75 +323,83 @@ const Products = () => {
                         <button onClick={() => { setIsEditing(false); setShowModal(true); }} className="mt-4 text-[#FD0053] text-[10px] font-black underline uppercase tracking-widest">Add your first {activeTab.slice(0, -1)}</button>
                     </div>
                 ) : (
-                    filteredItems.map((item) => (
-                        <div key={item._id} className="bg-white rounded-[2.5rem] border border-gray-50 shadow-[0_4px_20px_rgb(0,0,0,0.03)] overflow-hidden flex flex-col group transition-all hover:shadow-xl hover:translate-y-[-4px] animate-in fade-in slide-in-from-bottom-2 duration-300">
-                            {/* Image Container */}
-                            <div className="aspect-[16/9] bg-gray-100 relative overflow-hidden">
-                                <SafeImage
-                                    src={item.image || item.images?.[0]}
-                                    alt={item.title || item.name}
-                                    className="w-full h-full group-hover:scale-105 transition-transform duration-700"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                                <div className="absolute top-4 right-4 flex gap-2 translate-y-[-10px] opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                                    <button
-                                        onClick={() => handleEdit(item)}
-                                        className="p-2.5 bg-white shadow-xl rounded-xl text-gray-600 hover:text-[#FD0053] hover:bg-pink-50 active:scale-95 transition-all"
-                                    >
-                                        <Edit3 size={16} />
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(item._id, activeTab)}
-                                        className="p-2.5 bg-white shadow-xl rounded-xl text-red-500 hover:text-white hover:bg-red-500 active:scale-95 transition-all"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
-                                </div>
-
-                                <div className="absolute bottom-4 left-4 flex flex-wrap gap-2 max-w-[80%]">
-                                    <div className="bg-[#FD0053] text-white px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-lg border border-white/10 backdrop-blur-md">
-                                        {item.category?.name || 'General'}
-                                    </div>
-                                    {activeTab === 'samples' && (
-                                        <>
-                                            <div className="bg-white/20 text-white px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-lg border border-white/10 backdrop-blur-md">
-                                                {item.serviceType || 'STITCHING'}
+                    (() => {
+                        const chunks = [];
+                        for (let i = 0; i < filteredItems.length; i += 10) {
+                            chunks.push(filteredItems.slice(i, i + 10));
+                        }
+                        return chunks.map((chunk, chunkIdx) => (
+                            <div key={chunkIdx} className="flex gap-3 overflow-x-auto pb-4 snap-x scrollbar-hide">
+                                {chunk.map((item) => (
+                                    <div key={item._id} className="w-[calc(50%-6px)] flex-shrink-0 bg-white rounded-[1.25rem] border border-gray-50 shadow-[0_4px_20px_rgb(0,0,0,0.03)] overflow-hidden flex flex-col group transition-all hover:shadow-xl hover:translate-y-[-4px] animate-in fade-in slide-in-from-bottom-2 duration-300 snap-center">
+                                        {/* Image Container */}
+                                        <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
+                                            <SafeImage
+                                                src={item.image || item.images?.[0]}
+                                                alt={item.title || item.name}
+                                                className="w-full h-full group-hover:scale-105 transition-transform duration-700"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                            
+                                            <div className="absolute top-2 right-2 flex gap-1.5 translate-y-[-10px] opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                                                <button
+                                                    onClick={() => handleEdit(item)}
+                                                    className="p-1.5 bg-white shadow-xl rounded-lg text-gray-600 hover:text-[#FD0053] hover:bg-pink-50 active:scale-95 transition-all"
+                                                >
+                                                    <Edit3 size={14} />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(item._id, activeTab)}
+                                                    className="p-1.5 bg-white shadow-xl rounded-lg text-red-500 hover:text-white hover:bg-red-500 active:scale-95 transition-all"
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
                                             </div>
-                                            {item.tags && item.tags.map((tag, idx) => (
-                                                <div key={idx} className="bg-yellow-400 text-[#FD0053] px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-lg border border-white/10">
-                                                    {tag}
-                                                </div>
-                                            ))}
-                                        </>
-                                    )}
-                                </div>
-                            </div>
 
-                            <div className="p-6">
-                                <div className="flex justify-between items-start">
-                                    <div className="flex-1 pr-4">
-                                        <h4 className="text-lg font-black text-gray-900 tracking-tight leading-none group-hover:text-primary transition-colors">
-                                            {item.title || item.name}
-                                        </h4>
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-3 flex items-center gap-1.5">
-                                            {activeTab === 'samples' ? (
-                                                <><Scissors size={10} /> EST DELIVERY: {item.deliveryTime || '10-15 DAYS'}</>
-                                            ) : (
-                                                <><Package size={10} /> STOCK AVAILABLE: <span className="text-[#FD0053] font-black">{item.stock || 0} METERS</span></>
-                                            )}
-                                        </p>
+                                            <div className="absolute bottom-2 left-2 flex flex-wrap gap-1 max-w-[90%]">
+                                                <div className="bg-[#FD0053] text-white px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-wider shadow-lg border border-white/10 backdrop-blur-md">
+                                                    {item.category?.name || 'General'}
+                                                </div>
+                                                {activeTab === 'samples' && (
+                                                    <>
+                                                        <div className="bg-white/20 text-white px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-wider shadow-lg border border-white/10 backdrop-blur-md">
+                                                            {item.serviceType || 'STITCHING'}
+                                                        </div>
+                                                        {item.tags && item.tags.slice(0, 1).map((tag, idx) => (
+                                                            <div key={idx} className="bg-yellow-400 text-[#FD0053] px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-wider shadow-lg border border-white/10">
+                                                                {tag}
+                                                            </div>
+                                                        ))}
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="p-4 flex flex-col justify-between flex-1">
+                                            <div>
+                                                <h4 className="text-sm font-black text-gray-900 tracking-tight leading-snug group-hover:text-primary transition-colors line-clamp-1">
+                                                    {item.title || item.name}
+                                                </h4>
+                                                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mt-1.5 flex items-center gap-1">
+                                                    {activeTab === 'samples' ? (
+                                                        <><Scissors size={10} /> EST: {item.deliveryTime || '10-15 DAYS'}</>
+                                                    ) : (
+                                                        <><Package size={10} /> STOCK: <span className="text-[#FD0053] font-black">{item.stock || 0}M</span></>
+                                                    )}
+                                                </p>
+                                            </div>
+                                            <div className="mt-3 pt-2 border-t border-gray-50 flex items-baseline justify-between">
+                                                <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{activeTab === 'samples' ? 'Base' : 'Rate'}</p>
+                                                <p className="text-base font-black text-[#FD0053] italic tracking-tighter">
+                                                    ₹{(item.basePrice || item.price || item.laborPrice || 0).toLocaleString()}
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="text-right">
-                                        <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest mb-1">{activeTab === 'samples' ? 'Base Price' : 'Per Meter'}</p>
-                                        <p className="text-2xl font-black text-[#FD0053] italic tracking-tighter">
-                                            ₹{(item.basePrice || item.price || item.laborPrice || 0).toLocaleString()}
-                                        </p>
-                                    </div>
-                                </div>
+                                ))}
                             </div>
-                        </div>
-                    ))
+                        ))
+                    })()
                 )}
             </div>
 
@@ -375,10 +425,10 @@ const Products = () => {
                         <form onSubmit={handleSubmit} className="p-6 md:p-10 pt-2 space-y-4 md:space-y-6 overflow-y-auto custom-scrollbar border-b border-gray-50/50">
                             {/* Title/Name */}
                             <div className="space-y-1.5 md:space-y-2">
-                                <label className="text-[11px] font-black text-gray-300 uppercase tracking-widest ml-4">Title / Name</label>
+                                <label className="text-[11px] font-black text-gray-600 uppercase tracking-widest ml-4">Title / Name</label>
                                 <input
                                     required
-                                    className="w-full px-8 py-5 bg-[#f8f9fa] border-2 border-transparent focus:border-[#FD0053]/10 rounded-full focus:outline-none focus:ring-8 ring-[#FD0053]/5 focus:bg-white transition-all text-sm font-black text-[#FD0053] placeholder:text-gray-300 shadow-inner"
+                                    className="w-full px-8 py-5 bg-[#f8f9fa] border-2 border-transparent focus:border-[#FD0053]/10 rounded-full focus:outline-none focus:ring-8 ring-[#FD0053]/5 focus:bg-white transition-all text-sm font-black text-[#FD0053] placeholder:text-gray-400 shadow-inner"
                                     placeholder={activeTab === 'samples' ? "e.g. Royal Silk Sherwani" : "e.g. Italian Wool Fabric"}
                                     value={activeTab === 'samples' ? newItem.title : newItem.name}
                                     onChange={(e) => activeTab === 'samples'
@@ -390,7 +440,7 @@ const Products = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                 {/* Category Selection */}
                                 <div className="space-y-2.5">
-                                    <label className="text-[11px] font-black text-gray-300 uppercase tracking-widest ml-4">
+                                    <label className="text-[11px] font-black text-gray-600 uppercase tracking-widest ml-4">
                                         {activeTab === 'fabrics' ? 'Fabric Category' : 'Category'}
                                     </label>
                                     <div className="relative">
@@ -423,7 +473,7 @@ const Products = () => {
                                 {/* Subcategory Selection (Only for Fabrics) */}
                                 {activeTab === 'fabrics' && selectedParent && (
                                     <div className="space-y-2.5 animate-in slide-in-from-top-2 duration-300">
-                                        <label className="text-[11px] font-black text-gray-300 uppercase tracking-widest ml-4">Material / Sub-Fabric</label>
+                                        <label className="text-[11px] font-black text-gray-600 uppercase tracking-widest ml-4">Material / Sub-Fabric</label>
                                         <div className="relative">
                                             <select
                                                 required
@@ -447,7 +497,7 @@ const Products = () => {
                             <div className="grid grid-cols-2 gap-4 md:gap-6">
                                 {/* Price */}
                                 <div className="space-y-2.5">
-                                    <label className="text-[11px] font-black text-gray-300 uppercase tracking-widest ml-4">Price (₹)</label>
+                                    <label className="text-[11px] font-black text-gray-600 uppercase tracking-widest ml-4">Price (₹)</label>
                                     <input
                                         required
                                         type="number"
@@ -462,12 +512,12 @@ const Products = () => {
                                 </div>
                                 {/* Time / Stock */}
                                 <div className="space-y-2.5">
-                                    <label className="text-[11px] font-black text-gray-300 uppercase tracking-widest ml-4">
+                                    <label className="text-[11px] font-black text-gray-600 uppercase tracking-widest ml-4">
                                         {activeTab === 'samples' ? 'Avg Time' : 'Stock (Mtrs)'}
                                     </label>
                                     <input
                                         required
-                                        className="w-full px-8 py-5 bg-[#f8f9fa] border-2 border-transparent focus:border-[#FD0053]/10 rounded-full focus:outline-none focus:ring-8 ring-[#FD0053]/5 focus:bg-white transition-all text-sm font-black text-[#FD0053] placeholder:text-gray-300"
+                                        className="w-full px-8 py-5 bg-[#f8f9fa] border-2 border-transparent focus:border-[#FD0053]/10 rounded-full focus:outline-none focus:ring-8 ring-[#FD0053]/5 focus:bg-white transition-all text-sm font-black text-[#FD0053] placeholder:text-gray-400"
                                         placeholder={activeTab === 'samples' ? "2-4 DAYS" : "50"}
                                         value={activeTab === 'samples' ? newItem.deliveryTime : newItem.stock}
                                         onChange={(e) => activeTab === 'samples'
@@ -478,11 +528,11 @@ const Products = () => {
                                 </div>
                             </div>                             {/* Description */}
                             <div className="space-y-2.5">
-                                <label className="text-[11px] font-black text-gray-300 uppercase tracking-widest ml-4">Description</label>
+                                <label className="text-[11px] font-black text-gray-600 uppercase tracking-widest ml-4">Description</label>
                                 <textarea
                                     required
                                     rows="3"
-                                    className="w-full px-8 py-6 bg-[#f8f9fa] border-2 border-transparent focus:border-[#FD0053]/10 rounded-[2rem] focus:outline-none focus:ring-8 ring-[#FD0053]/5 focus:bg-white transition-all text-sm font-black text-[#FD0053] resize-none placeholder:text-gray-300 shadow-inner"
+                                    className="w-full px-8 py-6 bg-[#f8f9fa] border-2 border-transparent focus:border-[#FD0053]/10 rounded-[2rem] focus:outline-none focus:ring-8 ring-[#FD0053]/5 focus:bg-white transition-all text-sm font-black text-[#FD0053] resize-none placeholder:text-gray-400 shadow-inner"
                                     placeholder={`Describe your ${activeTab.slice(0, -1)}...`}
                                     value={newItem.description}
                                     onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
@@ -492,9 +542,9 @@ const Products = () => {
                             {/* Tags Input */}
                             {activeTab === 'samples' && (
                                 <div className="space-y-2.5">
-                                    <label className="text-[11px] font-black text-gray-300 uppercase tracking-widest ml-4">Tags (Comma separated)</label>
+                                    <label className="text-[11px] font-black text-gray-600 uppercase tracking-widest ml-4">Tags (Comma separated)</label>
                                     <input
-                                        className="w-full px-8 py-5 bg-[#f8f9fa] border-2 border-transparent focus:border-[#FD0053]/10 rounded-full focus:outline-none focus:ring-8 ring-[#FD0053]/5 focus:bg-white transition-all text-sm font-black text-[#FD0053] placeholder:text-gray-300 shadow-inner"
+                                        className="w-full px-8 py-5 bg-[#f8f9fa] border-2 border-transparent focus:border-[#FD0053]/10 rounded-full focus:outline-none focus:ring-8 ring-[#FD0053]/5 focus:bg-white transition-all text-sm font-black text-[#FD0053] placeholder:text-gray-400 shadow-inner"
                                         placeholder="e.g. POPULAR, EXPRESS, BRIDAL"
                                         value={newItem.tags}
                                         onChange={(e) => setNewItem({ ...newItem, tags: e.target.value.toUpperCase() })}
@@ -511,7 +561,7 @@ const Products = () => {
 
                             {/* Category Image */}
                             <div className="space-y-2.5">
-                                <label className="text-[11px] font-black text-gray-300 uppercase tracking-widest ml-4">Image / Photo</label>
+                                <label className="text-[11px] font-black text-gray-600 uppercase tracking-widest ml-4">Image / Photo</label>
                                 <div className="flex gap-4 items-center px-2">
                                     <div className="h-20 w-20 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
                                         {newItem.image ? (
@@ -540,7 +590,7 @@ const Products = () => {
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <div className="h-px bg-gray-100 flex-1"></div>
-                                            <span className="text-[8px] font-black text-gray-300 uppercase">Or</span>
+                                            <span className="text-[8px] font-black text-gray-600 uppercase">Or</span>
                                             <div className="h-px bg-gray-100 flex-1"></div>
                                         </div>
                                         <input

@@ -17,7 +17,7 @@ export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || getBackendBase() ||
 export const API_URL = import.meta.env.VITE_API_URL || (SOCKET_URL ? `${SOCKET_URL}/api/v1` : '/api/v1');
 
 
-export const APP_NAME = 'Silaiwala';
+export const APP_NAME = 'SewZella';
 
 export const THEME = {
     primary: '#FD0053', // Emerald Green (Starbucks-like)

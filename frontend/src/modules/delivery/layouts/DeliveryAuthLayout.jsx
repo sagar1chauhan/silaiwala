@@ -10,28 +10,55 @@ const DeliveryAuthLayout = () => {
         <div className="min-h-screen bg-[#F5F7F9] flex flex-col items-center justify-start sm:py-10">
             <div className="w-full max-w-[450px] bg-white sm:rounded-[2.5rem] shadow-xl overflow-hidden relative min-h-screen sm:min-h-0 flex flex-col">
                 {/* Banner Section */}
-                <div className="relative h-[280px] w-full bg-[#E8F5E9] flex flex-col items-center justify-center pt-8 overflow-hidden">
+                <div className="relative h-[280px] w-full bg-[#E8F5E9] overflow-hidden">
+                    {/* City Silhouette Background (Simplified) */}
+                    <div className="absolute bottom-0 left-0 w-full flex items-end gap-3 px-8 opacity-[0.07]">
+                        <div className="w-16 h-24 bg-green-900 rounded-t-lg" />
+                        <div className="w-24 h-36 bg-green-900 rounded-t-lg" />
+                        <div className="w-20 h-28 bg-green-900 rounded-t-lg" />
+                    </div>
+                    
                     {/* Background elements */}
                     <div className="absolute top-0 right-0 w-32 h-32 bg-green-100 rounded-full blur-3xl -mr-10 -mt-10 opacity-50" />
                     <div className="absolute bottom-0 left-0 w-40 h-40 bg-white rounded-full blur-3xl -ml-20 -mb-20 opacity-50" />
                     
-                    {/* Logo and Brand */}
-                    <div className="z-10 flex flex-col items-center mb-4">
-                        <div className="flex items-center gap-2 mb-2">
-                             <img src="/sewzella_logo.jpeg" alt="Alterly" className="w-10 h-10 object-contain rounded-lg" />
-                             <span className="text-[#1A202C] font-black text-3xl tracking-tighter">Alterly</span>
+                    <div className="relative z-10 h-full grid grid-cols-[1.2fr_1fr] items-center px-6">
+                        {/* Left Side: Text Stack */}
+                        <div className="flex flex-col items-start gap-0 -translate-y-2">
+                            {/* Logo Icon */}
+                            <div className="mb-2">
+                                <img src="/sewzella_logo-removebg-preview.png" alt="Logo" className="h-24 w-auto object-contain" />
+                            </div>
+                            
+                            {/* Role Title */}
+                            <h2 className="text-[#4CAF50] font-sans text-xl font-black tracking-tight mb-1">Delivery Partner</h2>
+                            
+                            {/* Slogan */}
+                            <p className="text-gray-600 text-xs font-semibold tracking-tight opacity-80 italic">Pick up. Deliver. Earn.</p>
                         </div>
-                        <h2 className="text-[#4CAF50] font-bold text-xl">Delivery Partner</h2>
-                        <p className="text-gray-500 text-sm font-medium mt-1 tracking-wide">Pick up. Deliver. Earn.</p>
-                    </div>
 
-                    {/* Illustration */}
-                    <div className="relative w-full h-full flex justify-center items-end px-4">
-                        <img 
-                            src="/delivery_partner_illustration.png" 
-                            alt="Delivery Partner" 
-                            className="h-[180px] object-contain transform translate-y-2"
-                        />
+                        {/* Right Side: Illustration */}
+                        <div className="relative h-full flex justify-center items-end overflow-visible">
+                            {/* Location Path (Dotted line and Pin) */}
+                            <div className="absolute top-8 right-0 z-0 opacity-30 transform -translate-x-4 scale-75">
+                                <svg width="100" height="60" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M10 70C30 70 40 30 70 30C100 30 110 10 110 10" stroke="#4CAF50" strokeWidth="2" strokeDasharray="4 4"/>
+                                    <circle cx="110" cy="10" r="4" fill="#4CAF50" />
+                                </svg>
+                            </div>
+
+                            <motion.img 
+                                src="/delivery_partner_bgremove.png" 
+                                alt="Delivery Partner" 
+                                className="h-[260px] sm:h-[300px] w-auto object-contain transform translate-y-4 z-10 -translate-x-4"
+                                animate={{ y: [24, 14, 24] }}
+                                transition={{ 
+                                    duration: 3, 
+                                    repeat: Infinity, 
+                                    ease: "easeInOut" 
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
 

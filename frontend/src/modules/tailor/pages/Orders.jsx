@@ -311,6 +311,69 @@ const Orders = () => {
                         ))}
                     </div>
 
+                    {/* Customer Measurements Section */}
+                    {order.items?.some(item => item.measurements && Object.keys(item.measurements).length > 0) && (
+                        <div className="bg-white rounded-3xl p-5 border border-gray-100 space-y-4">
+                            <div className="flex items-center justify-between">
+                                <p className="text-[11px] font-black text-gray-900 uppercase tracking-widest">📐 Customer Measurements</p>
+                                <span className="text-[9px] font-black uppercase bg-green-50 text-green-600 px-2 py-1 rounded-full border border-green-100">Provided</span>
+                            </div>
+                            {order.items?.map((item, idx) => {
+                                const measurements = item.measurements || {};
+                                const entries = Object.entries(measurements).filter(([key]) => key !== 'type' && key !== 'slipImage');
+
+                                if (entries.length === 0) return null;
+
+                                return (
+                                    <div key={idx} className="space-y-3">
+                                        {order.items.length > 1 && (
+                                            <p className="text-[10px] font-bold text-[#FD0053] uppercase tracking-wider">
+                                                Item {idx + 1}: {item.service?.title || 'Custom Garment'}
+                                            </p>
+                                        )}
+                                        
+                                        {/* Measurement Type Badge */}
+                                        {measurements.type && (
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span className="text-[9px] font-black uppercase bg-pink-50 text-[#FD0053] px-2.5 py-1 rounded-full border border-pink-100">
+                                                    {measurements.type === 'slip' ? '📎 Uploaded Slip' : measurements.type === 'saved' ? '💾 Saved Profile' : '✏️ Self Measured'}
+                                                </span>
+                                            </div>
+                                        )}
+
+                                        {/* Slip Image (if measurement was uploaded as slip) */}
+                                        {measurements.slipImage && (
+                                            <div className="bg-gray-50 rounded-2xl p-3 border border-gray-100">
+                                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Measurement Slip</p>
+                                                <img 
+                                                    src={measurements.slipImage} 
+                                                    alt="Measurement Slip" 
+                                                    className="w-full max-h-60 object-contain rounded-xl border border-gray-200"
+                                                />
+                                            </div>
+                                        )}
+
+                                        {/* Measurement Values Grid */}
+                                        {entries.length > 0 && (
+                                            <div className="grid grid-cols-2 gap-2">
+                                                {entries.map(([key, value]) => (
+                                                    <div key={key} className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+                                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">
+                                                            {key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase()).trim()}
+                                                        </p>
+                                                        <p className="text-[14px] font-black text-gray-900">
+                                                            {typeof value === 'number' ? `${value}"` : value || '—'}
+                                                        </p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+
                     {isPending && (
                         /* Special Instructions (Pending accept view) */
                         <div className="bg-[#1A202C] text-white rounded-3xl p-5 space-y-2">

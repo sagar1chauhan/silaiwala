@@ -70,24 +70,18 @@ export const Step1Basic = ({ register, errors, setValue, watch }) => {
                 {...register('email', { required: 'Email is required' })}
                 error={errors.email?.message}
             />
-            {otpSent && (
-                <div className="animate-in slide-in-from-top-2 duration-300 space-y-4 pt-2">
-                    <Input
-                        label="Enter OTP"
-                        placeholder="000000"
-                        maxLength="6"
-                        {...register('otp', {
-                            required: 'OTP is required',
-                            pattern: {
-                                value: /^[0-9]{6}$/,
-                                message: 'Please enter a valid 6-digit OTP'
-                            }
-                        })}
-                        error={errors.otp?.message}
-                    />
-                </div>
-            )}
+            <Input
+                label="Create Password"
+                type="password"
+                placeholder="Secure password"
+                {...register('password', { 
+                    required: 'Password is required',
+                    minLength: { value: 6, message: 'Password must be at least 6 characters' }
+                })}
+                error={errors.password?.message}
+            />
         </div>
+
     );
 };
 

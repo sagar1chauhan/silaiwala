@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTailorAuth } from '../context/AuthContext';
+import { FiUser } from 'react-icons/fi';
 import api from '../services/api';
 
 const TailorLogin = () => {
@@ -70,32 +71,33 @@ const TailorLogin = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="w-full"
+            className="w-full max-w-sm mx-auto"
         >
-            <div className="text-center mb-4 sm:mb-5">
-                <h2 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">Welcome Back!</h2>
-                <p className="text-[9px] sm:text-[10px] font-bold text-gray-600 uppercase tracking-[0.2em] mt-1">
-                    {otpSent ? 'Enter code sent to mobile' : 'Access your shop dashboard'}
+            <div className="text-left mb-6 sm:mb-8">
+                <h2 className="text-2xl sm:text-3xl font-bold text-[#1e293b] tracking-tight mb-2">Welcome Back!</h2>
+                <p className="text-sm font-medium text-gray-500">
+                    {otpSent ? 'Enter the verification code sent to your mobile' : 'Login to manage your orders and customers'}
                 </p>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 {errors.root && (
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="p-3.5 text-[11px] font-bold uppercase tracking-wider text-pink-600 bg-pink-50 rounded-2xl border border-pink-100 flex items-center justify-center gap-2"
+                        className="p-3 text-xs font-semibold text-red-600 bg-red-50 rounded-xl border border-red-100 flex items-center justify-center gap-2"
                     >
-                        <span className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-pulse" />
+                        <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
                         {errors.root.message}
                     </motion.div>
                 )}
 
-                <div className="space-y-3">
-                    <div className="bg-[#F8FAFC] rounded-[1.2rem] sm:rounded-[1.5rem] p-1 border border-slate-50 shadow-inner group transition-all duration-300 focus-within:ring-2 focus-within:ring-pink-100 focus-within:border-pink-200">
-                        <div className="flex items-center px-3 sm:px-4 py-1.5 sm:py-2 gap-2 sm:gap-3">
-                            <span className="text-gray-800 font-bold text-sm">+91</span>
-                            <div className="w-px h-6 bg-slate-200" />
+                <div className="space-y-4">
+                    {/* Mobile Number Field */}
+                    <div className="bg-white rounded-xl p-1 border border-gray-200 shadow-sm transition-all duration-300 focus-within:ring-2 focus-within:ring-pink-100 focus-within:border-pink-300">
+                        <div className="flex items-center px-3 py-2 gap-2">
+                            <FiUser className="text-[#D86580] text-lg" />
+                            <span className="text-gray-500 font-bold text-sm border-r border-gray-100 pr-2">+91</span>
                             <input
                                 type="tel"
                                 placeholder="Mobile Number"
@@ -108,26 +110,24 @@ const TailorLogin = () => {
                                     }
                                 })}
                                 disabled={otpSent || sendingOtp}
-                                className="flex-1 bg-transparent border-none focus:ring-0 text-black font-bold placeholder:text-gray-500 placeholder:font-medium tracking-wide outline-none w-full"
+                                className="flex-1 bg-transparent border-none focus:ring-0 text-gray-800 font-medium placeholder:text-gray-400 outline-none w-full disabled:opacity-60"
                             />
                         </div>
                     </div>
+                    {errors.mobileNumber && <p className="text-xs text-red-500 pl-2 -mt-2">{errors.mobileNumber.message}</p>}
 
                     {!otpSent && (
                         <button
                             type="button"
                             onClick={handleSendOTP}
                             disabled={!mobileNumber || mobileNumber.length < 10 || sendingOtp}
-                            className={`w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-md ${!mobileNumber || mobileNumber.length < 10 || sendingOtp
+                            className={`w-full h-12 rounded-xl font-bold transition-all duration-300 ${
+                                !mobileNumber || mobileNumber.length < 10 || sendingOtp
                                     ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                                    : 'bg-[#FD0053] hover:bg-[#E04D79] text-white shadow-[#FD0053]/20 hover:shadow-lg'
-                                }`}
+                                    : 'bg-[#D86580] hover:bg-[#b8526a] text-white shadow-md shadow-pink-200'
+                            }`}
                         >
-                            {sendingOtp ? 'Sending...' : (
-                                <span className="flex items-center justify-center gap-2">
-                                    CONTINUE <span className="text-lg">›</span>
-                                </span>
-                            )}
+                            {sendingOtp ? 'Sending OTP...' : 'Send OTP'}
                         </button>
                     )}
                 </div>
@@ -140,38 +140,30 @@ const TailorLogin = () => {
                             exit={{ opacity: 0, height: 0 }}
                             className="space-y-4 overflow-hidden pt-2"
                         >
-                            <div className="bg-[#F8FAFC] rounded-[1.2rem] sm:rounded-[1.5rem] p-1 border border-slate-50 shadow-inner group transition-all duration-300 focus-within:ring-2 focus-within:ring-pink-100 focus-within:border-pink-200">
-                                <div className="flex items-center px-3 sm:px-4 py-1.5 sm:py-2 gap-2 sm:gap-3">
+                            {/* OTP Field */}
+                            <div className="bg-white rounded-xl p-1 border border-gray-200 shadow-sm transition-all duration-300 focus-within:ring-2 focus-within:ring-pink-100 focus-within:border-pink-300">
+                                <div className="flex items-center px-3 py-2 gap-3">
                                     <input
                                         type="text"
-                                        placeholder="Verification Code"
+                                        placeholder="Enter OTP"
                                         maxLength={6}
                                         {...register('otp', {
                                             required: 'OTP is required',
                                         })}
-                                        className="flex-1 bg-transparent border-none focus:ring-0 text-black font-bold placeholder:text-gray-500 placeholder:font-medium tracking-[0.5em] text-center outline-none w-full"
+                                        className="flex-1 bg-transparent border-none focus:ring-0 text-gray-800 font-bold placeholder:text-gray-400 placeholder:font-medium tracking-[0.5em] text-center outline-none w-full"
                                     />
                                 </div>
                             </div>
 
+                            {/* Verify Button */}
                             <button
                                 type="submit"
-                                className={`w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg ${isLoading ? 'bg-gray-300 text-gray-600' : 'bg-[#FD0053] hover:bg-[#E04D79] text-white shadow-[#FD0053]/20'}`}
                                 disabled={isLoading}
+                                className={`w-full h-12 rounded-xl font-bold text-white transition-all duration-300 ${
+                                    isLoading ? 'bg-pink-300 cursor-not-allowed' : 'bg-[#D86580] hover:bg-[#b8526a] shadow-md shadow-pink-200'
+                                }`}
                             >
-                                {isLoading ? 'Verifying...' : (
-                                    <span className="flex items-center justify-center gap-2">
-                                        VERIFY & SIGN IN <span className="text-lg">›</span>
-                                    </span>
-                                )}
-                            </button>
-
-                            <button
-                                type="button"
-                                onClick={() => { setOtpSent(false); clearErrors('root'); }}
-                                className="w-full text-[10px] font-bold text-pink-400 hover:text-pink-500 uppercase tracking-widest transition-colors flex items-center justify-center gap-1 mt-2"
-                            >
-                                ← Change mobile number
+                                {isLoading ? 'Verifying...' : 'Verify & Login'}
                             </button>
                         </motion.div>
                     )}

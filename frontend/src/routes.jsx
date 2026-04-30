@@ -15,6 +15,7 @@ import TailorLogin from './modules/tailor/pages/Login';
 import TailorRegistration from './modules/tailor/pages/Registration';
 import { UnderReview, RejectedPage } from './modules/tailor/pages/StatusPages';
 import TailorProtectedRoute from './modules/tailor/components/ProtectedRoute';
+import TailorAuthLayout from './modules/tailor/layouts/TailorAuthLayout';
 import { TAILOR_STATUS } from './modules/tailor/context/AuthContext';
 import TailorOverview from './modules/tailor/pages/Overview';
 import TailorOrders from './modules/tailor/pages/Orders';
@@ -29,6 +30,7 @@ import WalletPage from './modules/common/pages/WalletPage';
 import TailorEarnings from './modules/tailor/pages/TailorEarnings';
 import MeasurementList from './modules/tailor/pages/MeasurementList';
 import MeasurementDetail from './modules/tailor/pages/MeasurementDetail';
+import PartnerLanding from './modules/tailor/pages/PartnerLanding';
 
 // Customer Pages
 import CustomerHome from './modules/customer/pages/Home';
@@ -50,6 +52,7 @@ import TailorListing from './modules/customer/pages/TailorListing'; // NEW
 import TailorSelection from './modules/customer/pages/TailorSelection'; // NEW
 import CustomerProtectedRoute from './modules/customer/components/CustomerProtectedRoute';
 import CustomerMainLayout from './modules/customer/layouts/CustomerMainLayout';
+import CustomerOnboarding from './modules/customer/pages/Onboarding';
 import { NotificationProvider as CustomerNotificationProvider } from './modules/customer/context/NotificationContext';
 
 // Delivery Pages
@@ -101,8 +104,13 @@ const AppRoutes = () => {
             <Route element={<AuthLayout />}>
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
+            </Route>
 
-                {/* Partner Public Auth Routes */}
+            {/* Partner Landing Page */}
+            <Route path="/partner/welcome" element={<PartnerLanding />} />
+
+            {/* Partner Public Auth Routes */}
+            <Route element={<TailorAuthLayout />}>
                 <Route path="/partner/login" element={<TailorLogin />} />
                 <Route path="/partner/signup" element={<TailorRegistration />} />
                 <Route path="/partner/register" element={<Navigate to="/partner/signup" replace />} />
@@ -115,6 +123,9 @@ const AppRoutes = () => {
                 <Route path="/delivery/forgot-password" element={<DeliveryForgotPassword />} />
                 <Route path="/delivery/reset-password" element={<DeliveryResetPassword />} />
             </Route>
+
+            {/* Customer Public Routes */}
+            <Route path="/welcome" element={<CustomerOnboarding />} />
 
             {/* Customer Routes */}
             <Route element={<CustomerProtectedRoute />}>

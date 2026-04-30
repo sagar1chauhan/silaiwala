@@ -14,7 +14,7 @@ const ProtectedRoute = ({ requiredStatus = [TAILOR_STATUS.APPROVED] }) => {
     }
 
     if (!token) {
-        return <Navigate to="/partner/login" replace />;
+        return <Navigate to="/partner/welcome" replace />;
     }
 
     if (status === TAILOR_STATUS.PENDING_APPROVAL && !requiredStatus.includes(TAILOR_STATUS.PENDING_APPROVAL)) {
@@ -26,7 +26,7 @@ const ProtectedRoute = ({ requiredStatus = [TAILOR_STATUS.APPROVED] }) => {
     }
 
     if (!requiredStatus.includes(status)) {
-        return <Navigate to="/partner/login" replace />;
+        return <Navigate to="/partner/welcome" replace />;
     }
 
     return <Outlet />;

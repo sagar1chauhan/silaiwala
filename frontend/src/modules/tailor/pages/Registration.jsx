@@ -26,7 +26,7 @@ const TailorRegistration = () => {
         let fieldsToValidate = [];
         switch (step) {
             case 1:
-                fieldsToValidate = ['fullName', 'phone', 'email', 'otp'];
+                fieldsToValidate = ['fullName', 'phone', 'email', 'password'];
                 break;
             case 2:
                 fieldsToValidate = ['shopName', 'address', 'city', 'pincode', 'serviceArea', 'experienceInYears', 'specializations'];
@@ -89,6 +89,7 @@ const TailorRegistration = () => {
                 name: data.fullName,
                 email: data.email,
                 phoneNumber: data.phone,
+                password: data.password,
                 role: 'tailor',
                 shopName: data.shopName,
                 experienceInYears: Number(data.experienceInYears),
@@ -136,7 +137,7 @@ const TailorRegistration = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 className="w-full flex flex-col items-center justify-center py-6 text-center"
             >
-                <div className="h-20 w-20 bg-pink-50 text-[#FD0053] rounded-full flex items-center justify-center mb-5 shadow-xl shadow-pink-900/10">
+                <div className="h-20 w-20 bg-pink-50 text-[#D86580] rounded-full flex items-center justify-center mb-5 shadow-xl shadow-pink-900/10">
                     <CheckCircle2 size={40} strokeWidth={2.5} />
                 </div>
                 <h2 className="text-xl font-black text-slate-800 tracking-tight">Application Sent!</h2>
@@ -145,7 +146,7 @@ const TailorRegistration = () => {
                 </p>
                 <button
                     onClick={() => navigate('/partner/under-review')}
-                    className="mt-6 text-xs font-black bg-[#FD0053] text-white px-8 py-3 rounded-full hover:bg-[#E04D79] transition-colors shadow-lg shadow-pink-200"
+                    className="mt-6 text-xs font-black bg-[#D86580] text-white px-8 py-3 rounded-full hover:bg-[#b8526a] transition-colors shadow-lg shadow-pink-200"
                 >
                     View Status
                 </button>
@@ -163,7 +164,7 @@ const TailorRegistration = () => {
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                     {step > 1 && (
-                        <button type="button" onClick={prevStep} className="p-1 -ml-1 text-gray-400 hover:text-[#FD0053] transition-colors">
+                        <button type="button" onClick={prevStep} className="p-1 -ml-1 text-gray-400 hover:text-[#D86580] transition-colors">
                             <ChevronLeft size={20} />
                         </button>
                     )}
@@ -171,7 +172,7 @@ const TailorRegistration = () => {
                         <h2 className="text-base sm:text-lg font-black text-slate-800 tracking-tight leading-tight">
                             {stepTitles[step - 1]}
                         </h2>
-                        <p className="text-[9px] font-black text-[#FD0053] uppercase tracking-[0.2em] mt-0.5">
+                        <p className="text-[9px] font-black text-[#D86580] uppercase tracking-[0.2em] mt-0.5">
                             Step {step} of 4
                         </p>
                     </div>
@@ -179,7 +180,7 @@ const TailorRegistration = () => {
 
                 <div className="flex gap-1">
                     {[1, 2, 3, 4].map(i => (
-                        <div key={i} className={`h-1.5 w-6 rounded-full transition-colors duration-500 ${i <= step ? 'bg-[#FD0053]' : 'bg-pink-50'}`} />
+                        <div key={i} className={`h-1.5 w-6 rounded-full transition-colors duration-500 ${i <= step ? 'bg-[#D86580]' : 'bg-pink-50'}`} />
                     ))}
                 </div>
             </div>
@@ -203,7 +204,7 @@ const TailorRegistration = () => {
                         <button
                             type="button"
                             onClick={handleNext}
-                            className="w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg bg-[#FD0053] hover:bg-[#E04D79] text-white shadow-[#FD0053]/20"
+                            className="w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg bg-[#D86580] hover:bg-[#b8526a] text-white shadow-pink-200"
                         >
                             <span className="flex items-center justify-center gap-2">
                                 NEXT <span className="text-lg">›</span>
@@ -213,22 +214,14 @@ const TailorRegistration = () => {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className={`w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg ${isLoading ? 'bg-gray-300 text-gray-600' : 'bg-[#FD0053] hover:bg-[#E04D79] text-white shadow-[#FD0053]/20'}`}
+                            className={`w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg ${isLoading ? 'bg-gray-300 text-gray-600' : 'bg-[#D86580] hover:bg-[#b8526a] text-white shadow-pink-200'}`}
                         >
                             {isLoading ? 'Submitting...' : 'SUBMIT APPLICATION'}
                         </button>
                     )}
                 </div>
 
-                <div className="text-center mt-2 pb-1">
-                    <button
-                        type="button"
-                        onClick={() => navigate('/partner/login')}
-                        className="text-[10px] sm:text-xs text-gray-500 font-medium"
-                    >
-                        Already have an account? <span className="font-bold text-[#FD0053] hover:underline">Log in</span>
-                    </button>
-                </div>
+                {/* Sign up link removed as it's in layout now, but keeping an empty div for spacing if needed or just remove it. */}
             </form>
         </motion.div>
     );

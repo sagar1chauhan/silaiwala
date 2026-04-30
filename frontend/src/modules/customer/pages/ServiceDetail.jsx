@@ -221,7 +221,7 @@ const ServiceDetail = () => {
         const item = await prepareDraftItem();
         addServiceItem(item);
         resetDraftForm();
-        toast.success("Added to Order! Configure your next item.");
+        navigate('/services');
     };
 
     const handleProceed = async () => {

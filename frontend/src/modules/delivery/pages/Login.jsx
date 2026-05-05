@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiPhone } from 'react-icons/fi';
+import { Phone, Lock, Eye, ArrowRight, EyeOff } from 'lucide-react';
 import useAuthStore from '../../../store/authStore';
 
 const DeliveryLogin = () => {
@@ -13,6 +13,7 @@ const DeliveryLogin = () => {
     const [otpSent, setOtpSent] = useState(false);
     const [sendingOtp, setSendingOtp] = useState(false);
     const [error, setError] = useState('');
+    const [showOtp, setShowOtp] = useState(false);
 
     const handleSendOTP = async () => {
         if (!mobileNumber || mobileNumber.length < 10) {
@@ -51,14 +52,14 @@ const DeliveryLogin = () => {
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="w-full max-w-sm mx-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="w-full"
         >
-            <div className="text-left mb-8">
-                <h2 className="text-2xl font-black text-[#1A202C] tracking-tight">Welcome Partner!</h2>
-                <p className="text-gray-500 font-medium mt-1">
-                    {otpSent ? 'Enter the verification code sent to your mobile' : 'Login to start delivering with SEWZELLA'}
+            <div className="mb-8">
+                <h2 className="text-2xl font-black text-[#1e293b] mb-1">Welcome back!</h2>
+                <p className="text-sm font-medium text-gray-400">
+                    {otpSent ? 'Verify your number' : 'Login to continue'}
                 </p>
             </div>
 
@@ -66,88 +67,127 @@ const DeliveryLogin = () => {
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-6 p-3 bg-red-50 border border-red-100 rounded-xl text-red-600 text-xs font-bold text-center flex items-center justify-center gap-2"
+                    className="mb-6 p-3 text-xs font-bold text-red-600 bg-red-50 rounded-2xl border border-red-100 flex items-center gap-2"
                 >
-                    <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
+                    <span className="w-1.5 h-1.5 bg-red-500 rounded-full" />
                     {error}
                 </motion.div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Mobile Number Input */}
-                <div className="space-y-1.5">
-                    <div className="relative group">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 border-r border-gray-200 pr-3">
-                            <FiPhone size={16} className="text-green-500" />
-                            <span className="text-gray-500 font-bold text-sm">+91</span>
+                <div className="space-y-4">
+                    {/* Mobile Number Field */}
+                    <div className="group">
+                        <div className={`flex items-center px-4 py-4 rounded-2xl bg-[#F8F9FD] border-2 transition-all duration-300 ${error && !otpSent ? 'border-red-100' : 'border-transparent focus-within:border-[#2D2F6F] focus-within:bg-white'}`}>
+                            <Phone className={`w-5 h-5 mr-3 transition-colors ${error && !otpSent ? 'text-red-400' : 'text-[#2D2F6F]'}`} />
+                            <input
+                                type="tel"
+                                placeholder="Mobile number"
+                                value={mobileNumber}
+                                onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ''))}
+                                maxLength={10}
+                                disabled={otpSent || sendingOtp}
+                                className="flex-1 bg-transparent border-none focus:ring-0 text-gray-800 font-bold placeholder:text-gray-400 outline-none w-full disabled:opacity-60"
+                            />
                         </div>
-                        <input
-                            type="tel"
-                            placeholder="Mobile Number"
-                            value={mobileNumber}
-                            onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ''))}
-                            maxLength={10}
-                            disabled={otpSent || sendingOtp}
-                            className="w-full pl-24 pr-4 py-3.5 bg-white border border-gray-200 rounded-xl focus:border-[#4CAF50] focus:ring-1 focus:ring-[#4CAF50] outline-none transition-all font-medium text-gray-800 placeholder:text-gray-400 shadow-sm disabled:opacity-60"
-                        />
                     </div>
-                </div>
 
-                {!otpSent && (
-                    <button
-                        type="button"
-                        onClick={handleSendOTP}
-                        disabled={!mobileNumber || mobileNumber.length < 10 || sendingOtp}
-                        className={`w-full py-4 rounded-xl font-black transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${
-                            !mobileNumber || mobileNumber.length < 10 || sendingOtp
-                                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                                : 'bg-[#4CAF50] hover:bg-[#43A047] text-white shadow-lg shadow-green-100'
-                        }`}
-                    >
-                        {sendingOtp ? (
-                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        ) : 'Send OTP'}
-                    </button>
-                )}
+                    {!otpSent && (
+                        <button
+                            type="button"
+                            onClick={handleSendOTP}
+                            disabled={!mobileNumber || mobileNumber.length < 10 || sendingOtp}
+                            className={`w-full h-14 rounded-2xl font-black text-white flex items-center justify-center gap-2 transition-all duration-300 ${
+                                !mobileNumber || mobileNumber.length < 10 || sendingOtp
+                                    ? 'bg-gray-200 text-gray-400'
+                                    : 'bg-[#2D2F6F] hover:bg-[#1E1F4D] shadow-lg shadow-purple-100'
+                            }`}
+                        >
+                            {sendingOtp ? 'Sending...' : (
+                                <>
+                                    Send OTP <ArrowRight className="w-5 h-5" />
+                                </>
+                            )}
+                        </button>
+                    )}
+                </div>
 
                 <AnimatePresence>
                     {otpSent && (
                         <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="space-y-5 overflow-hidden"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="space-y-4 pt-2"
                         >
-                            {/* OTP Input */}
-                            <div className="space-y-1.5">
-                                <div className="relative group">
+                            {/* OTP Field */}
+                            <div className="group">
+                                <div className={`flex items-center px-4 py-4 rounded-2xl bg-[#F8F9FD] border-2 border-transparent focus-within:border-[#2D2F6F] focus-within:bg-white transition-all duration-300`}>
+                                    <Lock className="w-5 h-5 mr-3 text-[#2D2F6F]" />
                                     <input
-                                        type="text"
+                                        type={showOtp ? "text" : "password"}
                                         placeholder="Enter OTP"
                                         value={otp}
                                         onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                                         maxLength={6}
-                                        className="w-full px-4 py-3.5 bg-white border border-gray-200 rounded-xl focus:border-[#4CAF50] focus:ring-1 focus:ring-[#4CAF50] outline-none transition-all font-bold text-gray-800 placeholder:text-gray-400 placeholder:font-medium tracking-[0.5em] text-center shadow-sm"
+                                        className="flex-1 bg-transparent border-none focus:ring-0 text-gray-800 font-bold placeholder:text-gray-400 outline-none w-full tracking-[0.2em]"
                                     />
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setShowOtp(!showOtp)}
+                                        className="text-gray-400 hover:text-[#2D2F6F]"
+                                    >
+                                        {showOtp ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                    </button>
                                 </div>
                             </div>
 
-                            {/* Verify & Login Button */}
+                            <div className="flex justify-end">
+                                <button type="button" onClick={() => setOtpSent(false)} className="text-xs font-bold text-[#2D2F6F] hover:underline">
+                                    Resend OTP?
+                                </button>
+                            </div>
+
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full py-4 bg-[#4CAF50] hover:bg-[#43A047] text-white font-black rounded-xl shadow-lg shadow-green-100 transition-all active:scale-[0.98] disabled:opacity-70 flex items-center justify-center gap-2"
+                                className={`w-full h-14 rounded-2xl font-black text-white flex items-center justify-center gap-2 transition-all duration-300 ${
+                                    isLoading ? 'bg-purple-300' : 'bg-[#2D2F6F] hover:bg-[#1E1F4D] shadow-lg shadow-purple-100'
+                                }`}
                             >
-                                {isLoading ? (
-                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                ) : 'Verify & Login'}
+                                {isLoading ? 'Verifying...' : (
+                                    <>
+                                        Login <ArrowRight className="w-5 h-5" />
+                                    </>
+                                )}
                             </button>
                         </motion.div>
                     )}
                 </AnimatePresence>
+
+                {/* Social Login Section */}
+                {!otpSent && (
+                    <div className="pt-4 space-y-6">
+                        <div className="relative flex items-center justify-center">
+                            <div className="w-full h-[1px] bg-gray-100" />
+                            <span className="absolute px-4 bg-white text-[10px] font-bold text-gray-400 uppercase tracking-widest">or login with</span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <button type="button" className="flex items-center justify-center gap-3 py-3 rounded-2xl border-2 border-gray-50 hover:bg-gray-50 transition-colors">
+                                <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
+                                <span className="text-sm font-bold text-gray-700">Google</span>
+                            </button>
+                            <button type="button" className="flex items-center justify-center gap-3 py-3 rounded-2xl border-2 border-gray-50 hover:bg-gray-50 transition-colors">
+                                <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" className="w-5 h-5" alt="Facebook" />
+                                <span className="text-sm font-bold text-gray-700">Facebook</span>
+                            </button>
+                        </div>
+                    </div>
+                )}
             </form>
         </motion.div>
     );
 };
 
 export default DeliveryLogin;
+

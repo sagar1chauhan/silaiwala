@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTailorAuth } from '../context/AuthContext';
-import { FiUser } from 'react-icons/fi';
+import { Phone, Lock, Eye, ArrowRight, EyeOff } from 'lucide-react';
 import api from '../services/api';
 
 const TailorLogin = () => {
@@ -13,6 +13,7 @@ const TailorLogin = () => {
     const [otpSent, setOtpSent] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [sendingOtp, setSendingOtp] = useState(false);
+    const [showOtp, setShowOtp] = useState(false);
     const { register, handleSubmit, watch, formState: { errors }, setError: setFormError, clearErrors } = useForm();
     const mobileNumber = watch('mobileNumber');
 
@@ -68,39 +69,37 @@ const TailorLogin = () => {
 
     return (
         <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="w-full max-w-sm mx-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="w-full"
         >
-            <div className="text-left mb-6 sm:mb-8">
-                <h2 className="text-2xl sm:text-3xl font-bold text-[#1e293b] tracking-tight mb-2">Welcome Back!</h2>
-                <p className="text-sm font-medium text-gray-500">
-                    {otpSent ? 'Enter the verification code sent to your mobile' : 'Login to manage your orders and customers'}
+            <div className="mb-8">
+                <h2 className="text-2xl font-black text-[#1e293b] mb-1">Welcome Tailor!</h2>
+                <p className="text-sm font-medium text-gray-400">
+                    {otpSent ? 'Verify your number' : 'Login to continue'}
                 </p>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 {errors.root && (
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="p-3 text-xs font-semibold text-red-600 bg-red-50 rounded-xl border border-red-100 flex items-center justify-center gap-2"
+                        className="p-3 text-xs font-bold text-red-600 bg-red-50 rounded-2xl border border-red-100 flex items-center gap-2"
                     >
-                        <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
+                        <span className="w-1.5 h-1.5 bg-red-500 rounded-full" />
                         {errors.root.message}
                     </motion.div>
                 )}
 
                 <div className="space-y-4">
                     {/* Mobile Number Field */}
-                    <div className="bg-white rounded-xl p-1 border border-gray-200 shadow-sm transition-all duration-300 focus-within:ring-2 focus-within:ring-pink-100 focus-within:border-pink-300">
-                        <div className="flex items-center px-3 py-2 gap-2">
-                            <FiUser className="text-[#D86580] text-lg" />
-                            <span className="text-gray-500 font-bold text-sm border-r border-gray-100 pr-2">+91</span>
+                    <div className="group">
+                        <div className={`flex items-center px-4 py-4 rounded-2xl bg-[#F8F9FD] border-2 transition-all duration-300 ${errors.mobileNumber ? 'border-red-100' : 'border-transparent focus-within:border-[#2D2F6F] focus-within:bg-white'}`}>
+                            <Phone className={`w-5 h-5 mr-3 transition-colors ${errors.mobileNumber ? 'text-red-400' : 'text-[#2D2F6F]'}`} />
                             <input
                                 type="tel"
-                                placeholder="Mobile Number"
+                                placeholder="Mobile number"
                                 maxLength={10}
                                 {...register('mobileNumber', {
                                     required: 'Mobile number is required',
@@ -110,24 +109,28 @@ const TailorLogin = () => {
                                     }
                                 })}
                                 disabled={otpSent || sendingOtp}
-                                className="flex-1 bg-transparent border-none focus:ring-0 text-gray-800 font-medium placeholder:text-gray-400 outline-none w-full disabled:opacity-60"
+                                className="flex-1 bg-transparent border-none focus:ring-0 text-gray-800 font-bold placeholder:text-gray-400 outline-none w-full disabled:opacity-60"
                             />
                         </div>
+                        {errors.mobileNumber && <p className="text-[10px] text-red-500 font-bold mt-1 pl-2">{errors.mobileNumber.message}</p>}
                     </div>
-                    {errors.mobileNumber && <p className="text-xs text-red-500 pl-2 -mt-2">{errors.mobileNumber.message}</p>}
 
                     {!otpSent && (
                         <button
                             type="button"
                             onClick={handleSendOTP}
                             disabled={!mobileNumber || mobileNumber.length < 10 || sendingOtp}
-                            className={`w-full h-12 rounded-xl font-bold transition-all duration-300 ${
+                            className={`w-full h-14 rounded-2xl font-black text-white flex items-center justify-center gap-2 transition-all duration-300 ${
                                 !mobileNumber || mobileNumber.length < 10 || sendingOtp
-                                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                                    : 'bg-[#D86580] hover:bg-[#b8526a] text-white shadow-md shadow-pink-200'
+                                    ? 'bg-gray-200 text-gray-400'
+                                    : 'bg-[#2D2F6F] hover:bg-[#4c1d95] shadow-lg shadow-purple-100'
                             }`}
                         >
-                            {sendingOtp ? 'Sending OTP...' : 'Send OTP'}
+                            {sendingOtp ? 'Sending...' : (
+                                <>
+                                    Send OTP <ArrowRight className="w-5 h-5" />
+                                </>
+                            )}
                         </button>
                     )}
                 </div>
@@ -135,35 +138,51 @@ const TailorLogin = () => {
                 <AnimatePresence>
                     {otpSent && (
                         <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="space-y-4 overflow-hidden pt-2"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="space-y-4 pt-2"
                         >
                             {/* OTP Field */}
-                            <div className="bg-white rounded-xl p-1 border border-gray-200 shadow-sm transition-all duration-300 focus-within:ring-2 focus-within:ring-pink-100 focus-within:border-pink-300">
-                                <div className="flex items-center px-3 py-2 gap-3">
+                            <div className="group">
+                                <div className={`flex items-center px-4 py-4 rounded-2xl bg-[#F8F9FD] border-2 border-transparent focus-within:border-[#2D2F6F] focus-within:bg-white transition-all duration-300`}>
+                                    <Lock className="w-5 h-5 mr-3 text-[#2D2F6F]" />
                                     <input
-                                        type="text"
+                                        type={showOtp ? "text" : "password"}
                                         placeholder="Enter OTP"
                                         maxLength={6}
                                         {...register('otp', {
                                             required: 'OTP is required',
                                         })}
-                                        className="flex-1 bg-transparent border-none focus:ring-0 text-gray-800 font-bold placeholder:text-gray-400 placeholder:font-medium tracking-[0.5em] text-center outline-none w-full"
+                                        className="flex-1 bg-transparent border-none focus:ring-0 text-gray-800 font-bold placeholder:text-gray-400 outline-none w-full tracking-[0.2em]"
                                     />
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setShowOtp(!showOtp)}
+                                        className="text-gray-400 hover:text-[#2D2F6F]"
+                                    >
+                                        {showOtp ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                    </button>
                                 </div>
                             </div>
 
-                            {/* Verify Button */}
+                            <div className="flex justify-end">
+                                <button type="button" onClick={() => setOtpSent(false)} className="text-xs font-bold text-[#2D2F6F] hover:underline">
+                                    Resend OTP?
+                                </button>
+                            </div>
+
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className={`w-full h-12 rounded-xl font-bold text-white transition-all duration-300 ${
-                                    isLoading ? 'bg-pink-300 cursor-not-allowed' : 'bg-[#D86580] hover:bg-[#b8526a] shadow-md shadow-pink-200'
+                                className={`w-full h-14 rounded-2xl font-black text-white flex items-center justify-center gap-2 transition-all duration-300 ${
+                                    isLoading ? 'bg-purple-300' : 'bg-[#2D2F6F] hover:bg-[#4c1d95] shadow-lg shadow-purple-100'
                                 }`}
                             >
-                                {isLoading ? 'Verifying...' : 'Verify & Login'}
+                                {isLoading ? 'Verifying...' : (
+                                    <>
+                                        Login <ArrowRight className="w-5 h-5" />
+                                    </>
+                                )}
                             </button>
                         </motion.div>
                     )}
@@ -174,3 +193,5 @@ const TailorLogin = () => {
 };
 
 export default TailorLogin;
+
+

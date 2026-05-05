@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '../components/UIElements';
 import { Step1Basic, Step2Business } from '../components/Registration/Steps1_2';
 import { Step3Docs, Step4Portfolio } from '../components/Registration/Steps3_4';
-import { ChevronLeft, CheckCircle2 } from 'lucide-react';
+import { ChevronLeft, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useTailorAuth } from '../context/AuthContext';
 import api from '../services/api';
 
@@ -135,18 +134,18 @@ const TailorRegistration = () => {
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="w-full flex flex-col items-center justify-center py-6 text-center"
+                className="w-full flex flex-col items-center justify-center py-10 text-center"
             >
-                <div className="h-20 w-20 bg-pink-50 text-[#D86580] rounded-full flex items-center justify-center mb-5 shadow-xl shadow-pink-900/10">
-                    <CheckCircle2 size={40} strokeWidth={2.5} />
+                <div className="h-24 w-24 bg-purple-50 text-[#2D2F6F] rounded-[2rem] flex items-center justify-center mb-6 shadow-xl shadow-purple-900/5">
+                    <CheckCircle2 size={48} strokeWidth={2.5} />
                 </div>
-                <h2 className="text-xl font-black text-slate-800 tracking-tight">Application Sent!</h2>
-                <p className="text-xs text-gray-500 mt-2 font-medium px-4">
+                <h2 className="text-2xl font-black text-slate-800 tracking-tight">Application Sent!</h2>
+                <p className="text-sm text-gray-500 mt-2 font-medium px-4">
                     Your details are under review. We will notify you once approved.
                 </p>
                 <button
                     onClick={() => navigate('/partner/under-review')}
-                    className="mt-6 text-xs font-black bg-[#D86580] text-white px-8 py-3 rounded-full hover:bg-[#b8526a] transition-colors shadow-lg shadow-pink-200"
+                    className="mt-8 font-black bg-[#2D2F6F] text-white px-10 py-4 rounded-2xl hover:bg-[#1E1F4D] transition-all shadow-lg shadow-purple-200"
                 >
                     View Status
                 </button>
@@ -156,36 +155,35 @@ const TailorRegistration = () => {
 
     return (
         <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             className="w-full"
         >
-            <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
                     {step > 1 && (
-                        <button type="button" onClick={prevStep} className="p-1 -ml-1 text-gray-400 hover:text-[#D86580] transition-colors">
+                        <button type="button" onClick={prevStep} className="p-2 -ml-2 text-gray-400 hover:text-[#2D2F6F] transition-colors bg-gray-50 rounded-xl">
                             <ChevronLeft size={20} />
                         </button>
                     )}
                     <div>
-                        <h2 className="text-base sm:text-lg font-black text-slate-800 tracking-tight leading-tight">
+                        <h2 className="text-xl font-black text-slate-800 tracking-tight leading-tight">
                             {stepTitles[step - 1]}
                         </h2>
-                        <p className="text-[9px] font-black text-[#D86580] uppercase tracking-[0.2em] mt-0.5">
+                        <p className="text-[10px] font-black text-[#2D2F6F] uppercase tracking-[0.2em] mt-1">
                             Step {step} of 4
                         </p>
                     </div>
                 </div>
 
-                <div className="flex gap-1">
+                <div className="flex gap-1.5">
                     {[1, 2, 3, 4].map(i => (
-                        <div key={i} className={`h-1.5 w-6 rounded-full transition-colors duration-500 ${i <= step ? 'bg-[#D86580]' : 'bg-pink-50'}`} />
+                        <div key={i} className={`h-1.5 w-6 rounded-full transition-all duration-500 ${i <= step ? 'bg-[#2D2F6F]' : 'bg-gray-100'}`} />
                     ))}
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={step}
@@ -193,38 +191,35 @@ const TailorRegistration = () => {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -10 }}
                         transition={{ duration: 0.3 }}
-                        className="space-y-3"
+                        className="space-y-4"
                     >
                         {renderStep()}
                     </motion.div>
                 </AnimatePresence>
 
-                <div className="pt-2">
+                <div className="pt-4">
                     {step < 4 ? (
                         <button
                             type="button"
                             onClick={handleNext}
-                            className="w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg bg-[#D86580] hover:bg-[#b8526a] text-white shadow-pink-200"
+                            className="w-full h-14 rounded-2xl font-black text-sm tracking-widest uppercase transition-all duration-300 shadow-lg bg-[#2D2F6F] hover:bg-[#1E1F4D] text-white shadow-purple-100 flex items-center justify-center gap-2"
                         >
-                            <span className="flex items-center justify-center gap-2">
-                                NEXT <span className="text-lg">›</span>
-                            </span>
+                            NEXT <ArrowRight className="w-5 h-5" />
                         </button>
                     ) : (
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className={`w-full h-11 sm:h-12 rounded-full font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-lg ${isLoading ? 'bg-gray-300 text-gray-600' : 'bg-[#D86580] hover:bg-[#b8526a] text-white shadow-pink-200'}`}
+                            className={`w-full h-14 rounded-2xl font-black text-sm tracking-widest uppercase transition-all duration-300 shadow-lg ${isLoading ? 'bg-gray-300 text-gray-600' : 'bg-[#2D2F6F] hover:bg-[#1E1F4D] text-white shadow-purple-100'}`}
                         >
                             {isLoading ? 'Submitting...' : 'SUBMIT APPLICATION'}
                         </button>
                     )}
                 </div>
-
-                {/* Sign up link removed as it's in layout now, but keeping an empty div for spacing if needed or just remove it. */}
             </form>
         </motion.div>
     );
 };
 
 export default TailorRegistration;
+

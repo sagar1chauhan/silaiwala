@@ -1,64 +1,90 @@
 import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { ClipboardList, Users, Scissors, TrendingUp } from 'lucide-react';
+import partnerLoginImg from '../../../assets/partnerLogin.png';
 
 const TailorAuthLayout = () => {
     const location = useLocation();
     const isLogin = location.pathname.includes('login');
 
-    return (
-        <div className="min-h-screen bg-[#F5F7F9] flex flex-col items-center justify-start sm:py-10">
-            <div className="w-full max-w-[450px] bg-white sm:rounded-[2.5rem] shadow-xl overflow-hidden relative min-h-screen sm:min-h-0 flex flex-col">
-                {/* Banner Section */}
-                <div className="relative h-[300px] w-full bg-[#FDF2F8] overflow-hidden">
-                    {/* Background elements */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-pink-100 rounded-full blur-3xl -mr-10 -mt-10 opacity-50" />
-                    <div className="absolute bottom-0 left-0 w-40 h-40 bg-white rounded-full blur-3xl -ml-20 -mb-20 opacity-50" />
-                    
-                    <div className="relative z-10 h-full grid grid-cols-[1.2fr_1fr] items-center px-6">
-                        {/* Left Side: Text Stack */}
-                        <div className="flex flex-col items-start gap-0 -translate-y-4">
-                            {/* Logo Icon */}
-                            <div className="mb-4">
-                                <img src="/sewzella_logo-removebg-preview.png" alt="Logo" className="h-32 w-auto object-contain" />
-                            </div>
-                            
-                            {/* Role Title */}
-                            <h2 className="text-[#D86580] font-sans text-2xl font-black tracking-tight mb-2">SewZella</h2>
-                            
-                            {/* Slogan */}
-                            <p className="text-gray-600 text-sm font-semibold tracking-tight opacity-80 italic">Stitching excellence,<br />happy customers.</p>
-                        </div>
+    const features = [
+        { icon: <ClipboardList className="w-7 h-7 text-[#2D2F6F]" />, label: 'Manage Orders' },
+        { icon: <Users className="w-7 h-7 text-[#2D2F6F]" />, label: 'Client Management' },
+        { icon: <Scissors className="w-7 h-7 text-[#2D2F6F]" />, label: 'Measurements & Fittings' },
+        { icon: <TrendingUp className="w-7 h-7 text-[#2D2F6F]" />, label: 'Business Growth' },
+    ];
 
-                        {/* Right Side: Illustration */}
-                        <div className="relative h-full flex justify-center items-end overflow-visible">
-                            <img 
-                                src="/tailor_partner_illustration-removebg-preview.png" 
-                                alt="Tailor Partner" 
-                                className="h-[280px] sm:h-[320px] w-auto object-contain transform translate-y-6 z-10 -translate-x-2"
-                            />
+    return (
+        <div className="min-h-screen bg-[#F8F9FD] flex flex-col items-center">
+            {/* Top Branding Section */}
+            <div className="relative w-full h-[400px] overflow-hidden">
+                <img 
+                    src={partnerLoginImg} 
+                    alt="Tailor Background" 
+                    className="w-full h-full object-cover"
+                />
+                {/* White Left Shadow/Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-transparent w-[70%]" />
+                
+                {/* Logo and Text Overlay */}
+                <div className="absolute inset-0 flex flex-col items-start px-8 pt-10">
+                    <div className="flex flex-col items-center mb-6 -ml-4">
+                        <img src="/sewzella_logo-removebg-preview.png" alt="SewZella" className="h-32 w-auto drop-shadow-sm" />
+                        <div className="flex items-center gap-3 -mt-4">
+                             <div className="h-[1.5px] w-10 bg-[#2D2F6F] opacity-50" />
+                             <span className="text-[11px] font-black text-[#2D2F6F] tracking-[0.25em] uppercase">Tailored for you</span>
+                             <div className="h-[1.5px] w-10 bg-[#2D2F6F] opacity-50" />
                         </div>
                     </div>
-                </div>
 
-                {/* Content Section */}
-                <div className="flex-1 bg-white px-8 pt-8 pb-10">
+                    <div className="max-w-[220px] space-y-3 relative z-10">
+                        <h1 className="text-2xl font-black text-[#1e293b] leading-[1.1] tracking-tight">
+                            Crafting style.<br />
+                            <span className="text-[#2D2F6F]">Creating smiles.</span>
+                        </h1>
+                        <p className="text-[12px] font-bold text-gray-700 leading-snug">
+                            Manage your orders, clients and grow your tailoring business with Sewzella.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Features Card - Overlapping */}
+            <div className="relative z-20 -mt-16 w-[94%] max-w-[450px] bg-white rounded-[1rem] shadow-md py-2 px-2 border border-gray-50/50">
+                <div className="grid grid-cols-4 gap-0 divide-x divide-gray-100">
+                    {features.map((feature, idx) => (
+                        <div key={idx} className="flex flex-col items-center text-center gap-1 px-1">
+                            <div className="w-8 h-8 flex items-center justify-center">
+                                {React.cloneElement(feature.icon, { className: 'w-5 h-5 text-[#2D2F6F]' })}
+                            </div>
+                            <span className="text-[8px] font-black text-gray-500 uppercase tracking-tighter leading-tight px-1">
+                                {feature.label}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Main Auth Content Area */}
+            <div className="w-full max-w-[450px] px-4 mt-6 mb-12">
+                <div className="bg-white rounded-[1.5rem] shadow-xl border border-gray-50/50 overflow-hidden p-8">
                     <Outlet />
                 </div>
 
                 {/* Footer Navigation */}
-                <div className="bg-white px-8 pb-8 pt-2 text-center relative z-10">
+                <div className="mt-8 text-center">
                     {isLogin ? (
-                        <p className="text-gray-500 font-medium text-sm">
-                            Don't have an account?{' '}
-                            <Link to="/partner/signup" className="text-[#D86580] font-bold hover:underline">
-                                Sign Up
+                        <p className="text-gray-600 font-bold text-sm tracking-tight">
+                            New to Sewzella Tailor?{' '}
+                            <Link to="/partner/signup" className="text-[#2D2F6F] hover:underline font-black">
+                                Register Now
                             </Link>
                         </p>
                     ) : (
-                        <p className="text-gray-500 font-medium text-sm">
+                        <p className="text-gray-600 font-bold text-sm tracking-tight">
                             Already have an account?{' '}
-                            <Link to="/partner/login" className="text-[#D86580] font-bold hover:underline">
+                            <Link to="/partner/login" className="text-[#2D2F6F] hover:underline font-black">
                                 Login
                             </Link>
                         </p>
@@ -70,3 +96,5 @@ const TailorAuthLayout = () => {
 };
 
 export default TailorAuthLayout;
+
+

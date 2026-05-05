@@ -95,8 +95,8 @@ const DeliverySignup = () => {
             onClick={() => fileInputRefs.current[name]?.click()}
             className={`flex-1 flex flex-col items-center justify-center gap-2 h-32 rounded-2xl border-2 border-dashed transition-all cursor-pointer ${
                 formData[name] 
-                ? 'bg-green-50 border-green-200 text-green-600' 
-                : 'bg-gray-50 border-gray-200 text-gray-400 hover:border-[#4CAF50] hover:bg-green-50/30'
+                ? 'bg-purple-50/50 border-purple-200/50 text-purple-600' 
+                : 'bg-gray-50 border-gray-200 text-gray-400 hover:border-[#2D2F6F] hover:bg-purple-50/50/30'
             }`}
         >
             <input
@@ -124,7 +124,7 @@ const DeliverySignup = () => {
             className="w-full max-w-sm mx-auto"
         >
             <div className="text-left mb-6">
-                <h2 className="text-2xl font-black text-[#1A202C] tracking-tight">Join the Fleet</h2>
+                <h2 className="text-2xl font-black text-[#1A1A1A] tracking-tight">Join the Fleet</h2>
                 <p className="text-gray-500 font-medium mt-1">Become a delivery partner today</p>
                 
                 {/* Progress Indicator */}
@@ -133,7 +133,7 @@ const DeliverySignup = () => {
                         <div 
                             key={step} 
                             className={`h-1.5 rounded-full transition-all duration-500 ${
-                                currentStep === step ? 'w-8 bg-[#4CAF50]' : currentStep > step ? 'w-4 bg-green-200' : 'w-2 bg-gray-200'
+                                currentStep === step ? 'w-8 bg-[#2D2F6F]' : currentStep > step ? 'w-4 bg-green-200' : 'w-2 bg-gray-200'
                             }`} 
                         />
                     ))}
@@ -157,24 +157,24 @@ const DeliverySignup = () => {
                             className="space-y-3"
                         >
                             <div className="relative group">
-                                <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-green-500" />
-                                <input name="name" placeholder="Full Name" value={formData.name} onChange={handleChange} className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-[#4CAF50] focus:ring-1 focus:ring-[#4CAF50] outline-none transition-all font-medium text-sm" />
+                                <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2D2F6F]" />
+                                <input name="name" placeholder="Full Name" value={formData.name} onChange={handleChange} className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-[#2D2F6F] focus:ring-1 focus:ring-[#2D2F6F] outline-none transition-all font-medium text-sm" />
                             </div>
                             <div className="relative group">
-                                <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-green-500" />
-                                <input name="email" type="email" placeholder="Email Address" value={formData.email} onChange={handleChange} className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-[#4CAF50] focus:ring-1 focus:ring-[#4CAF50] outline-none transition-all font-medium text-sm" />
+                                <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2D2F6F]" />
+                                <input name="email" type="email" placeholder="Email Address" value={formData.email} onChange={handleChange} className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-[#2D2F6F] focus:ring-1 focus:ring-[#2D2F6F] outline-none transition-all font-medium text-sm" />
                             </div>
                             <div className="relative group">
-                                <FiPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-green-500" />
-                                <input name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleChange} className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-[#4CAF50] focus:ring-1 focus:ring-[#4CAF50] outline-none transition-all font-medium text-sm" />
+                                <FiPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2D2F6F]" />
+                                <input name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleChange} className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-[#2D2F6F] focus:ring-1 focus:ring-[#2D2F6F] outline-none transition-all font-medium text-sm" />
                             </div>
                             <div className="relative group">
-                                <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-green-500" />
-                                <input name="password" type="password" placeholder="Create Password" value={formData.password} onChange={handleChange} className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-[#4CAF50] focus:ring-1 focus:ring-[#4CAF50] outline-none transition-all font-medium text-sm" />
+                                <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2D2F6F]" />
+                                <input name="password" type="password" placeholder="Create Password" value={formData.password} onChange={handleChange} className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-[#2D2F6F] focus:ring-1 focus:ring-[#2D2F6F] outline-none transition-all font-medium text-sm" />
                             </div>
                             <div className="relative group">
-                                <FiShield className="absolute left-4 top-1/2 -translate-y-1/2 text-green-500" />
-                                <input name="aadharNumber" placeholder="Aadhaar Number" value={formData.aadharNumber} onChange={handleChange} className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-[#4CAF50] focus:ring-1 focus:ring-[#4CAF50] outline-none transition-all font-medium text-sm" />
+                                <FiShield className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2D2F6F]" />
+                                <input name="aadharNumber" placeholder="Aadhaar Number" value={formData.aadharNumber} onChange={handleChange} className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-[#2D2F6F] focus:ring-1 focus:ring-[#2D2F6F] outline-none transition-all font-medium text-sm" />
                             </div>
                         </motion.div>
                     )}
@@ -213,8 +213,8 @@ const DeliverySignup = () => {
                             className="space-y-3"
                         >
                             <div className="relative group">
-                                <FiTruck className="absolute left-4 top-1/2 -translate-y-1/2 text-green-500" />
-                                <select name="vehicleType" value={formData.vehicleType} onChange={handleChange} className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-[#4CAF50] outline-none transition-all font-bold text-gray-700 text-sm appearance-none">
+                                <FiTruck className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2D2F6F]" />
+                                <select name="vehicleType" value={formData.vehicleType} onChange={handleChange} className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-[#2D2F6F] outline-none transition-all font-bold text-gray-700 text-sm appearance-none">
                                     <option value="bike">Bike</option>
                                     <option value="scooter">Scooter</option>
                                     <option value="car">Car</option>
@@ -222,12 +222,12 @@ const DeliverySignup = () => {
                                 </select>
                             </div>
                             <div className="relative group">
-                                <FiFileText className="absolute left-4 top-1/2 -translate-y-1/2 text-green-500" />
-                                <input name="vehicleNumber" placeholder="Vehicle No. (e.g., MH 12 AB 1234)" value={formData.vehicleNumber} onChange={handleChange} className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-[#4CAF50] focus:ring-1 focus:ring-[#4CAF50] outline-none transition-all font-bold text-[#4CAF50] text-sm" />
+                                <FiFileText className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2D2F6F]" />
+                                <input name="vehicleNumber" placeholder="Vehicle No. (e.g., MH 12 AB 1234)" value={formData.vehicleNumber} onChange={handleChange} className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-[#2D2F6F] focus:ring-1 focus:ring-[#2D2F6F] outline-none transition-all font-bold text-[#2D2F6F] text-sm" />
                             </div>
                             <div className="relative group">
-                                <FiMapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-green-500" />
-                                <input name="address" placeholder="Residential Address" value={formData.address} onChange={handleChange} className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-[#4CAF50] focus:ring-1 focus:ring-[#4CAF50] outline-none transition-all font-medium text-sm" />
+                                <FiMapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2D2F6F]" />
+                                <input name="address" placeholder="Residential Address" value={formData.address} onChange={handleChange} className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-[#2D2F6F] focus:ring-1 focus:ring-[#2D2F6F] outline-none transition-all font-medium text-sm" />
                             </div>
                         </motion.div>
                     )}
@@ -247,7 +247,7 @@ const DeliverySignup = () => {
                         <button 
                             type="button" 
                             onClick={nextStep} 
-                            className="flex-[2] py-3 bg-[#4CAF50] hover:bg-[#43A047] text-white font-black rounded-xl shadow-lg shadow-green-100 transition-all text-sm uppercase tracking-widest"
+                            className="flex-[2] py-3 bg-[#2D2F6F] hover:bg-[#1E1F4D] text-white font-black rounded-xl shadow-lg shadow-purple-100/50 transition-all text-sm uppercase tracking-widest"
                         >
                             Continue
                         </button>
@@ -255,7 +255,7 @@ const DeliverySignup = () => {
                         <button 
                             type="submit" 
                             disabled={isLoading} 
-                            className="flex-[2] py-3 bg-[#4CAF50] hover:bg-[#43A047] text-white font-black rounded-xl shadow-lg shadow-green-100 transition-all text-sm uppercase tracking-widest disabled:opacity-70"
+                            className="flex-[2] py-3 bg-[#2D2F6F] hover:bg-[#1E1F4D] text-white font-black rounded-xl shadow-lg shadow-purple-100/50 transition-all text-sm uppercase tracking-widest disabled:opacity-70"
                         >
                             {isLoading ? 'Processing...' : 'Register Now'}
                         </button>

@@ -164,26 +164,6 @@ const DeliveryLogin = () => {
                     )}
                 </AnimatePresence>
 
-                {/* Social Login Section */}
-                {!otpSent && (
-                    <div className="pt-4 space-y-6">
-                        <div className="relative flex items-center justify-center">
-                            <div className="w-full h-[1px] bg-gray-100" />
-                            <span className="absolute px-4 bg-white text-[10px] font-bold text-gray-400 uppercase tracking-widest">or login with</span>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <button type="button" className="flex items-center justify-center gap-3 py-3 rounded-2xl border-2 border-gray-50 hover:bg-gray-50 transition-colors">
-                                <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
-                                <span className="text-sm font-bold text-gray-700">Google</span>
-                            </button>
-                            <button type="button" className="flex items-center justify-center gap-3 py-3 rounded-2xl border-2 border-gray-50 hover:bg-gray-50 transition-colors">
-                                <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" className="w-5 h-5" alt="Facebook" />
-                                <span className="text-sm font-bold text-gray-700">Facebook</span>
-                            </button>
-                        </div>
-                    </div>
-                )}
             </form>
         </motion.div>
     );

@@ -29,10 +29,10 @@ const BottomNav = () => {
     return (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 pb-safe pt-2 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] md:hidden">
             <div className="flex justify-between max-w-md mx-auto relative">
-                <NavItem to="/" icon={Shirt} label="Services" />
-                <NavItem to="/store" icon={ShoppingBag} label="Store" />
-                <NavItem to="/orders" icon={ClipboardList} label="Orders" />
-                <NavItem to="/profile" icon={User} label="Profile" />
+                <NavItem to="/user" icon={Shirt} label="Services" />
+                <NavItem to="/user/store" icon={ShoppingBag} label="Store" />
+                <NavItem to="/user/orders" icon={ClipboardList} label="Orders" />
+                <NavItem to="/user/profile" icon={User} label="Profile" />
             </div>
         </div>
     );

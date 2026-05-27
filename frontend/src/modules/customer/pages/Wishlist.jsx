@@ -21,7 +21,7 @@ const WishlistPage = () => {
                 <h2 className="text-lg font-bold text-gray-900 mb-2">Your Wishlist is Empty</h2>
                 <p className="text-sm text-gray-500 mb-6 max-w-xs">Save items that you like to your wishlist to review them later.</p>
                 <Link
-                    to="/store"
+                    to="/user/store"
                     className="px-6 py-3 rounded-xl bg-[#2D2F6E] text-white font-bold text-sm shadow-lg hover:bg-[#1E1F4D] transition-all"
                 >
                     Explore Store
@@ -61,7 +61,7 @@ const WishlistPage = () => {
 
             {/* Quick Link to Cart if items available */}
             <Link
-                to="/cart"
+                to="/user/cart"
                 className="fixed bottom-6 right-6 w-14 h-14 bg-[#2D2F6E] text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40 md:hidden"
             >
                 <ShoppingBag size={24} />

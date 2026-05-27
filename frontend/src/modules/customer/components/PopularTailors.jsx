@@ -28,7 +28,7 @@ const PopularTailors = () => {
                     <h2 className="text-[19px] md:text-xl font-black text-gray-900 tracking-tight leading-none">Expert Tailors Near You</h2>
                     <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1">Stitching experts at your doorstep</p>
                 </div>
-                <Link to="/tailors" className="text-xs font-black text-[#2D2F6E] bg-indigo-50 px-3 py-1.5 rounded-full border border-[#2D2F6E]/10 hover:shadow-sm transition-all">
+                <Link to="/user/tailors" className="text-xs font-black text-[#2D2F6E] bg-indigo-50 px-3 py-1.5 rounded-full border border-[#2D2F6E]/10 hover:shadow-sm transition-all">
                     See All
                 </Link>
             </div>

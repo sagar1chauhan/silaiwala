@@ -90,7 +90,7 @@ const OrderTracking = () => {
                 <AlertCircle size={48} className="text-red-400 mb-4" />
                 <h2 className="text-lg font-bold text-gray-900">{error || 'Order Not Found'}</h2>
                 <button 
-                    onClick={() => navigate('/orders')} 
+                    onClick={() => navigate('/user/orders')} 
                     className="mt-6 px-8 py-3 bg-primary text-white rounded-full font-bold text-sm shadow-lg active:scale-95 transition-all"
                 >
                     Back to My Orders

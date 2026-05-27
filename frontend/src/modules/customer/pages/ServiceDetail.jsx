@@ -230,7 +230,7 @@ const ServiceDetail = () => {
         const item = await prepareDraftItem();
         addServiceItem(item);
         resetDraftForm();
-        navigate('/services');
+        navigate('/user/services');
     };
 
     const handleProceed = async () => {
@@ -239,8 +239,8 @@ const ServiceDetail = () => {
         addServiceItem(item);
         
         // Go to next step
-        if (!preSelectedTailor) navigate('/checkout/tailor');
-        else navigate('/checkout/address');
+        if (!preSelectedTailor) navigate('/user/checkout/tailor');
+        else navigate('/user/checkout/address');
     };
 
     return (

@@ -150,7 +150,7 @@ const HomeHeader = ({ user }) => {
                         </button>
 
                         <Link
-                            to="/cart"
+                            to="/user/cart"
                             className="p-2 sm:p-2.5 bg-gray-50 rounded-xl sm:rounded-2xl text-gray-400 border border-gray-100 hover:bg-white hover:text-[#2D2F6E] transition-all active:scale-90 relative"
                         >
                             <ShoppingBag size={18} />
@@ -161,7 +161,7 @@ const HomeHeader = ({ user }) => {
                             )}
                         </Link>
 
-                        <Link to="/profile" className="ml-0.5 active:scale-90 transition-transform">
+                        <Link to="/user/profile" className="ml-0.5 active:scale-90 transition-transform">
                             <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-[1rem] sm:rounded-[1.25rem] border-2 border-[#2D2F6E]/10 p-0.5 overflow-hidden shadow-sm">
                                 <img
                                     src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'User'}`}

@@ -17,7 +17,7 @@ const CartPage = () => {
     const handleCheckout = () => {
         setIsCheckoutLoading(true);
         setTimeout(() => {
-            navigate('/checkout/address'); // Proceed to checkout flow
+            navigate('/user/checkout/address'); // Proceed to checkout flow
         }, 1000);
     };
 
@@ -30,7 +30,7 @@ const CartPage = () => {
                 <h2 className="text-lg font-bold text-gray-900 mb-2">Your Cart is Empty</h2>
                 <p className="text-sm text-gray-500 mb-6 max-w-xs">Looks like you haven't added anything to your cart yet.</p>
                 <Link
-                    to="/store"
+                    to="/user/store"
                     className="px-6 py-3 rounded-xl bg-[#2D2F6E] text-white font-bold text-sm shadow-lg hover:bg-[#1E1F4D] transition-all"
                 >
                     Start Shopping

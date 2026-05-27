@@ -26,7 +26,7 @@ const EditProfile = () => {
             // useAuthStore doesn't have a setUser by default in many patterns, checking common ones
             // For now, mock success and navigate back
             setIsLoading(false);
-            navigate('/profile');
+            navigate('/user/profile');
         }, 1000);
     };
 

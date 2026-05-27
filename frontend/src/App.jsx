@@ -11,7 +11,7 @@ function App() {
   // Initialize splash state based on current path
   const [splashConfig, setSplashConfig] = useState(() => {
     const path = window.location.pathname;
-    const isSplash = path === '/' || 
+    const isSplash = path === '/user' || 
                     path === '/welcome' || 
                     path.startsWith('/partner') || 
                     path.startsWith('/delivery');

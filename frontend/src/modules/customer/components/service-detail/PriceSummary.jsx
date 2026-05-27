@@ -56,7 +56,7 @@ const PriceSummary = ({ basePrice, deliveryPrice, fabricPrice = 0, deliveryDays,
                 </div>
 
                 <button
-                    onClick={onProceed ? onProceed : () => navigate('/checkout/address')}
+                    onClick={onProceed ? onProceed : () => navigate('/user/checkout/address')}
                     className="bg-primary text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg hover:bg-primary-dark active:scale-95 transition-all flex items-center justify-center gap-2"
                 >
                     Proceed to Checkout <ArrowRight size={16} />

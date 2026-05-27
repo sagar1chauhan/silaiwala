@@ -17,7 +17,7 @@ const StoreHeader = ({ searchQuery, setSearchQuery, onOpenFilter }) => {
                 {/* Branding Row - Mobile Only */}
                 <div className="flex justify-between items-center mb-2 md:hidden">
                     <div className="flex items-center gap-2">
-                        <Link to="/" className="w-9 h-9 bg-white rounded-xl flex items-center justify-center shadow-md overflow-hidden border border-gray-50 rotate-3 active:scale-95 transition-transform">
+                        <Link to="/user" className="w-9 h-9 bg-white rounded-xl flex items-center justify-center shadow-md overflow-hidden border border-gray-50 rotate-3 active:scale-95 transition-transform">
                             <img src={silaiwalaLogo} alt="Silaiwala" className="w-full h-full object-cover" />
                         </Link>
                         <div>
@@ -27,7 +27,7 @@ const StoreHeader = ({ searchQuery, setSearchQuery, onOpenFilter }) => {
 
                     <div className="flex items-center gap-1.5">
                         <Link
-                            to="/wishlist"
+                            to="/user/wishlist"
                             className="p-2 bg-gray-50 rounded-2xl text-gray-400 border border-gray-100 hover:bg-white hover:text-[#2D2F6E] transition-all active:scale-90 relative"
                         >
                             <Heart size={18} className={wishlistCount > 0 ? "fill-[#2D2F6E] text-[#2D2F6E]" : ""} />
@@ -39,7 +39,7 @@ const StoreHeader = ({ searchQuery, setSearchQuery, onOpenFilter }) => {
                         </Link>
 
                         <Link
-                            to="/cart"
+                            to="/user/cart"
                             className="p-2 bg-gray-50 rounded-2xl text-gray-400 border border-gray-100 hover:bg-white hover:text-[#2D2F6E] transition-all active:scale-90 relative"
                         >
                             <ShoppingBag size={18} />

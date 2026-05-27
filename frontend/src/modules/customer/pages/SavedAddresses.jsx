@@ -57,7 +57,7 @@ const AddressPage = () => {
         <div className="min-h-screen bg-gray-50 pb-24 font-sans text-gray-900">
             {/* Header */}
             <header className="bg-white px-6 pt-12 pb-6 flex items-center gap-4 sticky top-0 z-30 border-b border-gray-100 shadow-sm">
-                <button onClick={() => navigate('/profile')} className="p-2 -ml-2 rounded-full hover:bg-gray-50 text-[#2D2F6E]">
+                <button onClick={() => navigate('/user/profile')} className="p-2 -ml-2 rounded-full hover:bg-gray-50 text-[#2D2F6E]">
                     <ChevronLeft size={24} />
                 </button>
                 <h1 className="text-xl font-bold text-[#2D2F6E]">Saved Addresses</h1>

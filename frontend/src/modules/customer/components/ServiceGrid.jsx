@@ -45,7 +45,7 @@ const ServiceGrid = () => {
                     <h2 className="text-xl font-bold text-gray-900">Popular Services</h2>
                     <p className="text-xs text-gray-500">Custom fitted for you</p>
                 </div>
-                <Link to="/services" state={location.state} className="text-xs font-semibold text-[#2D2F6E] flex items-center gap-1 hover:underline">
+                <Link to="/user/services" state={location.state} className="text-xs font-semibold text-[#2D2F6E] flex items-center gap-1 hover:underline">
                     View All <ArrowRight size={12} />
                 </Link>
             </div>

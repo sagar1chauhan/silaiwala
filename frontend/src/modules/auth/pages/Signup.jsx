@@ -66,7 +66,7 @@ const Signup = () => {
         }
         try {
             await signup({ ...formData, role: 'customer', otp: fullOtp });
-            navigate('/');
+            navigate('/user');
         } catch (err) {
             setError(err.message || 'Signup failed. Please try again.');
         }

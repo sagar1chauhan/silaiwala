@@ -22,7 +22,7 @@ const CheckoutAddress = () => {
 
     const handleProceed = () => {
         if (selectedAddressId) {
-            navigate('/checkout/summary'); // Next step (Step 4)
+            navigate('/user/checkout/summary'); // Next step (Step 4)
         }
     };
 

@@ -418,8 +418,8 @@ const BulkOrderRequest = () => {
             <h2 className="text-lg font-black text-gray-900 mb-1">Submitted!</h2>
             <p className="text-[10px] text-gray-500 mb-6 uppercase tracking-widest px-4">Expert review in progress. Quote ready in 24h.</p>
             <div className="space-y-2">
-                <button onClick={() => navigate('/bulk-orders')} className="w-full py-3 bg-gray-900 text-white rounded-xl font-black text-[9px] uppercase tracking-widest">Track Inquiries</button>
-                <button onClick={() => navigate('/')} className="w-full py-3 bg-white text-gray-400 rounded-xl font-black text-[9px] uppercase border border-gray-100">Home</button>
+                <button onClick={() => navigate('/user/bulk-orders')} className="w-full py-3 bg-gray-900 text-white rounded-xl font-black text-[9px] uppercase tracking-widest">Track Inquiries</button>
+                <button onClick={() => navigate('/user')} className="w-full py-3 bg-white text-gray-400 rounded-xl font-black text-[9px] uppercase border border-gray-100">Home</button>
             </div>
         </motion.div>
     );

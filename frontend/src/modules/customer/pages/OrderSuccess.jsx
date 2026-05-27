@@ -16,7 +16,7 @@ const OrderSuccess = () => {
 
     // Redirect if direct access without order data
     if (!orderId) {
-        return <Navigate to="/" replace />;
+        return <Navigate to="/user" replace />;
     }
 
     return (
@@ -46,7 +46,7 @@ const OrderSuccess = () => {
                 </Link>
 
                 <Link
-                    to="/"
+                    to="/user"
                     className="w-full py-3.5 rounded-full bg-gray-50 text-gray-700 font-bold hover:bg-gray-100 transition-all flex items-center justify-center gap-2"
                 >
                     <ShoppingBag size={18} />

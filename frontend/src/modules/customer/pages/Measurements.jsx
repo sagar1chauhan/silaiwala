@@ -93,7 +93,7 @@ const MeasurementsPage = () => {
             {/* Header */}
             <header className="bg-white px-6 pt-12 pb-6 flex items-center gap-4 sticky top-0 z-30 border-b border-gray-100 shadow-sm">
                 <button 
-                    onClick={() => navigate('/profile')}
+                    onClick={() => navigate('/user/profile')}
                     className="p-2 -ml-2 rounded-full hover:bg-gray-50 text-primary"
                 >
                     <ChevronLeft size={24} />

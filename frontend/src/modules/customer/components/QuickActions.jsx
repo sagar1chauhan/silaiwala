@@ -12,27 +12,27 @@ const actions = [
     {
         label: 'Tailors',
         icon: <Users size={ICON_SIZE} color={ICON_COLOR} strokeWidth={STROKE_WIDTH} />,
-        path: '/tailors'
+        path: '/user/tailors'
     },
     {
         label: 'Store',
         icon: <ShoppingBag size={ICON_SIZE} color={ICON_COLOR} strokeWidth={STROKE_WIDTH} />,
-        path: '/store'
+        path: '/user/store'
     },
     {
         label: 'My Orders',
         icon: <ClipboardList size={ICON_SIZE} color={ICON_COLOR} strokeWidth={STROKE_WIDTH} />,
-        path: '/orders'
+        path: '/user/orders'
     },
     {
         label: 'Stitching',
         icon: <Scissors size={ICON_SIZE} color={ICON_COLOR} strokeWidth={STROKE_WIDTH} />,
-        path: '/services'
+        path: '/user/services'
     },
     {
         label: 'Style Add-ons',
         icon: <Sparkles size={ICON_SIZE} color={ICON_COLOR} strokeWidth={STROKE_WIDTH} />,
-        path: '/embellishments'
+        path: '/user/embellishments'
     },
     {
         label: 'Bridal',
@@ -42,12 +42,12 @@ const actions = [
     {
         label: 'Bulk Order',
         icon: <Layers size={ICON_SIZE} color={ICON_COLOR} strokeWidth={STROKE_WIDTH} />,
-        path: '/bulk-order'
+        path: '/user/bulk-order'
     },
     {
         label: 'Embroidery',
         icon: <Feather size={ICON_SIZE} color={ICON_COLOR} strokeWidth={STROKE_WIDTH} />,
-        path: '/embroidery'
+        path: '/user/embroidery'
     }
 ];
 

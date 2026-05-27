@@ -46,7 +46,7 @@ const Login = () => {
                 tailor: '/partner',
                 delivery: '/delivery',
                 admin: '/admin'
-            }[user.role] || '/';
+            }[user.role] || '/user';
             navigate(redirectPath);
         } catch (err) {
             setError(err.message || 'Invalid OTP');

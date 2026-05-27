@@ -91,28 +91,28 @@ const ProfilePage = () => {
                             color="bg-[#2D2F6E]"
                             label="My Orders"
                             subLabel="Track, Return, Feedback"
-                            to="/orders"
+                            to="/user/orders"
                         />
                         <MenuOption
                             icon={MapPin}
                             color="bg-[#2D2F6E]"
                             label="Saved Addresses"
                             subLabel="Manage Pickup & Delivery locations"
-                            to="/profile/addresses"
+                            to="/user/profile/addresses"
                         />
                         <MenuOption
                             icon={Ruler}
                             color="bg-[#2D2F6E]"
                             label="My Measurements"
                             subLabel="Saved Body Profiles"
-                            to="/profile/measurements"
+                            to="/user/profile/measurements"
                         />
                         <MenuOption
                             icon={Package}
                             color="bg-[#2D2F6E]"
                             label="Bulk Inquiries"
                             subLabel="Wholesale & Corporate Tracking"
-                            to="/bulk-orders"
+                            to="/user/bulk-orders"
                         />
                     </div>
                 </div>
@@ -127,7 +127,7 @@ const ProfilePage = () => {
                             label="Loyalty Points"
                             subLabel="Redeem your rewards"
                             extra={<span className="bg-gray-100 text-[10px] font-black px-2.5 py-1 rounded-full text-gray-900 border border-gray-200">0</span>}
-                            to="/rewards"
+                            to="/user/rewards"
                         />
                         <MenuOption
                             icon={Wallet}
@@ -135,14 +135,14 @@ const ProfilePage = () => {
                             label="Wallet"
                             subLabel="Your balance"
                             extra={<span className="bg-green-50 text-[10px] font-black px-2.5 py-1 rounded-full text-green-600 border border-green-100 italic">₹ 0</span>}
-                            to="/wallet"
+                            to="/user/wallet"
                         />
                         <MenuOption
                             icon={Ticket}
                             color="bg-[#2D2F6E]"
                             label="Coupons"
                             subLabel="View available offers"
-                            to="/coupons"
+                            to="/user/coupons"
                         />
                         <MenuOption
                             icon={Share2}
@@ -150,7 +150,7 @@ const ProfilePage = () => {
                             label="Refer & Earn"
                             subLabel="Invite friends, earn rewards"
                             extra={<span className="bg-[#2D2F6E] text-[8px] font-black px-2 py-0.5 rounded-full text-white animate-pulse">NEW</span>}
-                            to="/refer"
+                            to="/user/refer"
                         />
                     </div>
                 </div>
@@ -165,21 +165,21 @@ const ProfilePage = () => {
                             label="Language"
                             subLabel="Change app language"
                             extra={<span className="text-[10px] font-bold text-gray-400 mr-1">EN</span>}
-                            to="/settings/language"
+                            to="/user/settings/language"
                         />
                         <MenuOption
                             icon={Bell}
                             color="bg-[#2D2F6E]"
                             label="Notifications"
                             subLabel="Manage preferences"
-                            to="/settings/notifications"
+                            to="/user/settings/notifications"
                         />
                         <MenuOption
                             icon={MessageSquare}
                             color="bg-[#2D2F6E]"
                             label="Support"
                             subLabel="Get help & chat with us"
-                            to="/support"
+                            to="/user/support"
                         />
                     </div>
                 </div>

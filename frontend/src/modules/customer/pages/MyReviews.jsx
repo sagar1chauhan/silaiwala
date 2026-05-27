@@ -60,7 +60,7 @@ const MyReviews = () => {
                         <h2 className="text-xl font-black text-gray-900 mb-2">No reviews yet</h2>
                         <p className="text-sm text-gray-500 mb-8 max-w-[200px] mx-auto">Share your feedback on your completed orders.</p>
                         <button 
-                            onClick={() => navigate('/orders')}
+                            onClick={() => navigate('/user/orders')}
                             className="px-8 py-3 bg-primary text-white rounded-full font-bold text-sm shadow-lg active:scale-95 transition-all outline-none"
                         >
                             View Completed Orders

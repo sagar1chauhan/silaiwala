@@ -25,7 +25,7 @@ const CustomerMainLayout = () => {
             <header className="hidden md:block sticky top-0 z-[110] bg-white/80 backdrop-blur-2xl border-b border-gray-100/50 shadow-sm transition-all duration-300">
                 <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
                     {/* Brand */}
-                    <Link to="/" className="flex items-center gap-3 group">
+                    <Link to="/user" className="flex items-center gap-3 group">
                         <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md overflow-hidden border border-gray-50 rotate-3 group-hover:rotate-0 transition-transform">
                             <img src={silaiwalaLogo} alt="SewZella" className="w-full h-full object-cover" />
                         </div>
@@ -76,7 +76,7 @@ const CustomerMainLayout = () => {
                         <button className="p-2.5 bg-gray-50 rounded-2xl text-gray-400 border border-gray-100 hover:bg-white hover:text-[#2D2F6E] transition-all relative">
                             <Search size={20} />
                         </button>
-                        <Link to="/cart" className="p-2.5 bg-gray-50 rounded-2xl text-gray-400 border border-gray-100 hover:bg-white hover:text-[#2D2F6E] transition-all relative">
+                        <Link to="/user/cart" className="p-2.5 bg-gray-50 rounded-2xl text-gray-400 border border-gray-100 hover:bg-white hover:text-[#2D2F6E] transition-all relative">
                             <ShoppingBag size={20} />
                             {cartCount > 0 && (
                                 <span className="absolute -top-1 -right-1 h-5 w-5 bg-[#2D2F6E] text-white text-[10px] font-black flex items-center justify-center rounded-full border-2 border-white shadow-md">
@@ -84,7 +84,7 @@ const CustomerMainLayout = () => {
                                 </span>
                             )}
                         </Link>
-                        <Link to="/profile" className="flex items-center gap-3 pl-2 border-l border-gray-100 ml-2">
+                        <Link to="/user/profile" className="flex items-center gap-3 pl-2 border-l border-gray-100 ml-2">
                             <div className="w-10 h-10 rounded-xl border-2 border-[#2D2F6E]/10 p-0.5 overflow-hidden shadow-sm hover:border-[#2D2F6E]/30 transition-all">
                                 <img
                                     src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'User'}`}

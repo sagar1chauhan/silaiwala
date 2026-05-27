@@ -69,7 +69,7 @@ const CheckoutSummary = () => {
     const handlePayment = async () => {
         if (!selectedAddress) {
             toast.error('Please select a delivery address first');
-            navigate('/checkout/address');
+            navigate('/user/checkout/address');
             return;
         }
 
@@ -282,7 +282,7 @@ const CheckoutSummary = () => {
                                 Delivery Details
                             </h3>
                             <button
-                                onClick={() => navigate('/checkout/address')}
+                                onClick={() => navigate('/user/checkout/address')}
                                 className="text-[10px] font-bold text-[#2D2F6E] uppercase tracking-wider hover:underline"
                             >
                                 Change
@@ -299,7 +299,7 @@ const CheckoutSummary = () => {
                                 <MapPin size={32} className="mx-auto text-amber-500 opacity-50" />
                                 <p className="text-xs font-bold text-amber-900">No Address Selected</p>
                                 <button
-                                    onClick={() => navigate('/checkout/address')}
+                                    onClick={() => navigate('/user/checkout/address')}
                                     className="px-4 py-2 bg-amber-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest"
                                 >
                                     Select Now

@@ -179,7 +179,7 @@ const Embellishments = () => {
                     </div>
 
                     <button
-                        onClick={() => navigate('/services')}
+                        onClick={() => navigate('/user/services')}
                         className={cn(
                             "w-full py-4 rounded-xl font-black text-[11px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg",
                             calculateTotal() > 0 ? "bg-primary text-white shadow-primary/20 active:scale-[0.98]" : "bg-gray-100 text-gray-400"

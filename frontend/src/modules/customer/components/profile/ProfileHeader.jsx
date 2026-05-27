@@ -20,7 +20,7 @@ const ProfileHeader = ({ user, stats }) => {
                             <span className="text-2xl font-black text-[#2D2F6E] italic">{user?.name?.charAt(0) || 'U'}</span>
                         )}
                     </div>
-                    <Link to="/profile/edit" className="absolute -bottom-0.5 -right-0.5 bg-gray-900 text-white p-1.5 rounded-xl shadow-lg hover:bg-[#2D2F6E] transition-all transform hover:scale-110">
+                    <Link to="/user/profile/edit" className="absolute -bottom-0.5 -right-0.5 bg-gray-900 text-white p-1.5 rounded-xl shadow-lg hover:bg-[#2D2F6E] transition-all transform hover:scale-110">
                         <Camera size={12} />
                     </Link>
                 </div>

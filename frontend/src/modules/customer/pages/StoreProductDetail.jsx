@@ -38,7 +38,7 @@ const StoreProductDetail = () => {
             <div className="min-h-screen flex flex-col items-center justify-center gap-4">
                 <div className="w-8 h-8 rounded-full border-2 border-[#2D2F6E] border-r-transparent animate-spin"></div>
                 <p className="text-gray-500 font-bold">Loading Product...</p>
-                <Link to="/store" className="text-[#2D2F6E] underline text-sm font-bold">Return to Store</Link>
+                <Link to="/user/store" className="text-[#2D2F6E] underline text-sm font-bold">Return to Store</Link>
             </div>
         );
     }
@@ -83,7 +83,7 @@ const StoreProductDetail = () => {
             return;
         }
         addToCart(productData, { size: selectedSize, color: selectedColor.name });
-        navigate('/cart');
+        navigate('/user/cart');
     };
 
     return (
@@ -125,7 +125,7 @@ const StoreProductDetail = () => {
                     >
                         <Heart size={20} className={isWishlisted ? "fill-current" : ""} />
                     </button>
-                    <Link to="/cart" className="p-2 relative text-white hover:bg-white/10 rounded-full transition-colors">
+                    <Link to="/user/cart" className="p-2 relative text-white hover:bg-white/10 rounded-full transition-colors">
                         <ShoppingCart size={20} />
                         <span className="absolute top-1 right-0 w-2 h-2 bg-indigo-500 rounded-full border border-[#2D2F6E]" />
                     </Link>

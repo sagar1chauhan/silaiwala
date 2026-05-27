@@ -98,7 +98,7 @@ const MyBulkOrders = () => {
                         <h3 className="text-lg font-black text-gray-900 leading-tight">No Bulk Inquiries Found</h3>
                         <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest mt-2">Scale your team's look Today</p>
                         <button
-                            onClick={() => navigate('/bulk-order')}
+                            onClick={() => navigate('/user/bulk-order')}
                             className="mt-8 px-8 py-3 bg-[#2D2F6E] text-white rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all shadow-lg shadow-[#2D2F6E]/20"
                         >
                             Start First Bulk Request

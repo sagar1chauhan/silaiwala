@@ -41,7 +41,7 @@ const TailorSelection = () => {
             tailorId: tailorUserId,
             tailorName: tailor.shopName || tailor.user?.name
         });
-        navigate('/checkout/address');
+        navigate('/user/checkout/address');
     };
 
     if (isLoading) {

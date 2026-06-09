@@ -8,6 +8,7 @@ const Customer = require("../../../models/Customer");
 const Category = require("../../../models/Category");
 const CMSContent = require("../../../models/CMSContent");
 const Product = require("../../../models/Product");
+const ContactMessage = require("../../../models/ContactMessage");
 const PromoCode = require("../../../models/PromoCode");
 const Payout = require("../../../models/Payout");
 const Settings = require("../../../models/Settings");
@@ -601,6 +602,51 @@ exports.updateOrderStatus = async (req, res) => {
   }
 };
 
+
+// --- REPORTS MANAGEMENT ---
+
+exports.generateReport = async (req, res) => {
+  try {
+    const { type, startDate, endDate } = req.query;
+    res.status(200).json({ success: true, message: "Report generated (Mocked data)" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// --- CONTACT INQUIRIES MANAGEMENT ---
+
+exports.getContactMessages = async (req, res) => {
+  try {
+    const messages = await ContactMessage.find().sort("-createdAt");
+    res.status(200).json({ success: true, count: messages.length, data: messages });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.updateContactMessageStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    if (!["pending", "resolved"].includes(status)) {
+      return res.status(400).json({ success: false, message: "Invalid status" });
+    }
+
+    const message = await ContactMessage.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+
+    if (!message) {
+      return res.status(404).json({ success: false, message: "Message not found" });
+    }
+
+    res.status(200).json({ success: true, data: message });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 // --- CMS & MARKETING (BANNERS) ---
 

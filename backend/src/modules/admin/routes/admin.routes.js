@@ -45,6 +45,8 @@ const {
   getSettings,
   updateSettings,
   generateReport,
+  getContactMessages,
+  updateContactMessageStatus,
 } = require("../controllers/admin.controller");
 
 const router = express.Router();
@@ -91,6 +93,10 @@ router.get("/cms/content", getAllCMSContent);
 router.post("/cms/content", createCMSContent);
 router.put("/cms/content/:id", updateCMSContent);
 router.delete("/cms/content/:id", deleteCMSContent);
+
+// Contact Inquiries
+router.get("/cms/contact", getContactMessages);
+router.put("/cms/contact/:id", updateContactMessageStatus);
 
 // File Uploads
 router.post("/upload-image", upload.single("image"), uploadImage);

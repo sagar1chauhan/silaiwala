@@ -1,6 +1,7 @@
 const Banner = require("../../../models/Banner");
 const CMSContent = require("../../../models/CMSContent");
 const Settings = require("../../../models/Settings");
+const ContactMessage = require("../../../models/ContactMessage");
 
 // --- PUBLIC CMS CONTROLLERS ---
 
@@ -47,6 +48,26 @@ exports.getCMSContentBySlug = async (req, res) => {
       return res.status(404).json({ success: false, message: "Content not found" });
     }
     res.status(200).json({ success: true, data: content });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.submitContactMessage = async (req, res) => {
+  try {
+    const { firstName, lastName, email, message } = req.body;
+    if (!firstName || !lastName || !email || !message) {
+      return res.status(400).json({ success: false, message: "All fields are required" });
+    }
+
+    const newMessage = await ContactMessage.create({
+      firstName,
+      lastName,
+      email,
+      message
+    });
+
+    res.status(201).json({ success: true, message: "Contact message submitted successfully", data: newMessage });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

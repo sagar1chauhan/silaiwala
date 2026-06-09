@@ -308,6 +308,7 @@ const SewZellaLanding = () => {
               <ul className="space-y-4">
                 <li className="text-white/60 text-sm">concierge@sewzella.com</li>
                 <li className="text-white/60 text-sm">+1 (800) 555-0199</li>
+                <li><Link to="/page/contact-us" className="text-[var(--color-gold)] font-medium text-sm hover:text-white transition-colors uppercase tracking-widest text-[10px]">Send us a message</Link></li>
               </ul>
             </div>
           </div>
@@ -317,9 +318,9 @@ const SewZellaLanding = () => {
               &copy; {new Date().getFullYear()} SewZella Bespoke Tailoring. Handcrafted Excellence.
             </p>
             <div className="flex gap-6 text-white/40 text-xs tracking-wider uppercase">
-              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-white transition-colors">Accessibility Report</a>
+              <Link to="/page/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+              <Link to="/page/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link>
+              <Link to="/page/accessibility-report" className="hover:text-white transition-colors">Accessibility Report</Link>
             </div>
           </div>
         </div>

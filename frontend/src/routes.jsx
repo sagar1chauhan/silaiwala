@@ -98,6 +98,7 @@ import BulkOrderRequest from './modules/customer/pages/BulkOrderRequest'; // NEW
 import MyBulkOrders from './modules/customer/pages/MyBulkOrders'; // NEW
 import EmbroideryPage from './modules/customer/pages/Embroidery'; // NEW
 import SewZellaLanding from './modules/landing/SewZellaLanding'; // NEW
+import LandingCMSPage from './modules/landing/LandingCMSPage'; // NEW
 
 const AppRoutes = () => {
     return (
@@ -128,6 +129,7 @@ const AppRoutes = () => {
 
             {/* Landing Route */}
             <Route path="/" element={<SewZellaLanding />} />
+            <Route path="/page/:slug" element={<LandingCMSPage />} />
 
             {/* Customer Public Routes */}
             <Route path="/welcome" element={<CustomerOnboarding />} />

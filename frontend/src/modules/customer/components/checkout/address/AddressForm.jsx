@@ -1,72 +1,94 @@
 import React, { useState } from 'react';
 import { Home, Briefcase, ChevronRight, Navigation } from 'lucide-react';
 import useAddressStore from '../../../../../store/userStore';
+import { validateName, validatePhone, validatePincode } from '../../../../../utils/validation';
+import useAuthStore from '../../../../../store/authStore';
+import useLocationStore from '../../../../../store/locationStore';
+import { useGoogleLocation } from '../../../../../hooks/useGoogleLocation';
 
-const InputField = ({ label, name, placeholder, type = "text", required, form, errors, setForm, setErrors }) => (
+const InputField = ({ label, name, placeholder, type = "text", required, form, errors, setForm, setErrors, maxLength, prefix }) => (
     <div className="mb-3">
         <label className="text-[10px] uppercase font-bold text-gray-400 mb-1 block">{label} {required && "*"}</label>
-        <input
-            type={type}
-            placeholder={placeholder}
-            value={form[name]}
-            onChange={(e) => {
-                setForm({ ...form, [name]: e.target.value });
-                if (errors[name]) setErrors({ ...errors, [name]: null });
-            }}
-            className={`w-full text-xs font-semibold p-2.5 rounded-lg border focus:outline-none focus:ring-1 transition-all ${errors[name] ? "border-red-300 focus:border-red-500 bg-indigo-50" : "border-gray-200 focus:border-primary bg-gray-50/50 focus:bg-white"
+        <div className="relative flex items-center">
+            {prefix && (
+                <span className="absolute left-3 text-xs font-bold text-gray-800">
+                    {prefix}
+                </span>
+            )}
+            <input
+                type={type}
+                maxLength={maxLength}
+                placeholder={placeholder}
+                value={form[name]}
+                onChange={(e) => {
+                    let val = e.target.value;
+                    if (name === 'phone' || name === 'zipCode') {
+                        val = val.replace(/\D/g, '');
+                    }
+                    setForm({ ...form, [name]: val });
+                    if (errors[name]) setErrors({ ...errors, [name]: null });
+                }}
+                className={`w-full text-xs font-semibold p-2.5 rounded-lg border focus:outline-none focus:ring-1 transition-all ${prefix ? 'pl-9' : ''} ${
+                    errors[name] ? "border-red-300 focus:border-red-500 bg-indigo-50" : "border-gray-200 focus:border-primary bg-gray-50/50 focus:bg-white"
                 }`}
-        />
+            />
+        </div>
         {errors[name] && <span className="text-[9px] text-error font-medium ml-1">{errors[name]}</span>}
     </div>
 );
 
 const AddressForm = ({ onCancel, onSuccess }) => {
     const addAddress = useAddressStore((state) => state.addAddress);
-    const [isLocating, setIsLocating] = useState(false);
+    const isLoading = useAddressStore((state) => state.isLoading);
+    const user = useAuthStore((state) => state.user);
+    const { detectLocation, isLocating } = useGoogleLocation();
 
     const [form, setForm] = useState({
-        receiverName: '', phone: '', zipCode: '',
-        street: '', city: '', state: '', type: 'Home'
+        receiverName: user?.name || user?.fullName || '',
+        phone: user?.phone || user?.phoneNumber || '',
+        zipCode: '',
+        street: '', city: '', state: '', type: 'Home',
+        location: null
     });
 
     const [errors, setErrors] = useState({});
 
-    const handleAutoLocation = () => {
-        setIsLocating(true);
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(async (position) => {
-                try {
-                    const { latitude, longitude } = position.coords;
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
-                    const data = await res.json();
-                    
-                    if (data && data.address) {
-                        const addr = data.address;
-                        setForm(prev => ({
-                            ...prev,
-                            street: data.display_name || '',
-                            city: addr.city || addr.town || addr.village || addr.suburb || '',
-                            state: addr.state || '',
-                            zipCode: addr.postcode || ''
-                        }));
+    const handleAutoLocation = async () => {
+        try {
+            const data = await detectLocation();
+            if (data) {
+                setForm(prev => ({
+                    ...prev,
+                    street: data.address,
+                    city: data.city || '',
+                    state: data.state || '',
+                    zipCode: data.pincode || '',
+                    location: {
+                        type: 'Point',
+                        coordinates: [data.longitude, data.latitude]
                     }
-                } catch (error) {
-                    console.error("Geocoding failed:", error);
-                } finally {
-                    setIsLocating(false);
-                }
-            }, (error) => {
-                alert("Location access denied. Please enter manually.");
-                setIsLocating(false);
-            });
+                }));
+                
+                useLocationStore.getState().setLocation(data.address, data.latitude, data.longitude);
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Could not fetch address details automatically. Please enter manually.");
         }
     };
 
     const validate = () => {
         const newErrors = {};
-        if (!form.receiverName.trim()) newErrors.receiverName = "Required";
-        if (!form.phone.match(/^\d{10}$/)) newErrors.phone = "Invalid Phone";
-        if (!form.zipCode.match(/^\d{6}$/)) newErrors.zipCode = "Invalid Pin";
+        
+        const nameErr = validateName(form.receiverName, "Contact Name");
+        if (nameErr) newErrors.receiverName = nameErr;
+        
+        const phoneErr = validatePhone(form.phone);
+        if (phoneErr) newErrors.phone = phoneErr;
+        
+        const pinErr = validatePincode(form.zipCode);
+        if (pinErr) newErrors.zipCode = pinErr;
+        
         if (!form.street.trim()) newErrors.street = "Required";
         if (!form.city.trim()) newErrors.city = "Required";
 
@@ -74,11 +96,15 @@ const AddressForm = ({ onCancel, onSuccess }) => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (validate()) {
-            addAddress(form);
-            onSuccess && onSuccess();
+            try {
+                await addAddress(form);
+                onSuccess && onSuccess();
+            } catch (err) {
+                console.error("Add address failed", err);
+            }
         }
     };
 
@@ -110,11 +136,11 @@ const AddressForm = ({ onCancel, onSuccess }) => {
             <form onSubmit={handleSubmit}>
                 <div className="grid grid-cols-2 gap-3">
                     <InputField label="Contact Name" name="receiverName" placeholder="John Doe" required form={form} errors={errors} setForm={setForm} setErrors={setErrors} />
-                    <InputField label="Phone Number" name="phone" placeholder="9876543210" required form={form} errors={errors} setForm={setForm} setErrors={setErrors} />
+                    <InputField label="Phone Number" name="phone" type="tel" maxLength={10} prefix="+91" placeholder="9876543210" required form={form} errors={errors} setForm={setForm} setErrors={setErrors} />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                    <InputField label="Pincode" name="zipCode" placeholder="110001" required form={form} errors={errors} setForm={setForm} setErrors={setErrors} />
+                    <InputField label="Pincode" name="zipCode" type="tel" maxLength={6} placeholder="110001" required form={form} errors={errors} setForm={setForm} setErrors={setErrors} />
                     <InputField label="City" name="city" placeholder="New Delhi" required form={form} errors={errors} setForm={setForm} setErrors={setErrors} />
                 </div>
 
@@ -147,15 +173,17 @@ const AddressForm = ({ onCancel, onSuccess }) => {
                     <button
                         type="button"
                         onClick={onCancel}
+                        disabled={isLoading}
                         className="py-2.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-50 transition-colors"
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
-                        className="py-2.5 rounded-xl bg-primary text-white text-xs font-bold shadow-lg shadow-indigo-900/10 hover:bg-primary-dark active:scale-95 transition-all flex items-center justify-center gap-2"
+                        disabled={isLoading}
+                        className={`py-2.5 rounded-xl bg-primary text-white text-xs font-bold shadow-lg shadow-indigo-900/10 transition-all flex items-center justify-center gap-2 ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary-dark active:scale-95'}`}
                     >
-                        Save Address <ChevronRight size={14} />
+                        {isLoading ? 'Saving...' : 'Save Address'} <ChevronRight size={14} />
                     </button>
                 </div>
             </form>

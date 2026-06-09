@@ -1,5 +1,16 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+
+import { AuthProvider as TailorAuthProvider } from './modules/tailor/context/AuthContext';
+import { NotificationProvider as TailorNotificationProvider } from './modules/tailor/context/NotificationContext';
+
+const TailorContextWrapper = () => (
+    <TailorAuthProvider>
+        <TailorNotificationProvider>
+            <Outlet />
+        </TailorNotificationProvider>
+    </TailorAuthProvider>
+);
 
 // Layouts
 import AuthLayout from './layouts/AuthLayout';
@@ -7,85 +18,86 @@ import TailorLayout from './layouts/TailorLayout';
 import AdminLayout from './layouts/AdminLayout';
 
 // Auth Pages
-import Login from './modules/auth/pages/Login';
-import Signup from './modules/auth/pages/Signup';
+const Login = React.lazy(() => import('./modules/auth/pages/Login'));
+const Signup = React.lazy(() => import('./modules/auth/pages/Signup'));
 
 // Tailor Module Pages
-import TailorLogin from './modules/tailor/pages/Login';
-import TailorRegistration from './modules/tailor/pages/Registration';
+const TailorLogin = React.lazy(() => import('./modules/tailor/pages/Login'));
+const TailorRegistration = React.lazy(() => import('./modules/tailor/pages/Registration'));
 import { UnderReview, RejectedPage } from './modules/tailor/pages/StatusPages';
 import TailorProtectedRoute from './modules/tailor/components/ProtectedRoute';
 import TailorAuthLayout from './modules/tailor/layouts/TailorAuthLayout';
 import { TAILOR_STATUS } from './modules/tailor/context/AuthContext';
-import TailorOverview from './modules/tailor/pages/Overview';
-import TailorOrders from './modules/tailor/pages/Orders';
-import TailorProducts from './modules/tailor/pages/Products';
-import DeliveryDetails from './modules/tailor/pages/DeliveryDetails';
-import VerificationStatus from './modules/tailor/pages/VerificationStatus';
-import SubscriptionSettings from './modules/tailor/pages/Subscription';
-import ProfileSettings from './modules/tailor/pages/ProfileSettings';
-import TailorWithdraw from './modules/tailor/pages/Withdraw';
-import TailorNotifications from './modules/tailor/pages/Notifications';
-import WalletPage from './modules/common/pages/WalletPage';
-import TailorEarnings from './modules/tailor/pages/TailorEarnings';
-import MeasurementList from './modules/tailor/pages/MeasurementList';
-import MeasurementDetail from './modules/tailor/pages/MeasurementDetail';
-import PartnerLanding from './modules/tailor/pages/PartnerLanding';
+const TailorOverview = React.lazy(() => import('./modules/tailor/pages/Overview'));
+const TailorOrders = React.lazy(() => import('./modules/tailor/pages/Orders'));
+const TailorProducts = React.lazy(() => import('./modules/tailor/pages/Products'));
+const DeliveryDetails = React.lazy(() => import('./modules/tailor/pages/DeliveryDetails'));
+const VerificationStatus = React.lazy(() => import('./modules/tailor/pages/VerificationStatus'));
+const SubscriptionSettings = React.lazy(() => import('./modules/tailor/pages/Subscription'));
+const ProfileSettings = React.lazy(() => import('./modules/tailor/pages/ProfileSettings'));
+const TailorWithdraw = React.lazy(() => import('./modules/tailor/pages/Withdraw'));
+const TailorNotifications = React.lazy(() => import('./modules/tailor/pages/Notifications'));
+const WalletPage = React.lazy(() => import('./modules/common/pages/WalletPage'));
+const TailorEarnings = React.lazy(() => import('./modules/tailor/pages/TailorEarnings'));
+const MeasurementList = React.lazy(() => import('./modules/tailor/pages/MeasurementList'));
+const MeasurementDetail = React.lazy(() => import('./modules/tailor/pages/MeasurementDetail'));
+const PartnerLanding = React.lazy(() => import('./modules/tailor/pages/PartnerLanding'));
 
 // Customer Pages
-import CustomerHome from './modules/customer/pages/Home';
-import ServicesPage from './modules/customer/pages/Services';
-import ServiceDetailPage from './modules/customer/pages/ServiceDetail';
-import StorePage from './modules/customer/pages/Store'; // NEW
-import StoreProductDetail from './modules/customer/pages/StoreProductDetail'; // NEW
-import OrdersPage from './modules/customer/pages/Orders'; // NEW
-import ProfilePage from './modules/customer/pages/Profile'; // NEW
-import EditProfile from './modules/customer/pages/EditProfile'; // NEW
-import CheckoutAddress from './modules/customer/pages/CheckoutAddress'; // NEW
-import CheckoutSummary from './modules/customer/pages/CheckoutSummary'; // NEW
-import OrderSuccess from './modules/customer/pages/OrderSuccess'; // NEW
-import OrderTracking from './modules/customer/pages/OrderTracking'; // NEW
-import CartPage from './modules/customer/pages/Cart'; // NEW
-import WishlistPage from './modules/customer/pages/Wishlist'; // NEW
-import TailorProfile from './modules/customer/pages/TailorProfile'; // NEW
-import TailorListing from './modules/customer/pages/TailorListing'; // NEW
-import TailorSelection from './modules/customer/pages/TailorSelection'; // NEW
+const CustomerHome = React.lazy(() => import('./modules/customer/pages/Home'));
+const ServicesPage = React.lazy(() => import('./modules/customer/pages/Services'));
+const ServiceDetailPage = React.lazy(() => import('./modules/customer/pages/ServiceDetail'));
+const StorePage = React.lazy(() => import('./modules/customer/pages/Store')); // NEW
+const StoreProductDetail = React.lazy(() => import('./modules/customer/pages/StoreProductDetail')); // NEW
+const OrdersPage = React.lazy(() => import('./modules/customer/pages/Orders')); // NEW
+const ProfilePage = React.lazy(() => import('./modules/customer/pages/Profile')); // NEW
+const EditProfile = React.lazy(() => import('./modules/customer/pages/EditProfile')); // NEW
+const CheckoutAddress = React.lazy(() => import('./modules/customer/pages/CheckoutAddress')); // NEW
+const CheckoutSummary = React.lazy(() => import('./modules/customer/pages/CheckoutSummary')); // NEW
+const OrderSuccess = React.lazy(() => import('./modules/customer/pages/OrderSuccess')); // NEW
+const OrderTracking = React.lazy(() => import('./modules/customer/pages/OrderTracking')); // NEW
+const CartPage = React.lazy(() => import('./modules/customer/pages/Cart')); // NEW
+const WishlistPage = React.lazy(() => import('./modules/customer/pages/Wishlist')); // NEW
+const TailorProfile = React.lazy(() => import('./modules/customer/pages/TailorProfile')); // NEW
+const TailorListing = React.lazy(() => import('./modules/customer/pages/TailorListing')); // NEW
+const TailorSelection = React.lazy(() => import('./modules/customer/pages/TailorSelection')); // NEW
 import CustomerProtectedRoute from './modules/customer/components/CustomerProtectedRoute';
 import CustomerMainLayout from './modules/customer/layouts/CustomerMainLayout';
-import CustomerOnboarding from './modules/customer/pages/Onboarding';
+const CustomerOnboarding = React.lazy(() => import('./modules/customer/pages/Onboarding'));
 import { NotificationProvider as CustomerNotificationProvider } from './modules/customer/context/NotificationContext';
 
 // Delivery Pages
-import DeliveryDashboard from './modules/delivery/pages/Dashboard/DeliveryDashboard';
-import DeliveryTasks from './modules/delivery/pages/Tasks/Tasks';
-import DeliveryHistory from './modules/delivery/pages/History/DeliveryHistory';
-import DeliveryProfile from './modules/delivery/pages/Profile/DeliveryProfile';
-import DeliveryLogin from './modules/delivery/pages/Login';
-import DeliverySignup from './modules/delivery/pages/Signup';
-import DeliveryForgotPassword from './modules/delivery/pages/ForgotPassword';
-import DeliveryResetPassword from './modules/delivery/pages/ResetPassword';
+const DeliveryDashboard = React.lazy(() => import('./modules/delivery/pages/Dashboard/DeliveryDashboard'));
+const DeliveryTasks = React.lazy(() => import('./modules/delivery/pages/Tasks/Tasks'));
+const DeliveryHistory = React.lazy(() => import('./modules/delivery/pages/History/DeliveryHistory'));
+const DeliveryProfile = React.lazy(() => import('./modules/delivery/pages/Profile/DeliveryProfile'));
+const DeliveryLogin = React.lazy(() => import('./modules/delivery/pages/Login'));
+const DeliverySignup = React.lazy(() => import('./modules/delivery/pages/Signup'));
+const DeliveryForgotPassword = React.lazy(() => import('./modules/delivery/pages/ForgotPassword'));
+const DeliveryResetPassword = React.lazy(() => import('./modules/delivery/pages/ResetPassword'));
 import DeliveryLayout from './modules/delivery/layouts/DeliveryLayout';
 import DeliveryAuthLayout from './modules/delivery/layouts/DeliveryAuthLayout';
 import DeliveryProtectedRoute from './modules/delivery/components/DeliveryProtectedRoute';
-import DeliveryWallet from './modules/delivery/pages/Wallet/DeliveryWallet';
+const DeliveryWallet = React.lazy(() => import('./modules/delivery/pages/Wallet/DeliveryWallet'));
 
 // Admin Pages
-import AdminDashboard from './modules/admin/pages/Dashboard';
-import AdminOrders from './modules/admin/pages/Orders';
-import AdminTailors from './modules/admin/pages/Tailors';
-import AdminDelivery from './modules/admin/pages/Delivery';
-import AdminCustomers from './modules/admin/pages/Customers';
-import AdminServices from './modules/admin/pages/Services';
-import AdminStore from './modules/admin/pages/Store';
-import AdminFinance from './modules/admin/pages/Finance';
-import AdminCMS from './modules/admin/pages/CMS';
-import AdminReports from './modules/admin/pages/Reports';
-import AdminSettings from './modules/admin/pages/Settings';
-import AdminLogin from './modules/admin/pages/Login';
-import AdminStyleAddons from './modules/admin/pages/StyleAddons';
-import AdminBulkOrders from './modules/admin/pages/BulkOrders';
+const AdminDashboard = React.lazy(() => import('./modules/admin/pages/Dashboard'));
+const AdminOrders = React.lazy(() => import('./modules/admin/pages/Orders'));
+const AdminTailors = React.lazy(() => import('./modules/admin/pages/Tailors'));
+const AdminDelivery = React.lazy(() => import('./modules/admin/pages/Delivery'));
+const AdminCustomers = React.lazy(() => import('./modules/admin/pages/Customers'));
+const AdminServices = React.lazy(() => import('./modules/admin/pages/Services'));
+const AdminStore = React.lazy(() => import('./modules/admin/pages/Store'));
+const AdminFinance = React.lazy(() => import('./modules/admin/pages/Finance'));
+const AdminCMS = React.lazy(() => import('./modules/admin/pages/CMS'));
+const AdminReports = React.lazy(() => import('./modules/admin/pages/Reports'));
+const AdminSettings = React.lazy(() => import('./modules/admin/pages/Settings'));
+const AdminLogin = React.lazy(() => import('./modules/admin/pages/Login'));
+const AdminStyleAddons = React.lazy(() => import('./modules/admin/pages/StyleAddons'));
+const AdminBulkOrders = React.lazy(() => import('./modules/admin/pages/BulkOrders'));
 import AdminProtectedRoute from './modules/admin/components/AdminProtectedRoute';
 
+<<<<<<< HEAD
 import ReferEarn from './modules/customer/pages/ReferEarn'; // NEW
 import FabricDetail from './modules/customer/pages/FabricDetail'; // NEW
 import Measurements from './modules/customer/pages/Measurements'; // NEW
@@ -99,9 +111,24 @@ import MyBulkOrders from './modules/customer/pages/MyBulkOrders'; // NEW
 import EmbroideryPage from './modules/customer/pages/Embroidery'; // NEW
 import SewZellaLanding from './modules/landing/SewZellaLanding'; // NEW
 import LandingCMSPage from './modules/landing/LandingCMSPage'; // NEW
+=======
+const ReferEarn = React.lazy(() => import('./modules/customer/pages/ReferEarn')); // NEW
+const FabricDetail = React.lazy(() => import('./modules/customer/pages/FabricDetail')); // NEW
+const Measurements = React.lazy(() => import('./modules/customer/pages/Measurements')); // NEW
+const SavedAddresses = React.lazy(() => import('./modules/customer/pages/SavedAddresses')); // NEW
+const Support = React.lazy(() => import('./modules/customer/pages/Support')); // NEW
+const CMSContent = React.lazy(() => import('./modules/customer/pages/CMSContent')); // NEW
+const Embellishments = React.lazy(() => import('./modules/customer/pages/Embellishments')); // NEW
+const MyReviews = React.lazy(() => import('./modules/customer/pages/MyReviews')); // NEW
+const BulkOrderRequest = React.lazy(() => import('./modules/customer/pages/BulkOrderRequest')); // NEW
+const MyBulkOrders = React.lazy(() => import('./modules/customer/pages/MyBulkOrders')); // NEW
+const EmbroideryPage = React.lazy(() => import('./modules/customer/pages/Embroidery')); // NEW
+const SewZellaLanding = React.lazy(() => import('./modules/landing/SewZellaLanding')); // NEW
+>>>>>>> 0119936d9dfc540b863f7889a05e48ddf6043b88
 
 const AppRoutes = () => {
     return (
+        <React.Suspense fallback={<div className="flex items-center justify-center min-h-screen font-black text-[#2D2F6E] animate-pulse">Loading...</div>}>
         <Routes>
             {/* ... Auth Routes ... */}
             <Route element={<AuthLayout />}>
@@ -109,15 +136,6 @@ const AppRoutes = () => {
                 <Route path="/signup" element={<Signup />} />
             </Route>
 
-            {/* Partner Landing Page */}
-            <Route path="/partner/welcome" element={<PartnerLanding />} />
-
-            {/* Partner Public Auth Routes */}
-            <Route element={<TailorAuthLayout />}>
-                <Route path="/partner/login" element={<TailorLogin />} />
-                <Route path="/partner/signup" element={<TailorRegistration />} />
-                <Route path="/partner/register" element={<Navigate to="/partner/signup" replace />} />
-            </Route>
 
             {/* Delivery Auth Routes - Using custom design */}
             <Route element={<DeliveryAuthLayout />}>
@@ -176,29 +194,48 @@ const AppRoutes = () => {
                 </Route>
             </Route>
 
-            {/* Tailor/Partner Public Routes */}
-            <Route path="/partner/under-review" element={<UnderReview />} />
-            <Route path="/partner/rejected" element={<RejectedPage />} />
+            {/* === TAILOR / PARTNER MODULE === */}
+            <Route element={<TailorContextWrapper />}>
+                {/* Partner Landing Page */}
+                <Route path="/partner/welcome" element={<PartnerLanding />} />
 
-            {/* Tailor/Partner Protected Routes */}
-            <Route element={<TailorProtectedRoute requiredStatus={[TAILOR_STATUS.APPROVED]} />}>
-                <Route element={<TailorLayout />}>
-                    <Route path="/partner" element={<TailorOverview />} />
-                    <Route path="/partner/orders" element={<TailorOrders />} />
-                    <Route path="/partner/portfolio" element={<TailorProducts />} />
-                    <Route path="/partner/earnings" element={<TailorEarnings />} />
-                    <Route path="/partner/wallet" element={<TailorEarnings />} />
-                    <Route path="/partner/products" element={<TailorProducts />} />
-                    <Route path="/partner/delivery" element={<DeliveryDetails />} />
-                    <Route path="/partner/verification" element={<VerificationStatus />} />
-                    <Route path="/partner/subscription" element={<SubscriptionSettings />} />
-                    <Route path="/partner/settings" element={<ProfileSettings />} />
-                    <Route path="/partner/measurements" element={<MeasurementList />} />
-                    <Route path="/partner/measurements/:id" element={<MeasurementDetail />} />
+                {/* Partner Public Auth Routes */}
+                <Route element={<TailorAuthLayout />}>
+                    <Route path="/partner/login" element={<TailorLogin />} />
+                    <Route path="/partner/signup" element={<TailorRegistration />} />
+                    <Route path="/partner/register" element={<Navigate to="/partner/signup" replace />} />
                 </Route>
-                {/* Full screen tailor views separated from layout nav */}
-                <Route path="/partner/withdraw" element={<TailorWithdraw />} />
-                <Route path="/partner/notifications" element={<TailorNotifications />} />
+
+                {/* Tailor/Partner Public Routes */}
+                <Route path="/partner/under-review" element={<UnderReview />} />
+                <Route path="/partner/rejected" element={<RejectedPage />} />
+
+                {/* Tailor/Partner Verification Route (Accessible by Pending, Rejected, and Approved) */}
+                <Route element={<TailorProtectedRoute requiredStatus={[TAILOR_STATUS.APPROVED, TAILOR_STATUS.PENDING_APPROVAL, TAILOR_STATUS.REJECTED]} />}>
+                    <Route element={<TailorLayout />}>
+                        <Route path="/partner/verification" element={<VerificationStatus />} />
+                    </Route>
+                </Route>
+
+                {/* Tailor/Partner Protected Routes (Approved Only) */}
+                <Route element={<TailorProtectedRoute requiredStatus={[TAILOR_STATUS.APPROVED]} />}>
+                    <Route element={<TailorLayout />}>
+                        <Route path="/partner" element={<TailorOverview />} />
+                        <Route path="/partner/orders" element={<TailorOrders />} />
+                        <Route path="/partner/portfolio" element={<TailorProducts />} />
+                        <Route path="/partner/earnings" element={<TailorEarnings />} />
+                        <Route path="/partner/wallet" element={<TailorEarnings />} />
+                        <Route path="/partner/products" element={<TailorProducts />} />
+                        <Route path="/partner/delivery" element={<DeliveryDetails />} />
+                        <Route path="/partner/subscription" element={<SubscriptionSettings />} />
+                        <Route path="/partner/settings" element={<ProfileSettings />} />
+                        <Route path="/partner/measurements" element={<MeasurementList />} />
+                        <Route path="/partner/measurements/:id" element={<MeasurementDetail />} />
+                    </Route>
+                    {/* Full screen tailor views separated from layout nav */}
+                    <Route path="/partner/withdraw" element={<TailorWithdraw />} />
+                    <Route path="/partner/notifications" element={<TailorNotifications />} />
+                </Route>
             </Route>
 
             {/* Delivery Routes */}
@@ -236,6 +273,7 @@ const AppRoutes = () => {
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </React.Suspense>
     );
 };
 

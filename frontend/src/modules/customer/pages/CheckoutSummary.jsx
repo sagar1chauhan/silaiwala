@@ -9,6 +9,7 @@ import useCartStore from '../../../store/cartStore';
 import BillDetails from '../components/checkout/summary/BillDetails';
 import ServiceReviewCard from '../components/checkout/summary/ServiceReviewCard';
 import { cn } from '../../../utils/cn';
+import { calculateDistance } from '../../../utils/distance';
 
 import useOrderStore from '../../../store/orderStore';
 
@@ -16,14 +17,18 @@ const CheckoutSummary = () => {
     const navigate = useNavigate();
     const {
         serviceItems,
-        clearCheckout
+        buyNowItem,
+        isBuyNowMode,
+        clearCheckout,
+        removeServiceItem
     } = useCheckoutStore(state => state);
     const { items: cartItems, getTotalPrice, clearCart } = useCartStore(state => state);
     const selectedAddress = useAddressStore(state => state.getSelectedAddress());
 
     const addOrder = useOrderStore(state => state.addOrder);
 
-    const isServiceCheckout = serviceItems.length > 0;
+    const currentCheckoutItems = isBuyNowMode && buyNowItem ? [buyNowItem] : serviceItems;
+    const isServiceCheckout = currentCheckoutItems.length > 0;
     const isCartCheckout = cartItems.length > 0;
 
     const [isProcessing, setIsProcessing] = useState(false);
@@ -31,23 +36,111 @@ const CheckoutSummary = () => {
     const location = useLocation();
     const bulkOrderId = location.state?.bulkOrderId;
 
-    // ... (bulk order fetch remains same)
+    const [roadDistances, setRoadDistances] = useState({});
+    const [isCalculatingDistance, setIsCalculatingDistance] = useState(false);
+
+    // Redirect if cart becomes empty
+    useEffect(() => {
+        if (!bulkOrderId && currentCheckoutItems.length === 0 && cartItems.length === 0) {
+            navigate('/user/services');
+        }
+    }, [currentCheckoutItems.length, cartItems.length, bulkOrderId, navigate]);
+
+    // Fetch Road Distance dynamically if needed
+    useEffect(() => {
+        if (!selectedAddress?.location?.coordinates || !isServiceCheckout) return;
+
+        const fetchDistances = async () => {
+            const newDistances = { ...roadDistances };
+            let needsUpdate = false;
+            let fetching = false;
+
+            for (const item of currentCheckoutItems) {
+                if (item.configuration.isTailorAtHome && item.serviceDetails?.tailorCoordinates) {
+                    const [uLng, uLat] = selectedAddress.location.coordinates;
+                    const cacheKey = `${item.basketId}_${uLat}_${uLng}`;
+
+                    if (roadDistances[item.basketId]?.key !== cacheKey) {
+                        fetching = true;
+                        setIsCalculatingDistance(true);
+                        try {
+                            const [tLng, tLat] = item.serviceDetails.tailorCoordinates;
+                            const res = await api.post('/distance/calculate', {
+                                origin: [tLat, tLng],
+                                destination: [uLat, uLng]
+                            });
+
+                            if (res.data.success) {
+                                const distanceKm = res.data.data.distance;
+                                const visitSettings = { baseFee: 299, perKmFee: 20, freeKm: 5 };
+                                let fee = visitSettings.baseFee;
+                                if (distanceKm > visitSettings.freeKm) {
+                                    fee = Math.round(visitSettings.baseFee + (distanceKm - visitSettings.freeKm) * visitSettings.perKmFee);
+                                }
+                                newDistances[item.basketId] = { key: cacheKey, fee };
+                                needsUpdate = true;
+                            }
+                        } catch (err) {
+                            console.error("Failed to fetch road distance:", err);
+                        }
+                    }
+                }
+            }
+
+            if (needsUpdate) {
+                setRoadDistances(newDistances);
+            }
+            if (fetching) {
+                setIsCalculatingDistance(false);
+            }
+        };
+
+        fetchDistances();
+    }, [selectedAddress, currentCheckoutItems, isServiceCheckout]);
 
     // Pricing Logic
     const getServicePricing = () => {
-        if (serviceItems.length === 0) return { total: 0, base: 0, taxes: 0, delivery: 0 };
-        return serviceItems.reduce((acc, item) => {
-            // Safety cap for testing: If an item in basket is > 10000, treat it as 499 for Razorpay testing
-            const itemTotal = item.pricing.total > 10000 ? 599 : item.pricing.total;
+        if (currentCheckoutItems.length === 0) return { total: 0, base: 0, taxes: 0, delivery: 0, addons: 0, tailorAtHome: 0 };
+        return currentCheckoutItems.reduce((acc, item) => {
             const itemBase = item.pricing.base > 10000 ? 499 : item.pricing.base;
+            let dynamicTailorAtHome = item.pricing.tailorAtHome || 0;
+
+            if (item.configuration.isTailorAtHome && selectedAddress?.location?.coordinates && item.serviceDetails?.tailorCoordinates) {
+                const [uLng, uLat] = selectedAddress.location.coordinates;
+                const cacheKey = `${item.basketId}_${uLat}_${uLng}`;
+                
+                if (roadDistances[item.basketId] && roadDistances[item.basketId].key === cacheKey) {
+                    dynamicTailorAtHome = roadDistances[item.basketId].fee;
+                } else {
+                    try {
+                        const [tLng, tLat] = item.serviceDetails.tailorCoordinates;
+                        const distance = calculateDistance(uLat, uLng, tLat, tLng);
+                        const visitSettings = { baseFee: 299, perKmFee: 20, freeKm: 5 };
+                        if (distance <= visitSettings.freeKm) {
+                            dynamicTailorAtHome = visitSettings.baseFee;
+                        } else {
+                            dynamicTailorAtHome = Math.round(visitSettings.baseFee + (distance - visitSettings.freeKm) * visitSettings.perKmFee);
+                        }
+                    } catch (err) {
+                        console.error("Distance recalculation failed:", err);
+                    }
+                }
+            }
+
+            const itemTaxes = item.pricing.taxes || 0;
+            const itemDelivery = item.pricing.delivery || 0;
+            const itemAddons = item.pricing.addons || 0;
+            const newTotal = itemBase + itemTaxes + itemDelivery + itemAddons + dynamicTailorAtHome;
 
             return {
-                total: acc.total + itemTotal,
+                total: acc.total + newTotal,
                 base: acc.base + itemBase,
-                taxes: acc.taxes + item.pricing.taxes,
-                delivery: acc.delivery + item.pricing.delivery
+                taxes: acc.taxes + itemTaxes,
+                delivery: acc.delivery + itemDelivery,
+                addons: acc.addons + itemAddons,
+                tailorAtHome: acc.tailorAtHome + dynamicTailorAtHome
             };
-        }, { total: 0, base: 0, taxes: 0, delivery: 0 });
+        }, { total: 0, base: 0, taxes: 0, delivery: 0, addons: 0, tailorAtHome: 0 });
     };
 
     const currentPricing = bulkOrder
@@ -80,10 +173,10 @@ const CheckoutSummary = () => {
             if (!bulkOrderId) {
                 let payload;
                 if (isServiceCheckout) {
-                    const firstItemTailor = serviceItems[0]?.serviceDetails?.tailorId || serviceItems[0]?.serviceDetails?.tailor;
+                    const firstItemTailor = currentCheckoutItems[0]?.serviceDetails?.tailorId || currentCheckoutItems[0]?.serviceDetails?.tailor;
                     payload = {
                         tailorId: firstItemTailor,
-                        items: serviceItems.map(item => ({
+                        items: currentCheckoutItems.map(item => ({
                             service: item.serviceDetails.id || item.serviceDetails._id,
                             fabricSource: item.configuration.fabricSource,
                             deliveryType: item.configuration.deliveryType,
@@ -212,7 +305,15 @@ const CheckoutSummary = () => {
 
             <div className="max-w-5xl mx-auto p-4 flex flex-col lg:flex-row gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
 
-                <div className="flex-1 space-y-4">
+                <div className="flex-1 space-y-6">
+                
+                {isCalculatingDistance && (
+                    <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl flex items-center gap-3 text-blue-700 animate-pulse">
+                        <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                        <span className="text-sm font-bold">Calculating precise road distance for Tailor visit...</span>
+                    </div>
+                )}
+
                     {/* 2. Review Section */}
                     {bulkOrderId && bulkOrder ? (
                         <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm mb-4 relative overflow-hidden">
@@ -242,12 +343,14 @@ const CheckoutSummary = () => {
                         </div>
                     ) : isServiceCheckout ? (
                         <div className="space-y-4">
-                            <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Service Bundle ({serviceItems.length} items)</h3>
-                            {serviceItems.map((item, idx) => (
+                            <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">{isBuyNowMode ? 'Book Now Item' : `Service Bundle (${currentCheckoutItems.length} items)`}</h3>
+                            {currentCheckoutItems.map((item, idx) => (
                                 <ServiceReviewCard
-                                    key={idx}
+                                    key={item.basketId || idx}
                                     service={item.serviceDetails}
                                     config={item.configuration}
+                                    pricing={item.pricing}
+                                    onRemove={!isBuyNowMode ? () => removeServiceItem(idx) : undefined}
                                 />
                             ))}
                         </div>
@@ -303,6 +406,7 @@ const CheckoutSummary = () => {
                                     className="px-4 py-2 bg-amber-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest"
                                 >
                                     Select Now
+
                                 </button>
                             </div>
                         )}
@@ -316,7 +420,7 @@ const CheckoutSummary = () => {
                     {/* 5. Payment Method */}
                     <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
                         <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-                            <CreditCard size={16} className="text-[#2D2F6E]" />
+                            <CreditCard size={15} className="text-[#2D2F6E]" />
                             Payment Method
                         </h3>
                         <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 flex items-center gap-3">

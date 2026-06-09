@@ -3,12 +3,13 @@ import { MapPin, ChevronDown, Check, Loader2, Navigation, Search } from 'lucide-
 import { motion, AnimatePresence } from 'framer-motion';
 
 import useLocationStore from '../../../store/locationStore';
+import { useGoogleLocation } from '../../../hooks/useGoogleLocation';
 
 const LocationBar = () => {
     const { address: location, setLocation, coordinates } = useLocationStore();
     const [isEditing, setIsEditing] = useState(false);
     const [tempLocation, setTempLocation] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+    const { detectLocation, isLocating: isLoading } = useGoogleLocation();
 
     const handleSave = () => {
         if (tempLocation.trim()) {
@@ -20,24 +21,17 @@ const LocationBar = () => {
         }
     };
 
-    const handleDetectLocation = () => {
-        setIsLoading(true);
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(async (position) => {
-                const { latitude, longitude } = position.coords;
-                // Reverse geocoding would happen here, showing mock for now
-                setTimeout(() => {
-                    const mockAddress = "HSR Layout, Bangalore - 560102";
-                    setLocation(mockAddress, latitude, longitude);
-                    setIsLoading(false);
-                    setIsEditing(false);
-                }, 1500);
-            }, (error) => {
-                alert("Location access denied.");
-                setIsLoading(false);
-            });
-        } else {
-            setIsLoading(false);
+    const handleDetectLocation = async () => {
+        try {
+            const data = await detectLocation();
+            if (data) {
+                setLocation(data.address, data.latitude, data.longitude);
+            }
+        } catch (error) {
+            console.error(error);
+            alert(error.message || "Failed to detect location.");
+        } finally {
+            setIsEditing(false);
         }
     };
 

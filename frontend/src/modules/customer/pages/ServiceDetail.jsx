@@ -48,6 +48,7 @@ const ServiceDetail = () => {
         addServiceItem, 
         serviceItems,
         removeServiceItem,
+        setBuyNowMode,
         serviceDetails: storedDetails 
     } = useCheckoutStore(state => state);
     const addMeasurement = useMeasurementStore(state => state.addMeasurement);
@@ -69,9 +70,11 @@ const ServiceDetail = () => {
     const [selectedSavedProfile, setSelectedSavedProfile] = useState(null);
     const [measurements, setMeasurements] = useState(null);
     const [visitSettings, setVisitSettings] = useState({ baseFee: 150, perKmFee: 20, freeKm: 3 });
+    const [gstPercentage, setGstPercentage] = useState(5);
     const userCoords = useLocationStore(state => state.coordinates);
 
     const [showFooter, setShowFooter] = useState(false);
+    const [showPriceBreakdown, setShowPriceBreakdown] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -94,7 +97,12 @@ const ServiceDetail = () => {
                 ]);
 
                 if (results[0].status === 'fulfilled') {
-                    setServiceData(results[0].value.data.data);
+                    const service = results[0].value.data.data;
+                    setServiceData(service);
+                    // Pre-select tailor if it came directly with the service
+                    if (service.tailor && !results[1].value) {
+                        setPreSelectedTailor(service.tailor);
+                    }
                 }
                 if (results[1].status === 'fulfilled' && results[1].value) {
                     setPreSelectedTailor(results[1].value.data.data);
@@ -105,10 +113,15 @@ const ServiceDetail = () => {
                     setSelectedFabric(location.state.selectedFabric);
                 }
 
-                // Fetch visit settings
+                // Fetch global settings
                 const settingsRes = await api.get('/cms/settings');
-                if (settingsRes.data.success && settingsRes.data.data.visitFee) {
-                    setVisitSettings(settingsRes.data.data.visitFee);
+                if (settingsRes.data.success) {
+                    if (settingsRes.data.data.visitFee) {
+                        setVisitSettings(settingsRes.data.data.visitFee);
+                    }
+                    if (settingsRes.data.data.pricing?.gstPercentage !== undefined) {
+                        setGstPercentage(settingsRes.data.data.pricing.gstPercentage);
+                    }
                 }
             } catch (error) {
                 console.error('Failed to fetch service/tailor detail:', error);
@@ -154,7 +167,7 @@ const ServiceDetail = () => {
 
     const tailorAtHomePrice = calculateVisitPrice();
     const subtotal = basePrice + deliveryPrice + fabricPrice + addonsPrice + tailorAtHomePrice;
-    const taxes = Math.round(subtotal * 0.05);
+    const taxes = Math.round(subtotal * (gstPercentage / 100));
     const currentTotal = subtotal + taxes;
 
     // Grand Total (Basket + Current)
@@ -201,8 +214,9 @@ const ServiceDetail = () => {
         return {
             serviceDetails: {
                 ...serviceData,
-                tailorId: preSelectedTailor?._id || null,
-                tailorName: preSelectedTailor?.shopName || preSelectedTailor?.user?.name || null
+                tailorId: preSelectedTailor?._id || serviceData?.tailor?._id || null,
+                tailorName: preSelectedTailor?.shopName || preSelectedTailor?.user?.name || serviceData?.tailor?.shopName || serviceData?.tailor?.user?.name || null,
+                tailorCoordinates: preSelectedTailor?.location?.coordinates || serviceData?.tailor?.location?.coordinates || null
             },
             configuration: { 
                 deliveryType, 
@@ -219,6 +233,7 @@ const ServiceDetail = () => {
                 addons: addonsPrice,
                 tailorAtHome: tailorAtHomePrice,
                 taxes, 
+                gstPercentage,
                 total: currentTotal, 
                 deliveryDays: getDeliveryDays() 
             },
@@ -230,17 +245,32 @@ const ServiceDetail = () => {
         const item = await prepareDraftItem();
         addServiceItem(item);
         resetDraftForm();
-        navigate('/user/services');
+        // Stay on page and show a success toast
+        import('react-hot-toast').then(({ toast }) => {
+            toast.success('Item added to basket', {
+                icon: '🛒',
+                style: {
+                    borderRadius: '10px',
+                    background: '#333',
+                    color: '#fff',
+                },
+            });
+        });
     };
 
-    const handleProceed = async () => {
+    const handleBuyNow = async () => {
         const item = await prepareDraftItem();
-        // Add current drafting to the basket
-        addServiceItem(item);
         
-        // Go to next step
-        if (!preSelectedTailor) navigate('/user/checkout/tailor');
-        else navigate('/user/checkout/address');
+        // Use 'Book Now' mode instead of adding to basket
+        setBuyNowMode(true, item);
+        
+        // Auto-select logic: if the service belongs to a tailor OR user came from tailor profile
+        const targetTailor = preSelectedTailor || serviceData?.tailor;
+        if (!targetTailor) {
+            navigate('/user/checkout/tailor');
+        } else {
+            navigate('/user/checkout/address');
+        }
     };
 
     return (
@@ -453,13 +483,19 @@ const ServiceDetail = () => {
                                 <div className="flex flex-col">
                                     <div className="flex items-center gap-1.5 mb-0.5">
                                         <span className="text-[9px] font-black text-primary uppercase tracking-tighter">
-                                            {serviceItems.length > 0 ? `Total Bundle (${serviceItems.length + 1} items)` : 'Live Bill'}
+                                            Live Bill
                                         </span>
                                         <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
                                     </div>
                                     <h4 className="text-xl font-black text-gray-900 flex items-baseline gap-1 leading-none">
                                         ₹{grandTotal.toLocaleString()}
                                         <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Incl. GST</span>
+                                        <button 
+                                            onClick={() => setShowPriceBreakdown(!showPriceBreakdown)}
+                                            className="ml-1 p-0.5 rounded-full hover:bg-gray-100 transition-colors"
+                                        >
+                                            {showPriceBreakdown ? <ChevronDown size={14} className="text-gray-500" /> : <ChevronUp size={14} className="text-gray-500" />}
+                                        </button>
                                     </h4>
                                 </div>
                                 <div className="text-right">
@@ -486,6 +522,62 @@ const ServiceDetail = () => {
                             </div>
 
                             {/* Action Buttons */}
+                            <AnimatePresence>
+                                {showPriceBreakdown && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        className="overflow-hidden mb-3"
+                                    >
+                                        <div className="bg-gray-50 rounded-xl p-3 border border-gray-100 space-y-1.5 text-xs text-gray-600">
+                                            {serviceItems.length > 0 && (
+                                                <div className="flex justify-between font-medium">
+                                                    <span>Previous Basket Items ({serviceItems.length})</span>
+                                                    <span>₹{basketTotal.toLocaleString()}</span>
+                                                </div>
+                                            )}
+                                            <div className="flex justify-between">
+                                                <span>Current Item Base</span>
+                                                <span>₹{basePrice.toLocaleString()}</span>
+                                            </div>
+                                            {fabricPrice > 0 && (
+                                                <div className="flex justify-between text-indigo-600">
+                                                    <span>Fabric</span>
+                                                    <span>+₹{fabricPrice.toLocaleString()}</span>
+                                                </div>
+                                            )}
+                                            {deliveryPrice > 0 && (
+                                                <div className="flex justify-between text-amber-600">
+                                                    <span>{deliveryType} Delivery</span>
+                                                    <span>+₹{deliveryPrice.toLocaleString()}</span>
+                                                </div>
+                                            )}
+                                            {addonsPrice > 0 && (
+                                                <div className="flex justify-between text-emerald-600">
+                                                    <span>Style Addons</span>
+                                                    <span>+₹{addonsPrice.toLocaleString()}</span>
+                                                </div>
+                                            )}
+                                            {tailorAtHomePrice > 0 && (
+                                                <div className="flex justify-between text-sky-600">
+                                                    <span>Tailor At Home Fee</span>
+                                                    <span>+₹{tailorAtHomePrice.toLocaleString()}</span>
+                                                </div>
+                                            )}
+                                            <div className="flex justify-between text-gray-400 pb-1 border-b border-gray-200">
+                                                <span>GST ({gstPercentage}%)</span>
+                                                <span>+₹{taxes.toLocaleString()}</span>
+                                            </div>
+                                            <div className="flex justify-between font-bold text-gray-900 pt-1">
+                                                <span>Total Amount</span>
+                                                <span>₹{grandTotal.toLocaleString()}</span>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+
                             <div className="flex gap-2">
                                 <button
                                     onClick={handleAddMore}
@@ -497,11 +589,11 @@ const ServiceDetail = () => {
                                             : "border-gray-100 text-gray-300 cursor-not-allowed"
                                     )}
                                 >
-                                    <Tag size={16} /> Add Another
+                                    <Tag size={16} /> Add to Basket
                                 </button>
                                 
                                 <button
-                                    onClick={handleProceed}
+                                    onClick={handleBuyNow}
                                     disabled={!measurementType || (measurementType !== 'saved' && !measurements)}
                                     className={cn(
                                         "flex-[2.5] py-2.5 rounded-lg font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg",
@@ -511,7 +603,7 @@ const ServiceDetail = () => {
                                     )}
                                 >
                                     {measurementType && (measurementType === 'saved' || measurements) ? (
-                                        <>Confirm & Checkout ({serviceItems.length + 1}) <ChevronRight size={16} /></>
+                                        <>Book Now <ChevronRight size={16} /></>
                                     ) : (
                                         <>Enter Details to Proceed</>
                                     )}

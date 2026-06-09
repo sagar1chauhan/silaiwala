@@ -175,7 +175,10 @@ exports.verifyPayment = asyncHandler(async (req, res, next) => {
  * @access  Private (Customer)
  */
 exports.createOrder = asyncHandler(async (req, res, next) => {
-  const { tailorId, items, totalAmount, deliveryAddress, promoCode } = req.body;
+  const { tailorId, items, totalAmount, deliveryAddress, promoCode, customerId } = req.body;
+
+  // Determine correct customer ID
+  const finalCustomerId = (req.user.role === 'admin' && customerId) ? customerId : req.user.id;
 
   // 1. Validation: Ensure tailor exists and is active (Check both User and Tailor Profile IDs)
   let tailor = await User.findOne({ _id: tailorId, role: { $in: ["tailor", "admin"] } });
@@ -248,7 +251,7 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
   // 6. Create Order with optimized object
   const order = await Order.create({
     orderId,
-    customer: req.user.id,
+    customer: finalCustomerId,
     tailor: targetTailorUserId,
     items: formattedItems,
     totalAmount: finalAmount,
@@ -294,19 +297,15 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
 exports.getMyOrders = asyncHandler(async (req, res, next) => {
   let query = {};
 
-  // Role-based filtering
-  if (req.user.role === "customer") {
-    query = { customer: req.user.id };
-  } else if (req.user.role === "tailor") {
-    query = { tailor: req.user.id };
-  } else if (req.user.role === "delivery") {
-    // Delivery partners see orders they are currently delivering
-    query = { deliveryPartner: req.user.id };
-  }
+  // This endpoint is used by the customer app, so we always look for orders where the user is the customer
+  query = { customer: req.user.id };
 
   const orders = await Order.find(query)
     .populate("tailor", "name shopName profileImage")
     .populate("customer", "name phoneNumber")
+    .populate("items.service", "title image")
+    .populate("items.product", "name image images")
+    .populate("items.selectedFabric", "name image images")
     .sort("-createdAt")
     .lean();
 
@@ -327,6 +326,9 @@ exports.getOrderDetails = asyncHandler(async (req, res, next) => {
     .populate("customer", "name phoneNumber")
     .populate("tailor", "name shopName phoneNumber")
     .populate("deliveryPartner", "name phoneNumber profileImage")
+    .populate("items.service", "title image")
+    .populate("items.product", "name image images")
+    .populate("items.selectedFabric", "name image images")
     .lean();
 
   if (!order) {

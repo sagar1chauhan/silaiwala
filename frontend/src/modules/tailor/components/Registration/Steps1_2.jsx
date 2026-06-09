@@ -1,93 +1,174 @@
 import React, { useState } from 'react';
-import { Input, FileUpload } from '../UIElements';
+import { Input } from '../UIElements';
+import ImageUploader from '../../../../components/Common/ImageUploader';
+import api from '../../services/api';
+import toast from 'react-hot-toast';
+import { Navigation } from 'lucide-react';
+import { useGoogleLocation } from '../../../../hooks/useGoogleLocation';
 
 export const Step1Basic = ({ register, errors, setValue, watch }) => {
     const profileImage = watch('profileImage');
     const phone = watch('phone');
     const [otpSent, setOtpSent] = useState(false);
 
-    const handleSendOTP = () => {
-        // Here you would typically make an API call to send the OTP
-        if (phone && phone.length >= 10) {
-            setOtpSent(true);
-            // Mocking OTP send success
-            console.log('OTP Sent to', phone);
+    const [isSending, setIsSending] = useState(false);
+
+    const handleSendOTP = async () => {
+        if (phone && /^[6-9]\d{9}$/.test(phone)) {
+            setIsSending(true);
+            try {
+                // 1. First verify phone doesn't already exist
+                const checkRes = await api.post('/auth/check-user', { phoneNumber: phone });
+                if (checkRes.data.exists) {
+                    toast.error(checkRes.data.message || 'This phone number is already registered');
+                    setIsSending(false);
+                    return;
+                }
+
+                // 2. If it doesn't exist, send OTP
+                const response = await api.post('/auth/send-otp', { phoneNumber: phone });
+                if (response.data.success) {
+                    setOtpSent(true);
+                    toast.success('OTP sent successfully!');
+                } else {
+                    toast.error(response.data.message || 'Failed to send OTP');
+                }
+            } catch (error) {
+                toast.error(error.response?.data?.message || 'Error sending OTP');
+            } finally {
+                setIsSending(false);
+            }
         }
     };
 
     return (
         <div className="space-y-4 animate-in slide-in-from-right duration-300">
-            <div className="flex flex-col items-center gap-3 mb-2">
-                <div className="relative h-20 w-20 bg-gray-100 rounded-3xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden group">
-                    {profileImage ? (
-                        <img src={URL.createObjectURL(profileImage)} className="h-full w-full object-cover" alt="Profile" />
-                    ) : (
-                        <div className="text-gray-300">
-                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                        </div>
-                    )}
-                    <input
-                        type="file"
-                        className="absolute inset-0 opacity-0 cursor-pointer"
-                        onChange={(e) => setValue('profileImage', e.target.files[0])}
-                    />
-                </div>
-                <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest text-center">
-                    Upload Profile Picture
-                </p>
+            <div className="mb-2">
+                <ImageUploader 
+                    label="Upload Profile Picture"
+                    value={profileImage}
+                    onChange={(file) => setValue('profileImage', file, { shouldValidate: true })}
+                />
             </div>
 
             <Input
                 label="Full Name"
                 placeholder="Enter your full name"
-                {...register('fullName', { required: 'Name is required' })}
+                {...register('fullName', { 
+                    required: 'Name is required',
+                    minLength: { value: 2, message: 'Name must be at least 2 characters' }
+                })}
                 error={errors.fullName?.message}
             />
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 items-stretch sm:items-end w-full">
-                <div className="flex-1">
-                    <Input
-                        label="Phone Number"
-                        placeholder="+91 00000 00000"
-                        {...register('phone', { required: 'Phone is required' })}
-                        error={errors.phone?.message}
-                    />
+                <div className="flex-1 space-y-1.5 group">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2 transition-colors group-focus-within:text-[#2D2F6F]">Phone Number</label>
+                    <div className={`flex items-center px-4 sm:px-5 py-3 sm:py-3.5 bg-[#F8F9FD] border-2 rounded-2xl focus-within:bg-white transition-all duration-300 ${errors.phone ? 'border-red-100 bg-red-50/30' : 'border-transparent focus-within:border-[#2D2F6F]'}`}>
+                        <span className="text-gray-800 font-bold text-sm mr-2">+91</span>
+                        <div className="w-px h-5 bg-slate-200 mr-2" />
+                        <input
+                            type="tel"
+                            placeholder="00000 00000"
+                            maxLength={10}
+                            {...register('phone', {
+                                required: 'Phone is required',
+                                pattern: {
+                                    value: /^[6-9]\d{9}$/,
+                                    message: 'Invalid 10-digit mobile number starting with 6-9'
+                                },
+                                onChange: (e) => {
+                                    e.target.value = e.target.value.replace(/\D/g, '');
+                                }
+                            })}
+                            className="flex-1 bg-transparent border-none focus:ring-0 font-medium text-sm text-gray-900 placeholder:text-gray-300 outline-none w-full"
+                        />
+                    </div>
+                    {errors.phone && <p className="text-[10px] text-red-500 font-bold pl-2">{errors.phone.message}</p>}
                 </div>
                 <button
                     type="button"
                     onClick={handleSendOTP}
-                    disabled={!phone || phone.length < 10 || otpSent}
+                    disabled={!phone || !/^[6-9]\d{9}$/.test(phone) || otpSent || isSending}
                     className="w-full sm:w-auto px-4 py-3 h-[48px] sm:h-[52px] bg-primary text-white rounded-2xl font-bold text-sm whitespace-nowrap active:scale-95 disabled:opacity-50 disabled:active:scale-100 transition-all shadow-lg shadow-indigo-900/10 sm:mb-1"
                 >
-                    {otpSent ? 'OTP Sent' : 'Send OTP'}
+                    {isSending ? 'Sending...' : (otpSent ? 'OTP Sent' : 'Send OTP')}
                 </button>
             </div>
+            {otpSent && (
+                <div className="animate-in slide-in-from-top-2 duration-300">
+                    <Input
+                        label="Verification Code (OTP)"
+                        placeholder="Enter 6-digit OTP"
+                        maxLength={6}
+                        {...register('otp', { 
+                            required: 'OTP is required',
+                            pattern: {
+                                value: /^\d{6}$/,
+                                message: 'OTP must be 6 digits'
+                            },
+                            onChange: (e) => {
+                                e.target.value = e.target.value.replace(/\D/g, '');
+                            }
+                        })}
+                        error={errors.otp?.message}
+                    />
+                </div>
+            )}
             <Input
                 label="Email Address"
                 type="email"
                 placeholder="tailor@example.com"
-                {...register('email', { required: 'Email is required' })}
-                error={errors.email?.message}
-            />
-            <Input
-                label="Create Password"
-                type="password"
-                placeholder="Secure password"
-                {...register('password', { 
-                    required: 'Password is required',
-                    minLength: { value: 6, message: 'Password must be at least 6 characters' }
+                {...register('email', { 
+                    required: 'Email is required',
+                    pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                        message: 'Invalid email address'
+                    }
                 })}
-                error={errors.password?.message}
+                error={errors.email?.message}
             />
         </div>
 
     );
 };
 
-export const Step2Business = ({ register, errors }) => {
+export const Step2Business = ({ register, errors, setValue }) => {
+    const { detectLocation, isLocating } = useGoogleLocation();
+
+    const handleAutoLocation = async () => {
+        try {
+            const data = await detectLocation();
+            if (data) {
+                setValue('address', data.address, { shouldValidate: true });
+                setValue('city', data.city || '', { shouldValidate: true });
+                setValue('pincode', data.pincode || '', { shouldValidate: true });
+                setValue('latitude', data.latitude);
+                setValue('longitude', data.longitude);
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error(error.message || "Could not fetch address details automatically.");
+        }
+    };
+
     return (
         <div className="space-y-4 animate-in slide-in-from-right duration-300">
+            <div className="flex justify-between items-center mb-2">
+                <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Business Details</h3>
+                <button 
+                    type="button"
+                    onClick={handleAutoLocation}
+                    disabled={isLocating}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 border border-primary/20 text-primary text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-indigo-100 transition-all active:scale-[0.98] disabled:opacity-50"
+                >
+                    {isLocating ? (
+                        <div className="w-3 h-3 border-2 border-primary border-t-transparent animate-spin rounded-full" />
+                    ) : (
+                        <Navigation size={12} className="fill-primary/10" />
+                    )}
+                    {isLocating ? 'Locating...' : 'Detect Location'}
+                </button>
+            </div>
             <Input
                 label="Shop Name"
                 placeholder="e.g. Royal Stitches"
@@ -110,7 +191,17 @@ export const Step2Business = ({ register, errors }) => {
                 <Input
                     label="Pincode"
                     placeholder="400001"
-                    {...register('pincode', { required: 'Pincode is required' })}
+                    maxLength={6}
+                    {...register('pincode', { 
+                        required: 'Pincode is required',
+                        pattern: {
+                            value: /^\d{6}$/,
+                            message: 'Enter a valid 6-digit pincode'
+                        },
+                        onChange: (e) => {
+                            e.target.value = e.target.value.replace(/\D/g, '');
+                        }
+                    })}
                     error={errors.pincode?.message}
                 />
             </div>
@@ -118,7 +209,7 @@ export const Step2Business = ({ register, errors }) => {
                 label="Experience (Years)"
                 type="number"
                 placeholder="e.g. 5"
-                {...register('experienceInYears', { required: 'Experience is required' })}
+                {...register('experienceInYears', { required: 'Experience is required', min: { value: 0, message: 'Invalid experience' } })}
                 error={errors.experienceInYears?.message}
             />
             <Input
@@ -127,20 +218,6 @@ export const Step2Business = ({ register, errors }) => {
                 {...register('specializations', { required: 'Specializations are required' })}
                 error={errors.specializations?.message}
             />
-            <div className="space-y-1">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Primary Service Area</label>
-                <select
-                    {...register('serviceArea', { required: 'Area is required' })}
-                    className={`w-full px-4 sm:px-5 py-3 sm:py-3.5 bg-gray-50 border-2 rounded-2xl focus:outline-none transition-all text-sm font-medium ${errors.serviceArea ? 'border-red-400 focus:border-red-500 bg-red-50/50' : 'border-gray-50 focus:border-primary focus:bg-white'}`}
-                >
-                    <option value="">Select Region</option>
-                    <option value="north">North India</option>
-                    <option value="south">South India</option>
-                    <option value="east">East India</option>
-                    <option value="west">West India</option>
-                    <option value="central">Central India</option>
-                </select>
-            </div>
         </div>
     );
 };

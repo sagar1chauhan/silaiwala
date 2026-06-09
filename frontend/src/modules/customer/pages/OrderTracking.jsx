@@ -43,8 +43,10 @@ const OrderTracking = () => {
                 setOrder(response.data.data);
             }
         } catch (err) {
-            console.error('Error fetching order tracking:', err);
-            setError(err.response?.data?.message || 'Failed to load tracking details.');
+            if (err.name !== 'CanceledError' && err.code !== 'ERR_CANCELED') {
+                console.error('Error fetching order tracking:', err);
+                setError(err.response?.data?.message || 'Failed to load tracking details.');
+            }
         } finally {
             setIsLoading(false);
         }
@@ -133,14 +135,31 @@ const OrderTracking = () => {
             { key: 'shipped', label: 'In Transit', icon: Truck },
             { key: 'delivered', label: 'Delivered', icon: CheckCircle2 }
         ]
-        : [
-            { key: 'pending', label: 'Placed', icon: Package },
-            { key: 'accepted', label: 'Accepted', icon: ShieldCheck },
-            ...(order.fabricPickupRequired ? [{ key: 'fabric-pickup', label: 'Fabric', icon: Truck }] : []),
-            { key: 'in-production', label: 'Crafting', icon: Calendar },
-            { key: 'out-for-delivery', label: 'Dispatch', icon: Truck },
-            { key: 'delivered', label: 'Arrived', icon: CheckCircle2 }
-        ];
+        : order.fabricPickupRequired
+            ? [
+                { key: 'pending', label: 'Placed', icon: Package },
+                { key: 'fabric-pickup', label: 'Fabric', icon: Truck }, // corresponds to fabric-delivered/received
+                { key: 'measurement-verification', label: 'Verify', icon: ShieldCheck },
+                { key: 'cutting', label: 'Cutting', icon: Scissors },
+                { key: 'stitching', label: 'Stitching', icon: Calendar },
+                { key: 'finishing', label: 'Finishing', icon: CheckCircle2 },
+                { key: 'quality-check', label: 'QC', icon: ShieldCheck },
+                { key: 'ready-for-delivery', label: 'Ready', icon: CheckCircle2 },
+                { key: 'out-for-delivery', label: 'Dispatch', icon: Truck },
+                { key: 'delivered', label: 'Arrived', icon: CheckCircle2 }
+            ]
+            : [
+                { key: 'pending', label: 'Placed', icon: Package },
+                { key: 'order-received', label: 'Received', icon: ShieldCheck },
+                { key: 'fabric-selected', label: 'Fabric', icon: Package },
+                { key: 'cutting', label: 'Cutting', icon: Scissors },
+                { key: 'stitching', label: 'Stitching', icon: Calendar },
+                { key: 'finishing', label: 'Finishing', icon: CheckCircle2 },
+                { key: 'quality-check', label: 'QC', icon: ShieldCheck },
+                { key: 'ready-for-delivery', label: 'Ready', icon: CheckCircle2 },
+                { key: 'out-for-delivery', label: 'Dispatch', icon: Truck },
+                { key: 'delivered', label: 'Arrived', icon: CheckCircle2 }
+            ];
 
     const getStageStatus = (stageKey) => {
         const history = isBulk ? (order.history || []) : (order.trackingHistory || []);
@@ -159,39 +178,104 @@ const OrderTracking = () => {
             return { completed: isCompleted, time: entry ? new Date(entry.timestamp || entry.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null };
         }
 
-        if (stageKey === 'accepted') {
-            const entry = history.find(h => h.status === 'accepted' || h.status.includes('ready-for-pickup'));
-            const isCompleted = !!entry || ['fabric-ready-for-pickup', 'fabric-picked-up', 'fabric-delivered', 'cutting', 'stitching', 'completed', 'ready-for-pickup', 'out-for-delivery', 'delivered'].includes(status);
-            return { completed: isCompleted, time: entry ? new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null };
-        }
+        const statusOrder = [
+            'pending',
+            'accepted',
+            'fabric-ready-for-pickup',
+            'fabric-picked-up',
+            'fabric-delivered',
+            'fabric-received',
+            'order-received',
+            'fabric-selected',
+            'measurement-verification',
+            'cutting',
+            'stitching',
+            'finishing',
+            'quality-check',
+            'ready-for-pickup',
+            'ready-for-delivery',
+            'out-for-delivery',
+            'delivered',
+            'product-delivered',
+            'order-completed'
+        ];
 
-        if (stageKey === 'fabric-pickup') {
-            const entry = history.find(h => h.status === 'fabric-delivered' || h.status === 'delivery-fabric-delivered');
-            const isCompleted = !!entry || ['cutting', 'stitching', 'completed', 'ready-for-pickup', 'out-for-delivery', 'delivered'].includes(status);
-            return { completed: isCompleted, time: entry ? new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null };
-        }
+        // Map stage keys to their equivalent status weights for comparison
+        let equivalentStageKey = stageKey;
+        if (stageKey === 'fabric-pickup') equivalentStageKey = 'fabric-received';
+        if (stageKey === 'accepted') equivalentStageKey = 'order-received';
+        if (stageKey === 'in-production') equivalentStageKey = 'cutting';
+        if (stageKey === 'shipped') equivalentStageKey = 'out-for-delivery';
 
-        if (stageKey === 'in-production') {
-            const entry = history.find(h => ['cutting', 'stitching', 'in-progress', 'in-production'].includes(h.status));
-            const isCompleted = !!entry || ['completed', 'ready-for-pickup', 'out-for-delivery', 'delivered', 'shipped'].includes(status);
-            return { completed: isCompleted, time: entry ? new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null };
-        }
+        const currentIndex = statusOrder.indexOf(status);
+        const stageIndex = statusOrder.indexOf(equivalentStageKey);
 
-        if (stageKey === 'out-for-delivery' || stageKey === 'shipped') {
-            const entry = history.find(h => h.status === 'out-for-delivery' || h.status === 'delivery-out-for-delivery' || h.status === 'shipped');
-            const isCompleted = !!entry || ['delivered'].includes(status);
-            return { completed: isCompleted, time: entry ? new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null };
-        }
+        const isCompleted = currentIndex >= stageIndex && stageIndex !== -1;
 
-        if (stageKey === 'delivered') {
-            const entry = history.find(h => h.status === 'delivered' || h.status === 'delivery-delivered');
-            return { completed: !!entry || status === 'delivered', time: entry ? new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null };
-        }
+        // Try to find exact timestamp from history
+        let historyEntry = history.find(h => {
+            if (stageKey === 'fabric-pickup') return ['fabric-delivered', 'fabric-received', 'delivery-fabric-delivered'].includes(h.status);
+            if (stageKey === 'ready-for-delivery') return ['ready-for-pickup', 'ready-for-delivery'].includes(h.status);
+            if (stageKey === 'out-for-delivery') return ['out-for-delivery', 'shipped'].includes(h.status);
+            if (stageKey === 'accepted') return ['accepted', 'order-received'].includes(h.status);
+            return h.status === stageKey;
+        });
 
-        return { completed: false };
+        // Fallback to current time if just completed but no history sync yet
+        const timeStr = historyEntry 
+            ? new Date(historyEntry.timestamp || historyEntry.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+            : (isCompleted ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null);
+
+        return { completed: isCompleted, time: timeStr };
     };
 
-    const timelineStates = stages.map(s => ({ ...s, ...getStageStatus(s.key) }));
+    const getStageSubEvents = (stageKey) => {
+        const history = isBulk ? (order.history || []) : (order.trackingHistory || []);
+        if (history.length === 0) return [];
+
+        let validStatuses = [];
+        let timeConstraint = null; // 'before-cutting', 'after-ready'
+
+        if (stageKey === 'fabric-pickup') {
+            validStatuses = ['reached-pickup', 'fabric-picked-up'];
+            timeConstraint = 'before-cutting';
+        } else if (stageKey === 'out-for-delivery') {
+            validStatuses = ['reached-pickup', 'picked-up-from-tailor', 'reached-dropoff'];
+            timeConstraint = 'after-ready';
+        }
+
+        if (validStatuses.length === 0) return [];
+
+        // Find boundary timestamps
+        const readyForPickupTime = history.find(h => h.status === 'ready-for-pickup')?.timestamp;
+        const cuttingTime = history.find(h => h.status === 'cutting' || h.status === 'fabric-delivered')?.timestamp;
+
+        let events = history.filter(h => validStatuses.includes(h.status));
+
+        if (timeConstraint === 'before-cutting' && cuttingTime) {
+            events = events.filter(e => new Date(e.timestamp) <= new Date(cuttingTime));
+        } else if (timeConstraint === 'after-ready' && readyForPickupTime) {
+            events = events.filter(e => new Date(e.timestamp) >= new Date(readyForPickupTime));
+        } else if (timeConstraint === 'after-ready' && !readyForPickupTime) {
+            // If it hasn't reached ready-for-pickup, there shouldn't be dispatch events
+            // But just in case, if status is out-for-delivery
+            if (stageKey === 'out-for-delivery' && order.status !== 'out-for-delivery' && order.status !== 'delivered') {
+                events = [];
+            }
+        }
+
+        return events.map(e => ({
+            message: e.message || `Status updated to ${e.status.replace(/-/g, ' ')}`,
+            time: new Date(e.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            rawTime: new Date(e.timestamp).getTime()
+        })).sort((a,b) => a.rawTime - b.rawTime);
+    };
+
+    const timelineStates = stages.map(s => ({ 
+        ...s, 
+        ...getStageStatus(s.key),
+        subEvents: getStageSubEvents(s.key)
+    }));
     const currentStageIndex = [...timelineStates].reverse().findIndex(s => s.completed);
     const actualCurrentIndex = currentStageIndex === -1 ? 0 : (timelineStates.length - 1 - currentStageIndex);
 
@@ -252,8 +336,8 @@ const OrderTracking = () => {
                     <div className="mb-4 p-3 bg-gradient-to-br from-primary to-primary-dark rounded-2xl text-white shadow-lg relative overflow-hidden">
                         <div className="relative z-10">
                             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 mb-1">Current Milestone</p>
-                            <h2 className="text-xl font-black tracking-tight leading-none mb-2">
-                                {timelineStates[actualCurrentIndex]?.label}
+                            <h2 className="text-xl font-black tracking-tight leading-none mb-2 capitalize">
+                                {order.status.replace(/-/g, ' ')}
                             </h2>
                             <p className="text-[10px] text-white/70 font-medium">
                                 {getCurrentStatusMessage()}
@@ -268,6 +352,89 @@ const OrderTracking = () => {
                         states={timelineStates} 
                         currentIndex={actualCurrentIndex} 
                     />
+                </div>
+
+                {/* 3.5 Order Details (Added by Request) */}
+                <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-4">
+                    <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2 mb-2">
+                        <Package size={16} className="text-[#2D2F6E]" />
+                        Order Details
+                    </h3>
+                    
+                    {/* Items */}
+                    <div className="space-y-3">
+                        {!isBulk && order.items?.map((item, idx) => (
+                            <div key={idx} className="flex gap-3">
+                                <div className="w-12 h-12 bg-gray-50 rounded-xl overflow-hidden border border-gray-100 shrink-0">
+                                    <img src={item.service?.image || item.product?.images?.[0] || item.product?.image} alt={item.service?.title || item.product?.name} className="w-full h-full object-cover" />
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="text-xs font-bold text-gray-900 line-clamp-1">{item.service?.title || item.product?.name}</h4>
+                                    <p className="text-[9px] text-gray-500 uppercase font-black tracking-widest mt-0.5">Qty: {item.quantity}</p>
+                                </div>
+                                <span className="text-xs font-bold text-[#2D2F6E]">₹{item.price}</span>
+                            </div>
+                        ))}
+                        {isBulk && (
+                            <div className="flex gap-3">
+                                <div className="flex-1">
+                                    <h4 className="text-xs font-bold text-gray-900">{order.serviceType}</h4>
+                                    <p className="text-[9px] text-gray-500 uppercase font-black tracking-widest mt-0.5">Est. Qty: {order.estimatedQuantity}</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Measurement Info */}
+                    {!isBulk && order.items?.[0]?.measurements?.type && (
+                        <div className="pt-3 border-t border-gray-100 flex justify-between items-center">
+                            <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Measurement</span>
+                            <span className="text-[10px] font-black text-primary uppercase bg-indigo-50 px-2 py-1 rounded-md">
+                                {order.items[0].measurements.type === 'home' ? 'Tailor At Home' :
+                                 order.items[0].measurements.type === 'sample' ? 'Sample Garment' :
+                                 order.items[0].measurements.type === 'slip' ? 'Uploaded Slip' :
+                                 order.items[0].measurements.type === 'saved' ? 'Saved Profile' : 'Self Measured'}
+                            </span>
+                        </div>
+                    )}
+
+                    {/* Delivery Details */}
+                    {order.deliveryAddress && (
+                        <div className="pt-3 border-t border-gray-100">
+                            <h4 className="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-1.5 flex items-center gap-1">
+                                <MapPin size={10} /> Delivery Address
+                            </h4>
+                            <p className="text-xs text-gray-600 font-medium leading-relaxed">
+                                {order.deliveryAddress.street}, {order.deliveryAddress.city}, {order.deliveryAddress.state} - {order.deliveryAddress.zipCode}
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Price Breakdown */}
+                    <div className="pt-3 border-t border-gray-100 space-y-2">
+                        {order.deliveryFee > 0 && (
+                            <div className="flex justify-between items-center text-xs">
+                                <span className="text-gray-500">Delivery Fee</span>
+                                <span className="font-medium text-gray-900">₹{order.deliveryFee}</span>
+                            </div>
+                        )}
+                        {order.tailorAtHomeFee > 0 && (
+                            <div className="flex justify-between items-center text-xs">
+                                <span className="text-gray-500">Tailor Visit Fee</span>
+                                <span className="font-medium text-gray-900">₹{order.tailorAtHomeFee}</span>
+                            </div>
+                        )}
+                        {order.discountAmount > 0 && (
+                            <div className="flex justify-between items-center text-xs">
+                                <span className="text-gray-500">Discount</span>
+                                <span className="font-medium text-green-600">-₹{order.discountAmount}</span>
+                            </div>
+                        )}
+                        <div className="flex justify-between items-center pt-2 border-t border-dashed border-gray-200">
+                            <span className="text-sm font-black text-gray-900">Total Paid</span>
+                            <span className="text-sm font-black text-primary">₹{order.totalAmount}</span>
+                        </div>
+                    </div>
                 </div>
 
                 {/* 4. Support & Actions */}

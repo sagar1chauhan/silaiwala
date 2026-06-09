@@ -54,6 +54,10 @@ app.use(globalLimiter);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
+// ─── Sanitization ────────────────────────────────────────────────────────────
+const sanitizeRequest = require("./middlewares/sanitizeRequest");
+app.use(sanitizeRequest);
+
 // ─── Static Files ────────────────────────────────────────────────────────────
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
@@ -94,6 +98,7 @@ app.use("/api/v1/reviews", require("./modules/reviews/routes/review.routes"));
 app.use("/api/v1/services", require("./modules/services/routes/service.routes"));
 app.use("/api/v1/notifications", require("./modules/notifications/routes/notification.routes"));
 app.use("/api/v1/tailors", require("./modules/tailors/routes/tailor.routes"));
+app.use("/api/v1/distance", require("./modules/distance/routes/distance.routes"));
 app.use("/api/v1/deliveries", require("./modules/deliveries/routes/delivery.routes"));
 app.use("/api/v1/wallet", require("./modules/wallet/wallet.routes"));
 app.use("/api/v1/admin", require("./modules/admin/routes/admin.routes"));

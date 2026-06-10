@@ -7,7 +7,8 @@ const rateLimit = require("express-rate-limit");
 const connectDB = require("./config/db");
 
 // Connect to Database (Required for serverless environments)
-connectDB();
+// Catch errors so it doesn't crash the Vercel function with an UnhandledPromiseRejection
+connectDB().catch(err => console.error("Initial database connection failed", err.message));
 
 const app = express();
 

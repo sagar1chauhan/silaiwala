@@ -98,6 +98,21 @@ const AdminStyleAddons = React.lazy(() => import('./modules/admin/pages/StyleAdd
 const AdminBulkOrders = React.lazy(() => import('./modules/admin/pages/BulkOrders'));
 import AdminProtectedRoute from './modules/admin/components/AdminProtectedRoute';
 
+<<<<<<< HEAD
+import ReferEarn from './modules/customer/pages/ReferEarn'; // NEW
+import FabricDetail from './modules/customer/pages/FabricDetail'; // NEW
+import Measurements from './modules/customer/pages/Measurements'; // NEW
+import SavedAddresses from './modules/customer/pages/SavedAddresses'; // NEW
+import Support from './modules/customer/pages/Support'; // NEW
+import CMSContent from './modules/customer/pages/CMSContent'; // NEW
+import Embellishments from './modules/customer/pages/Embellishments'; // NEW
+import MyReviews from './modules/customer/pages/MyReviews'; // NEW
+import BulkOrderRequest from './modules/customer/pages/BulkOrderRequest'; // NEW
+import MyBulkOrders from './modules/customer/pages/MyBulkOrders'; // NEW
+import EmbroideryPage from './modules/customer/pages/Embroidery'; // NEW
+import SewZellaLanding from './modules/landing/SewZellaLanding'; // NEW
+import LandingCMSPage from './modules/landing/LandingCMSPage'; // NEW
+=======
 const ReferEarn = React.lazy(() => import('./modules/customer/pages/ReferEarn')); // NEW
 const FabricDetail = React.lazy(() => import('./modules/customer/pages/FabricDetail')); // NEW
 const Measurements = React.lazy(() => import('./modules/customer/pages/Measurements')); // NEW
@@ -110,6 +125,7 @@ const BulkOrderRequest = React.lazy(() => import('./modules/customer/pages/BulkO
 const MyBulkOrders = React.lazy(() => import('./modules/customer/pages/MyBulkOrders')); // NEW
 const EmbroideryPage = React.lazy(() => import('./modules/customer/pages/Embroidery')); // NEW
 const SewZellaLanding = React.lazy(() => import('./modules/landing/SewZellaLanding')); // NEW
+>>>>>>> 0119936d9dfc540b863f7889a05e48ddf6043b88
 
 const AppRoutes = () => {
     return (
@@ -132,6 +148,7 @@ const AppRoutes = () => {
 
             {/* Landing Route */}
             <Route path="/" element={<SewZellaLanding />} />
+            <Route path="/page/:slug" element={<LandingCMSPage />} />
 
             {/* Customer Public Routes */}
             <Route path="/welcome" element={<CustomerOnboarding />} />

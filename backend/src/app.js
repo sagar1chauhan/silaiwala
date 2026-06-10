@@ -89,6 +89,18 @@ app.get("/health", (req, res) => {
   });
 });
 
+// ─── Ensure DB Connection for API Routes ─────────────────────────────────────
+// This ensures that serverless function requests wait for the database connection
+// before trying to query models, preventing the "bufferCommands = false" error.
+app.use("/api", async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
 // ─── API Routes ──────────────────────────────────────────────────────────────
 app.use("/api/v1/auth", require("./modules/auth/routes/auth.routes"));
 app.use("/api/v1/customers", require("./modules/customers/routes/customer.routes"));

@@ -502,7 +502,7 @@ exports.getOrderById = async (req, res) => {
 exports.updateOrderStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, paymentStatus, tailor, deliveryPartner } = req.body;
+    const { status, paymentStatus, tailor, deliveryPartner, deliveryFee } = req.body;
     
     const oldOrder = await Order.findById(id);
     if (!oldOrder) {
@@ -517,6 +517,7 @@ exports.updateOrderStatus = async (req, res) => {
       trackingMessage = `Order status updated to ${status.replace(/-/g, ' ')} by System Admin`;
     }
     if (paymentStatus) updateData.paymentStatus = paymentStatus;
+    if (deliveryFee !== undefined) updateData.deliveryFee = deliveryFee;
     
     // Handle Tailor Assignment Logic
     if (tailor && tailor !== oldOrder.tailor?.toString()) {
@@ -1109,7 +1110,7 @@ exports.getTransactions = async (req, res) => {
 exports.getAllPayouts = async (req, res) => {
   try {
     const payouts = await Payout.find()
-      .populate("tailor", "name shopName role email")
+      .populate("user", "name role email")
       .sort("-createdAt");
     res.status(200).json({ success: true, data: payouts });
   } catch (error) {
@@ -1143,7 +1144,7 @@ exports.updatePayoutStatus = async (req, res) => {
     // Handle Wallet Transaction Update
     const WalletTransaction = require("../../../models/WalletTransaction");
     const transaction = await WalletTransaction.findOne({ 
-      user: payout.tailor, // Payout model uses 'tailor' for user ref
+      user: payout.user, // Payout model uses 'user' for user ref
       amount: payout.amount,
       type: "debit",
       category: "withdrawal",
@@ -1158,7 +1159,7 @@ exports.updatePayoutStatus = async (req, res) => {
     // Refund logic if payout failed and it was previously pending/processing
     if (status === 'failed' && oldStatus !== 'failed' && oldStatus !== 'completed') {
       const User = require("../../../models/User");
-      const user = await User.findById(payout.tailor);
+      const user = await User.findById(payout.user);
       
       let profile;
       if (user.role === 'tailor') {
